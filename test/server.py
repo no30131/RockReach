@@ -15,6 +15,16 @@ def create_mask_from_color(image, color, tolerance=30):
     mask = cv2.inRange(image, lower_bound, upper_bound)
     return mask
 
+def find_closest_contour(contours, point):
+    min_dist = float('inf')
+    closest_contour = None
+    for contour in contours:
+        dist = cv2.pointPolygonTest(contour, point, True)
+        if dist >= 0 and dist < min_dist:
+            min_dist = dist
+            closest_contour = contour
+    return closest_contour
+
 @app.route('/process_selection', methods=['POST'])
 def process_selection():
     try:
@@ -27,13 +37,16 @@ def process_selection():
             return jsonify({'error': 'Image not found'}), 404
 
         for point in points:
-            color = get_color_at_point(img, (int(point['x']), int(point['y'])))
+            x, y = int(point['x']), int(point['y'])
+            color = get_color_at_point(img, (x, y))
             mask = create_mask_from_color(img, color)
-            
+
             # 查找轮廓
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            for contour in contours:
-                cv2.drawContours(img, [contour], -1, (0, 255, 0), 3)
+            closest_contour = find_closest_contour(contours, (x, y))
+
+            if closest_contour is not None:
+                cv2.drawContours(img, [closest_contour], -1, (0, 255, 0), 3)
 
         _, encoded_selected_image = cv2.imencode('.png', img)
         selected_image = base64.b64encode(encoded_selected_image).decode('utf-8')
