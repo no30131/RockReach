@@ -25,14 +25,46 @@
             width: 100%;
             height: 100%;
         }
+        #upload-container {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <h1>Select a Color</h1>
+    <div id="upload-container">
+        <input type="file" id="image-upload" accept="image/*">
+        <button onclick="uploadImage()">Upload Image</button>
+    </div>
     <div id="preview-container"></div>
     
     <script>
-        // 动态生成颜色选择按钮
+        let processedImages = {};
+
+        function uploadImage() {
+            const fileInput = document.getElementById('image-upload');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Please select an image to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                processedImages = data.images;
+                console.log("Processed images:", processedImages);
+                alert("Image uploaded and processed successfully.");
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
         function generateColorButtons(colors) {
             colors.forEach(color => {
                 const btn = document.createElement('button');
@@ -42,32 +74,24 @@
             });
         }
 
-        // 处理颜色选择
         function handleColorSelection(color) {
-            fetch('/select_color', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ color }),
-            })
-          .then(res => res.json())
-          .then(({image, filename}) => {
-                displayImagePreview(image, filename);
-            })
-          .catch(error => console.error('Error:', error));
+            if (!processedImages[color]) {
+                alert("Please upload an image first.");
+                return;
+            }
+            displayImagePreview(processedImages[color], `${color}_result.png`);
         }
 
-        // 显示图像预览
-        function displayImagePreview(imageData, filename) {
+        function displayImagePreview(imagePath, filename) {
             const previewContainer = document.getElementById('preview-container');
             previewContainer.innerHTML = '';
             const imgElement = document.createElement('img');
-            imgElement.src = imageData;
+            imgElement.src = imagePath;
             imgElement.alt = filename;
             previewContainer.appendChild(imgElement);
             console.log('Displaying image preview:', filename);
         }
 
-        // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             const colors = ['red', 'purple', 'green', 'black', 'yellow'];
             generateColorButtons(colors);
