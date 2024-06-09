@@ -10,6 +10,7 @@ const port = 3000;
 app.use(express.static("public"));
 
 app.use(express.json());
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
@@ -21,34 +22,26 @@ const upload = multer({
   })
 });
 
-app.post('/upload', upload.single('image'), async (req, res) => {
+app.post('/upload', upload.single('image'), (req, res) => {
+  res.json({ image: `/uploads/${req.file.filename}` });
+});
+
+app.post('/process_selection', async (req, res) => {
   try {
-    const image = fs.readFileSync(req.file.path);
-    const encodedImage = image.toString('base64');
-    const colors = ['red', 'purple', 'green', 'black', 'yellow'];
-    const processedImages = {};
+    const { points } = req.body;
+    const response = await axios.post('http://localhost:5000/process_selection', { points });
+    const { image, filename } = response.data;
 
-    for (const color of colors) {
-      const response = await axios.post('http://localhost:5000/select_rock_point', {
-        color,
-        image: encodedImage
-      });
-      const { image, filename } = response.data;
-      const imagePath = `/uploads/${filename}`;
-      fs.writeFileSync(path.join(__dirname, 'uploads', filename), Buffer.from(image, 'base64'));
-      processedImages[color] = imagePath;
-    }
+    const imagePath = path.join(__dirname, 'uploads', filename);
+    fs.writeFileSync(imagePath, Buffer.from(image, 'base64'));
 
-    res.json({ images: processedImages });
+    res.json({ image: `/uploads/${filename}`, filename });
   } catch (error) {
-    console.error('Error processing image:', error);
-    res.status(500).send('Error processing image');
-  } finally {
-    fs.unlinkSync(req.file.path);
+    console.error('Error processing selection:', error);
+    res.status(500).send('Error processing selection');
   }
 });
 
-// 設置靜態文件夾來提供處理後的圖片
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.listen(port, () => {

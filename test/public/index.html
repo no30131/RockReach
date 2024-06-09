@@ -2,12 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Color Selector</title>
+    <title>Image Selector</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding-top: 50px;
+        }
+        #canvas-container {
+            margin-top: 20px;
+            display: inline-block;
+            position: relative;
+        }
+        canvas {
+            border: 1px solid #ccc;
         }
         button {
             margin: 10px;
@@ -15,40 +23,40 @@
             font-size: 18px;
             cursor: pointer;
         }
-        #preview-container {
-            width: 300px;
-            height: 200px;
-            border: 1px solid #ccc;
-            margin-top: 20px;
-        }
-        img {
-            width: 100%;
-            height: 100%;
-        }
-        #upload-container {
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body>
-    <h1>Select a Color</h1>
-    <div id="upload-container">
-        <input type="file" id="image-upload" accept="image/*">
-        <button onclick="uploadImage()">Upload Image</button>
+    <h1>Select Objects</h1>
+    <input type="file" id="imageUpload" accept="image/*">
+    <button onclick="uploadImage()">Upload Image</button>
+    <div id="canvas-container">
+        <canvas id="imageCanvas"></canvas>
     </div>
+    <button onclick="submitSelection()">Submit Selection</button>
     <div id="preview-container"></div>
-    
+
     <script>
-        let processedImages = {};
+        let canvas, ctx;
+        let img = new Image();
+        let selectedPoints = [];
+        let uploadedImage;
+
+        document.getElementById('imageUpload').addEventListener('change', function (e) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        });
 
         function uploadImage() {
-            const fileInput = document.getElementById('image-upload');
+            const fileInput = document.getElementById('imageUpload');
             const file = fileInput.files[0];
-            if (!file) {
-                alert("Please select an image to upload.");
-                return;
-            }
-
             const formData = new FormData();
             formData.append('image', file);
 
@@ -56,45 +64,51 @@
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
+            .then(response => response.json())
             .then(data => {
-                processedImages = data.images;
-                console.log("Processed images:", processedImages);
-                alert("Image uploaded and processed successfully.");
+                uploadedImage = data.image;
+                console.log('Image uploaded:', data);
             })
             .catch(error => console.error('Error:', error));
         }
 
-        function generateColorButtons(colors) {
-            colors.forEach(color => {
-                const btn = document.createElement('button');
-                btn.textContent = color;
-                btn.onclick = () => handleColorSelection(color);
-                document.body.appendChild(btn);
-            });
+        function submitSelection() {
+            fetch('/process_selection', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ points: selectedPoints })
+            })
+            .then(res => res.json())
+            .then(({ image, filename }) => {
+                displayImagePreview(image, filename);
+            })
+            .catch(error => console.error('Error:', error));
         }
 
-        function handleColorSelection(color) {
-            if (!processedImages[color]) {
-                alert("Please upload an image first.");
-                return;
-            }
-            displayImagePreview(processedImages[color], `${color}_result.png`);
-        }
-
-        function displayImagePreview(imagePath, filename) {
+        function displayImagePreview(imageData, filename) {
             const previewContainer = document.getElementById('preview-container');
             previewContainer.innerHTML = '';
             const imgElement = document.createElement('img');
-            imgElement.src = imagePath;
+            imgElement.src = `data:image/png;base64,${imageData}`;
             imgElement.alt = filename;
             previewContainer.appendChild(imgElement);
             console.log('Displaying image preview:', filename);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const colors = ['red', 'purple', 'green', 'black', 'yellow'];
-            generateColorButtons(colors);
+            canvas = document.getElementById('imageCanvas');
+            ctx = canvas.getContext('2d');
+
+            canvas.addEventListener('click', function (event) {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                selectedPoints.push({ x, y });
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
         });
     </script>
 </body>
