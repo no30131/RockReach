@@ -1,0 +1,51 @@
+.header {
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+}
+
+.logo {
+    max-height: 28px;
+    margin-right: 10px;
+}
+
+.header-menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-links {
+    display: flex;
+    align-items: center;
+}
+
+.menu-login {
+    margin-right: 10px;
+}
+
+.button {
+    margin-left: 20px;
+    text-decoration: none;
+}
+
+.button.active {
+    color: #9a1902;
+}
+
+.header-menu > div {
+    display: flex;
+    align-items: center;
+}
+
+.login-button {
+    padding: 10px 20px;
+    border: 1px solid rgb(255, 98, 0);
+    border-radius: 5px;
+    background-color: rgb(255, 98, 0);
+    color: white;
+}
+
+.login-button:hover {
+    background-color: rgb(255, 115, 0);
+    border: 1px solid rgb(255, 115, 0);
+}

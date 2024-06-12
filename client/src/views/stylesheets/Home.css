@@ -1,0 +1,34 @@
+.home-main {
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.home-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin-right: 20px;
+}
+
+.home-main-image {
+    max-height: 300px;
+    margin: 30px 10px 10px 0px;
+}
+
+.home-go-button {
+    width: 150px;
+    height: 50px;
+    padding: 10px 20px;
+    border: 1px solid rgb(255, 98, 0);
+    border-radius: 5px;
+    background-color: rgb(255, 98, 0);
+    color: white;
+    font-size: 18px;
+}
+
+.home-go-button:hover {
+    background-color: rgb(255, 115, 0);
+    border: 1px solid rgb(255, 115, 0);
+}

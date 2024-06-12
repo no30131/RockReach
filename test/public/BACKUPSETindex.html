@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Selector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 50px;
+        }
+        #canvas-container {
+            margin-top: 20px;
+            display: inline-block;
+            position: relative;
+        }
+        canvas {
+            border: 1px solid #ccc;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Objects</h1>
+    <input type="file" id="imageUpload" accept="image/*">
+    <button onclick="uploadImage()">Upload Image</button>
+    <div id="canvas-container">
+        <canvas id="imageCanvas"></canvas>
+    </div>
+    <button onclick="submitSelection()">Submit Selection</button>
+    <div id="preview-container"></div>
+
+    <script>
+        let canvas, ctx;
+        let img = new Image();
+        let selectedPoints = [];
+        let uploadedImage;
+
+        document.getElementById('imageUpload').addEventListener('change', function (e) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        function uploadImage() {
+            const fileInput = document.getElementById('imageUpload');
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                uploadedImage = data.image;
+                console.log('Image uploaded:', data);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function submitSelection() {
+            fetch('/process_selection', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ points: selectedPoints })
+            })
+            .then(res => res.json())
+            .then(({ image, filename }) => {
+                displayImagePreview(image, filename);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function displayImagePreview(imageData, filename) {
+            const previewContainer = document.getElementById('preview-container');
+            previewContainer.innerHTML = '';
+            const imgElement = document.createElement('img');
+            imgElement.src = `data:image/png;base64,${imageData}`;
+            imgElement.alt = filename;
+            previewContainer.appendChild(imgElement);
+            console.log('Displaying image preview:', filename);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            canvas = document.getElementById('imageCanvas');
+            ctx = canvas.getContext('2d');
+
+            canvas.addEventListener('click', function (event) {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                selectedPoints.push({ x, y });
+                ctx.fillStyle = 'red';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        });
+    </script>
+</body>
+</html>

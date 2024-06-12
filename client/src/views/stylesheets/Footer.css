@@ -1,0 +1,12 @@
+footer {
+    padding: 0 20px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer-links {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}

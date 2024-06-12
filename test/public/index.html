@@ -2,20 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Image Selector</title>
+    <title>Color Selector</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding-top: 50px;
-        }
-        #canvas-container {
-            margin-top: 20px;
-            display: inline-block;
-            position: relative;
-        }
-        canvas {
-            border: 1px solid #ccc;
         }
         button {
             margin: 10px;
@@ -23,92 +15,62 @@
             font-size: 18px;
             cursor: pointer;
         }
+        #preview-container {
+            width: 300px;
+            height: 200px;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+        img {
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
-    <h1>Select Objects</h1>
-    <input type="file" id="imageUpload" accept="image/*">
-    <button onclick="uploadImage()">Upload Image</button>
-    <div id="canvas-container">
-        <canvas id="imageCanvas"></canvas>
-    </div>
-    <button onclick="submitSelection()">Submit Selection</button>
+    <h1>Select a Color</h1>
     <div id="preview-container"></div>
-
+    
     <script>
-        let canvas, ctx;
-        let img = new Image();
-        let selectedPoints = [];
-        let uploadedImage;
-
-        document.getElementById('imageUpload').addEventListener('change', function (e) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                img.onload = () => {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        });
-
-        function uploadImage() {
-            const fileInput = document.getElementById('imageUpload');
-            const file = fileInput.files[0];
-            const formData = new FormData();
-            formData.append('image', file);
-
-            fetch('/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                uploadedImage = data.image;
-                console.log('Image uploaded:', data);
-            })
-            .catch(error => console.error('Error:', error));
+        // 动态生成颜色选择按钮
+        function generateColorButtons(colors) {
+            colors.forEach(color => {
+                const btn = document.createElement('button');
+                btn.textContent = color;
+                btn.onclick = () => handleColorSelection(color);
+                document.body.appendChild(btn);
+            });
         }
 
-        function submitSelection() {
-            fetch('/process_selection', {
+        // 处理颜色选择
+        function handleColorSelection(color) {
+            fetch('/select_color', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ points: selectedPoints })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ color }),
             })
-            .then(res => res.json())
-            .then(({ image, filename }) => {
+          .then(res => res.json())
+          .then(({image, filename}) => {
                 displayImagePreview(image, filename);
             })
-            .catch(error => console.error('Error:', error));
+          .catch(error => console.error('Error:', error));
         }
 
+        // 显示图像预览
         function displayImagePreview(imageData, filename) {
             const previewContainer = document.getElementById('preview-container');
             previewContainer.innerHTML = '';
             const imgElement = document.createElement('img');
-            imgElement.src = `data:image/png;base64,${imageData}`;
+            imgElement.src = imageData;
             imgElement.alt = filename;
             previewContainer.appendChild(imgElement);
             console.log('Displaying image preview:', filename);
         }
 
+        // 初始化
         document.addEventListener('DOMContentLoaded', () => {
-            canvas = document.getElementById('imageCanvas');
-            ctx = canvas.getContext('2d');
-
-            canvas.addEventListener('click', function (event) {
-                const rect = canvas.getBoundingClientRect();
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
-                selectedPoints.push({ x, y });
-                ctx.fillStyle = 'red';
-                ctx.beginPath();
-                ctx.arc(x, y, 5, 0, Math.PI * 2);
-                ctx.fill();
-            });
+            const colors = ['red', 'purple', 'green', 'black', 'yellow'];
+            generateColorButtons(colors);
         });
     </script>
 </body>
