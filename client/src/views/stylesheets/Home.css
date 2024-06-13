@@ -5,11 +5,22 @@
 }
 
 .home-title {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 50px;
-    margin-right: 20px;
+    /* display: flex; */
+    /* flex-direction: column; */
+    margin-top: 40px;
+    margin-right: 50px;
+}
+
+.home-title > h1 {
+    text-align: left;
+    margin-bottom: -10px;
+    color: darkred;
+}
+
+.home-title > p {
+    margin-top: 30px;
+    text-align: left;
+    font-size: 17px;
 }
 
 .home-main-image {
@@ -17,18 +28,27 @@
     margin: 30px 10px 10px 0px;
 }
 
-.home-go-button {
-    width: 150px;
-    height: 50px;
+.home-signup-button {
+    width: 250px;
+    height: 55px;
     padding: 10px 20px;
     border: 1px solid rgb(255, 98, 0);
     border-radius: 5px;
     background-color: rgb(255, 98, 0);
     color: white;
     font-size: 18px;
+    margin-top: 50px;
+    margin-bottom: 200px;
 }
 
-.home-go-button:hover {
+.home-signup-button:hover {
     background-color: rgb(255, 115, 0);
     border: 1px solid rgb(255, 115, 0);
+}
+
+.home-signup-link {
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+    margin: 40px 0 20px 0;
 }

@@ -44,10 +44,3 @@ function App() {
 };
 
 export default App;
-
-// useEffect(() => {
-//     fetch("http://localhost:7000/api")
-//         .then(response => response.json())
-//         .then(data => setData(data))
-//         .catch(error => console.error("Error: ", error));
-// }, []);

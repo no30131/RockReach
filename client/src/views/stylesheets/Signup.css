@@ -17,6 +17,10 @@ h1, p {
   text-align: center;
 }
 
+h1 {
+  color: darkred;
+}
+
 .signup-submit {
     margin-top: 10px;
     width: 150px;

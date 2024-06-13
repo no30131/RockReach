@@ -1,0 +1,73 @@
+.signin-form {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 150px;
+}
+
+.input-email,
+.input-password {
+  margin: 12px 0;
+  padding: 15px;
+  background-color: rgba(243, 243, 243, 0.946);
+  border: none;
+}
+
+h1, p {
+  text-align: center;
+}
+
+.signin-submit {
+    margin-top: 10px;
+    width: 150px;
+    height: 50px;
+    padding: 10px 20px;
+    border: 1px solid rgb(255, 98, 0);
+    border-radius: 5px;
+    background-color: rgb(255, 98, 0);
+    color: white;
+    font-size: 18px;
+}
+
+.signin-submit:hover {
+    background-color: rgb(255, 115, 0);
+    border: 1px solid rgb(255, 115, 0);
+}
+
+.signin-link {
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.message-box {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  animation: fadeinout 5s ease-in-out;
+}
+
+.message-error-box {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #af4c4c;
+  color: white;
+  padding: 16px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  animation: fadeinout 5s ease-in-out;
+}
+
+@keyframes fadeinout {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
