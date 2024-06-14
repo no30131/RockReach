@@ -5,6 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser")
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
 
 // const uploadRoutes = require("./routes/uploadRoutes");
 const usersRoutes = require("./routes/usersRoutes");
@@ -27,6 +28,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.static("public"));
 app.use("/uploads", express.static("uploads"));

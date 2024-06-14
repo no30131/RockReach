@@ -18,6 +18,7 @@ const Signup = () => {
     try {
       const response = await fetch("http://localhost:7000/api/users/create", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json"
         },
@@ -30,7 +31,7 @@ const Signup = () => {
         setShowMessage(true);
         setTimeout(() => {
           setShowMessage(false);
-          navigate("/personal");
+          // navigate("/personal");
         }, 800);
       } else {
         console.error("Error creating user:", data);

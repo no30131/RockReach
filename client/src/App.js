@@ -6,6 +6,7 @@ import Home from "./views/Home.js";
 import Signin from "./views/Signin.js";
 import Signup from "./views/Signup.js";
 import Upload from "./views/Upload.js";
+import Gyms from "./views/Gyms.js";
 import Custom from "./views/Custom.js";
 import Friends from "./views/Friends.js";
 import Footprint from "./views/Footprint.js";
@@ -26,6 +27,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/signup" element={<Signup/>} />
             <Route path="/signin" element={<Signin />} />
+            <Route path="/gyms" element={<Gyms />} />
             <Route path="/upload" element={<Upload />} />
             <Route path="/custom" element={<Custom />} />
             <Route path="/friends" element={<Friends />} />

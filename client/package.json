@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
+    "jwt-decode": "^4.0.0",
     "konva": "^9.3.11",
     "plotly.js-dist": "^2.33.0",
     "react": "^18.3.1",
