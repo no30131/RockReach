@@ -52,7 +52,7 @@ const upload = multer({
 const uploadFiles = upload.array("files", 5);
 
 router.post("/create", uploadFiles, climbRecordsController.createClimbRecords);
-router.get("/:id", climbRecordsController.getClimbRecordsById);
+router.get("/:userId", climbRecordsController.getClimbRecordsByUserId);
 
 module.exports = router;
 

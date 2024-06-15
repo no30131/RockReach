@@ -7,7 +7,6 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 
-// const uploadRoutes = require("./routes/uploadRoutes");
 const usersRoutes = require("./routes/usersRoutes");
 const climbRecordsRoutes = require("./routes/climbRecordsRoutes");
 const gymsRoutes = require("./routes/gymsRoutes");
@@ -43,7 +42,6 @@ mongoose.connect(process.env.MONGODB_URI, {
   console.error("Error connecting to MongoDB", err);
 });
 
-// app.use("/api", uploadRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/climbRecords", climbRecordsRoutes);
 app.use("/api/friends", friendsRoutes);

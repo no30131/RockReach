@@ -56,9 +56,9 @@ exports.loginUser = async (req, res) => {
 }
 
 exports.getUserById = async (req, res) => {
-    const userId = req.params.id;
+    const userId = req.params.userId;
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).select("name introduce image");
         if (!user) {
             return res.status(404).send({ error: "User not found" });
         }

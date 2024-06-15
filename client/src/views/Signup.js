@@ -31,7 +31,7 @@ const Signup = () => {
         setShowMessage(true);
         setTimeout(() => {
           setShowMessage(false);
-          // navigate("/personal");
+          navigate("/personal");
         }, 800);
       } else {
         console.error("Error creating user:", data);
