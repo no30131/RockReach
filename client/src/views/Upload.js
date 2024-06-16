@@ -99,7 +99,7 @@ const Upload = () => {
         const formData = new FormData();
         formData.append("userId", userId);
         formData.append("date", climbDate.toISOString());
-        formData.append("gymId", selectedGym);
+        formData.append("gymName", selectedGym);
 
         const recordsData = records.map(record => ({
             wall: record.wall,
@@ -166,7 +166,7 @@ const Upload = () => {
                                 onChange={handleChange}
                             >
                                 {gyms.map((gym) => (
-                                    <option key={gym._id} value={gym._id}>
+                                    <option key={gym._id} value={gym.name}>
                                         {gym.name}
                                     </option>
                                 ))}

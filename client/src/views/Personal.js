@@ -213,7 +213,8 @@ const Personal = () => {
       'jpg': 'image/jpeg',
       'jpeg': 'image/jpeg',
       'png': 'image/png',
-      'gif': 'image/gif'
+      'gif': 'image/gif',
+      'webp': 'image/webp'
     };
 
     const fileExtension = file.split('.').pop().toLowerCase();
@@ -259,16 +260,16 @@ const Personal = () => {
       <div>
         {climbRecords.map((record) => (
           <div key={record._id} className="personal-records-box">
-            <p>Date: {new Date(record.date).toLocaleDateString()}</p>
-            <p>Gym ID: {record.gymId}</p>
+            <p>日期: {new Date(record.date).toLocaleDateString()}</p>
+            <p>岩館: {record.gymName}</p>
             <div>
               {record.records.map((rec, index) => (
                 <div key={index}>
                   <div className="personal-records">
-                    <p>Wall: {rec.wall}</p>
-                    <p>Level: {rec.level}</p>
-                    <p>Types: {rec.types.join(", ")}</p>
-                    <p>Times: {rec.times}</p>
+                    <p>牆面: {rec.wall}</p>
+                    <p>等級: {rec.level}</p>
+                    <p>類型: {rec.types.join(", ")}</p>
+                    <p>嘗試次數: {rec.times}</p>
                   </div>
                   <div className="personal-records-memo">Memo: {rec.memo}</div>
                   <div className="personal-records-files">

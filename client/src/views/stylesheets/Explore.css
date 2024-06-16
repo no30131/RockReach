@@ -1,0 +1,136 @@
+.explore-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.record-card {
+  width: 300px;
+  margin: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* .record-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f9f9f9;
+} */
+
+.user-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* .user-info {
+  display: flex;
+  flex-direction: column;
+} */
+
+.user-name {
+  font-weight: bold;
+  margin: 0;
+}
+
+.gym-name {
+  color: #888;
+  margin: 0;
+}
+
+.record-content {
+  padding: 10px;
+}
+
+.image-slider {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.slide {
+  width: 100%;
+  display: none;
+}
+
+.slide.active {
+  display: block;
+}
+
+/* .slide img {
+  width: 100%;
+  display: block;
+} */
+
+.pagination {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.dot {
+  height: 10px;
+  width: 10px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.dot.active {
+  background-color: #436abf;
+}
+
+/* .active {
+  background-color: #436abf;
+} */
+
+/* .record-level,
+.record-memo {
+  margin: 10px 0;
+} */
+
+.record-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+/* .likes,
+.comments {
+  display: flex;
+  align-items: center;
+} */
+
+.likes button,
+.comments button {
+  margin-right: 5px;
+}
+
+.comment-input {
+  display: flex;
+  align-items: center;
+}
+
+.comment-input input {
+  flex: 1;
+  padding: 5px;
+  margin-right: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.comment-input button {
+  background-color: #436abf;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+}

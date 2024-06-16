@@ -2,7 +2,7 @@ const ClimbRecords = require("../models/climbRecords");
 
 exports.createClimbRecords = async (req, res) => {
   try {
-    const { userId, date, gymId } = req.body;
+    const { userId, date, gymName } = req.body;
     const records = JSON.parse(req.body.records);
     const files = req.files;
 
@@ -21,7 +21,7 @@ exports.createClimbRecords = async (req, res) => {
     const climbRecords = new ClimbRecords({
       userId,
       date: dateOnly,
-      gymId,
+      gymName,
       records: updatedRecords
     });
     // console.log("Received files: ", files);
@@ -41,6 +41,86 @@ exports.getClimbRecordsByUserId = async (req, res) => {
       return res.status(404).json({ error: "Climb records not found" });
     }
     res.status(200).send(climbRecords);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+};
+
+exports.getExploresRecords = async (req, res) => {
+  try {
+    const records = await ClimbRecords.find({ "records.files": { $exists: true, $ne: [] } })
+      .populate("userId", "name image")
+      .lean();
+      const formattedRecords = records.map(record => ({
+        ...record,
+        user: record.userId,
+        records: record.records.filter(rec => rec.files && rec.files.length > 0).map(rec => ({
+          ...rec,
+          likes: rec.likes || 0,
+          comments: rec.comments || []
+        }))
+      }));
+  
+      res.status(200).send(formattedRecords);
+    } catch (error) {
+      res.status(400).send({ error: error.message });
+    }
+  };
+  
+exports.addExploresLike = async (req, res) => {
+  const id = req.params.id;
+  try { 
+    await ClimbRecords.findOneAndUpdate(
+      { "records._id": id},
+      { $inc: { "records.$.likes": 1 } },
+      { new: true }
+    );
+
+    const records = await ClimbRecords.find({ "records.files": { $exists: true, $ne: [] } })
+      .populate("userId", "name image")
+      .lean();
+
+      const formattedRecords = records.map(record => ({
+        ...record,
+        user: record.userId,
+        records: record.records.filter(rec => rec.files && rec.files.length > 0).map(rec => ({
+          ...rec,
+          likes: rec.likes || 0,
+          comments: rec.comments || []
+        }))
+      }));
+
+    res.status(201).send(formattedRecords);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+}; 
+
+exports.addExploresComment = async (req, res) => {
+  const id = req.params.id;
+  const { comment } = req.body;
+  try {    
+    const record = await ClimbRecords.findOneAndUpdate(
+      { "records._id": id},
+      { $push: { "records.$.comments": comment } },
+      { new: true }
+    );
+    
+    const records = await ClimbRecords.find({ "records.files": { $exists: true, $ne: [] } })
+      .populate("userId", "name image")
+      .lean();
+
+      const formattedRecords = records.map(record => ({
+        ...record,
+        user: record.userId,
+        records: record.records.filter(rec => rec.files && rec.files.length > 0).map(rec => ({
+          ...rec,
+          likes: rec.likes || 0,
+          comments: rec.comments || []
+        }))
+      }));
+
+    res.status(201).send(formattedRecords);
   } catch (error) {
     res.status(400).send({ error: error.message });
   }
