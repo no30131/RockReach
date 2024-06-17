@@ -8,6 +8,26 @@ const ChatRoom = ({ userId, friendId }) => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
 
+    // 獲取聊天記錄
+    useEffect(() => {
+        const fetchMessages = async () => {
+            try {
+                const response = await fetch(`http://localhost:7000/api/friends/chat/${userId}/${friendId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setMessages(data || []);
+                } else {
+                    console.error("Failed to fetch messages");
+                }
+            } catch (error) {
+                console.error("Error fetching messages: ", error);
+            }
+        };
+
+        fetchMessages();
+    }, [userId, friendId]);
+
+    // 監聽聊天消息
     useEffect(() => {
         socket.emit("joinRoom", { friendId });
 
@@ -21,34 +41,10 @@ const ChatRoom = ({ userId, friendId }) => {
         };
     }, [friendId]);
 
-    useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await fetch(`http://localhost:7000/api/friends/chat/${friendId}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setMessages(data.chat || []);   
-                } else {
-                    console.error("Failed to fetch messages");
-                }
-            } catch (error) {
-                console.error("Error fetching messages: ", error);
-            }
-        };
-
-        fetchMessages();
-    }, [friendId]);
-
+    // 發送消息
     const handleSendMessage = () => {
         if (message.trim() !== "") {
-            // const newMessage = {
-            //     talker: userId,
-            //     message,
-            //     time: new Date(),
-            // };
-
             socket.emit("sendMessage", { friendId, talker: userId, message });
-            // setMessages((prevMessages) => [...prevMessages, newMessage]);
             setMessage("");
         }
     };
@@ -69,7 +65,7 @@ const ChatRoom = ({ userId, friendId }) => {
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown = {(e) => {
+                    onKeyDown={(e) => {
                         if (e.key === "Enter") handleSendMessage();
                     }}
                 />

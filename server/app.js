@@ -57,21 +57,15 @@ io.on("connection", (socket) => {
 
   socket.on("joinRoom", ({ friendId }) => {
     socket.join(friendId);
-    console.log(`User enter room ${friendId}`);
+    // console.log(`User enter room ${friendId}`);
   });
 
   socket.on("sendMessage", async ({ friendId, talker, message }) => {
-    const newChat = { 
-      talker, 
-      message, 
-      time: moment().tz("Asia/Taipei").format() 
-    };
-
-    // console.log("newChat: ", JSON.stringify(newChat, null, 2));
+    // console.log("newChat: ", JSON.stringify({ talker, message, time: moment().tz("Asia/Taipei").format() }, null, 2));
 
     try {
-      const savedChat = await saveChatMessage(talker, friendId, message);
-      io.to(friendId).emit("receiveMessage", savedChat);
+      const newChat = await saveChatMessage(talker, friendId, message);
+      io.to(friendId).emit("receiveMessage", newChat);
     } catch (error) {
       console.error("Error: ", error);
     }

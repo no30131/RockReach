@@ -4,7 +4,7 @@ const friendsController = require("../controllers/friendsController");
 
 router.post("/create", friendsController.createFriends);
 router.post("/addChat", friendsController.addChatMessage);
-router.get("/chat/:friendId", friendsController.getChatByFriendId);
+router.get("/chat/:userId/:friendId", friendsController.getChatByFriendId);
 router.get("/:userId", friendsController.getFriendsByUserId);
 
 module.exports = router;

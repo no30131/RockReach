@@ -75,9 +75,14 @@ exports.addChatMessage = async (req, res) => {
 };
 
 exports.getChatByFriendId = async (req, res) => {
-  const friendId = req.params.friendId;
+  const { userId, friendId } = req.params;
   try {
-    const friend = await Friends.findById(friendId);
+    const friend = await Friends.findOne({
+      $or: [
+        { inviterId: userId, receiverId: friendId },
+        { inviterId: friendId, receiverId: userId }
+      ]
+    });
     if (!friend) {
       return res.status(404).json({ error: "Friend not found" });
     }
