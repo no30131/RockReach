@@ -67,3 +67,16 @@ exports.getUserById = async (req, res) => {
         res.status(400).send({ error: error.message });
     }
 };
+
+exports.getUserByName = async (req, res) => {
+    const name = req.params.name;
+    try {
+        const user = await User.findOne({ name });
+        if (!user) {
+            return res.status(404).send({ error: "User not found" });
+        }
+        res.status(200).send(user);
+    } catch (error) {
+        res.status(400).send({ error: error.message });
+    }
+};

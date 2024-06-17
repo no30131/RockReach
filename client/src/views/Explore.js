@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./stylesheets/Explore.css";
 
-const Explore = () => {
+const Explore = ({ userId }) => {
   const [records, setRecords] = useState([]);
   const [currentSlides, setCurrentSlides] = useState({});
   const [newComment, setNewComment] = useState({});
@@ -10,7 +10,10 @@ const Explore = () => {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const response = await fetch("http://localhost:7000/api/climbrecords/exploreWall");
+        const endpoint = userId
+          ? `http://localhost:7000/api/climbrecords/exploreWall/${userId}`
+          : `http://localhost:7000/api/climbrecords/exploreWall/`;
+        const response = await fetch(endpoint);
         const data = await response.json();
         setRecords(data);
       } catch (error) {
@@ -19,7 +22,7 @@ const Explore = () => {
     };
 
     fetchRecords();
-  }, []);
+  }, [userId]);
 
   const renderFile = (file) => {
     const fileTypeMap = {
@@ -66,11 +69,18 @@ const Explore = () => {
     }));
   };
 
+  const getEndpoint = () => {
+    return userId
+      ? `http://localhost:7000/api/climbrecords/exploreWall/${userId}`
+      : `http://localhost:7000/api/climbrecords/exploreWall`;
+  };
+
   const handleAddLike = async (recordId, subRecordId) => {
     try {
-      const response = await fetch(`http://localhost:7000/api/climbrecords/addLike/${subRecordId}`, {
+      await fetch(`http://localhost:7000/api/climbrecords/addLike/${subRecordId}`, {
         method: "POST"
       });
+      const response = await fetch(getEndpoint());
       const updatedRecord = await response.json();
       setRecords(updatedRecord);
     } catch (error) {
@@ -83,15 +93,16 @@ const Explore = () => {
     if (!comment) return;
 
     try {
-      const response = await fetch(`http://localhost:7000/api/climbrecords/addComment/${subRecordId}`, {
+      await fetch(`http://localhost:7000/api/climbrecords/addComment/${subRecordId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ comment })
       });
-      const updatedRecord = await response.json();
 
+      const response = await fetch(getEndpoint());
+      const updatedRecord = await response.json();
       setRecords(updatedRecord);
       setNewComment((prev) => ({ ...prev, [subRecordId]: "" }));
       setShowComments((prev) => ({ ...prev, [subRecordId]: true }));

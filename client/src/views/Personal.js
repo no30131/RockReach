@@ -251,7 +251,7 @@ const Personal = () => {
           <img src={user.image} alt={user.name} />
         </div>
       ) : (
-        <p>Loading user data...</p>
+        <p>請先登入！</p>
       )}
       <div id="level" style={{ width: 600, height: 400 }}></div>
       <div id="typesCount" style={{ width: 600, height: 400 }}></div>

@@ -6,6 +6,9 @@ const bodyParser = require("body-parser")
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
+const http = require("http");
+const socketIo = require("socket.io");
+const moment = require("moment-timezone");
 
 const usersRoutes = require("./routes/usersRoutes");
 const climbRecordsRoutes = require("./routes/climbRecordsRoutes");
@@ -13,10 +16,15 @@ const gymsRoutes = require("./routes/gymsRoutes");
 const customRoutes = require("./routes/customRoutes");
 const mapsRoutes = require("./routes/mapsRoutes");
 const friendsRoutes = require("./routes/friendsRoutes");
+const { saveChatMessage } = require("./controllers/friendsController");
+
+// const Friends = require("./models/friends");
+// const friendsController = require("./controllers/friendsController");
 
 const app = express();
 const PORT = 7000;
 dotenv.config();
+const server = http.createServer(app);
 
 const corsOptions = {
   origin: ["https://me2vegan.com", "http://localhost:3000"],
@@ -29,6 +37,7 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use("/uploads", express.static("uploads"));
 // app.use(helmet());
@@ -42,6 +51,37 @@ mongoose.connect(process.env.MONGODB_URI, {
   console.error("Error connecting to MongoDB", err);
 });
 
+const io = socketIo(server, { cors: corsOptions });
+io.on("connection", (socket) => {
+  // console.log("New connection");
+
+  socket.on("joinRoom", ({ friendId }) => {
+    socket.join(friendId);
+    console.log(`User enter room ${friendId}`);
+  });
+
+  socket.on("sendMessage", async ({ friendId, talker, message }) => {
+    const newChat = { 
+      talker, 
+      message, 
+      time: moment().tz("Asia/Taipei").format() 
+    };
+
+    // console.log("newChat: ", JSON.stringify(newChat, null, 2));
+
+    try {
+      const savedChat = await saveChatMessage(talker, friendId, message);
+      io.to(friendId).emit("receiveMessage", savedChat);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Disconnected");
+  });
+});
+
 app.use("/api/users", usersRoutes);
 app.use("/api/climbRecords", climbRecordsRoutes);
 app.use("/api/friends", friendsRoutes);
@@ -49,6 +89,6 @@ app.use("/api/maps", mapsRoutes);
 app.use("/api/gyms", gymsRoutes);
 app.use("/api/custom", customRoutes);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

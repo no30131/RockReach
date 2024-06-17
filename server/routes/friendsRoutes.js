@@ -3,6 +3,8 @@ const router = express.Router();
 const friendsController = require("../controllers/friendsController");
 
 router.post("/create", friendsController.createFriends);
-router.get("/:id", friendsController.getFriendsById);
+router.post("/addChat", friendsController.addChatMessage);
+router.get("/chat/:friendId", friendsController.getChatByFriendId);
+router.get("/:userId", friendsController.getFriendsByUserId);
 
 module.exports = router;

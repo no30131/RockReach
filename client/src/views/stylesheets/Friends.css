@@ -1,0 +1,114 @@
+/* body {
+    font-family: Arial, sans-serif;
+  }
+  
+  .friend-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .friend-item {
+    display: flex;
+    align-items: center;
+    width: 300px;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+  }
+  
+  .friend-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+  
+  .friend-name {
+    font-weight: bold;
+    margin-right: auto;
+  }
+  
+  .btn-view, .btn-chat {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-view:hover, .btn-chat:hover {
+    background-color: #0056b3;
+  }
+  
+  .btn-add-friend {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .btn-add-friend:hover {
+    background-color: #218838;
+  }
+  
+  .add-friend-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .add-friend-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .add-friend-container h2 {
+    margin-bottom: 20px;
+  }
+  
+  .add-friend-container input {
+    margin-bottom: 20px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+  }
+  
+  .add-friend-container button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .add-friend-container button:hover {
+    background-color: #0056b3;
+  }
+   */
