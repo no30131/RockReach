@@ -22,7 +22,6 @@ const Friends = () => {
   const [userId, setUserId] = useState(null);
   const [selectedFriendId, setSelectedFriendId] = useState(null);
   const [isChatVisible, setIsChatVisible] = useState(false);
-  // const [friendIdForChat, setFriendIdForChat] = useState(null);
 
   useEffect(() => {
     const token = getCookie("token");
@@ -99,11 +98,6 @@ const Friends = () => {
   const handleChat = (friendId) => {
     setSelectedFriendId(friendId);
     setIsChatVisible(true);
-    // try{
-    //   const response = await fetch(
-    //     `http://localhost:7000/api/friends/findFriendId?`
-    //   )
-    // }
   }
 
   if (!token) {

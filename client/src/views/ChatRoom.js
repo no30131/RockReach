@@ -8,7 +8,6 @@ const ChatRoom = ({ userId, friendId }) => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
 
-    // 獲取聊天記錄
     useEffect(() => {
         const fetchMessages = async () => {
             try {
@@ -27,7 +26,6 @@ const ChatRoom = ({ userId, friendId }) => {
         fetchMessages();
     }, [userId, friendId]);
 
-    // 監聽聊天消息
     useEffect(() => {
         socket.emit("joinRoom", { friendId });
 
@@ -41,7 +39,6 @@ const ChatRoom = ({ userId, friendId }) => {
         };
     }, [friendId]);
 
-    // 發送消息
     const handleSendMessage = () => {
         if (message.trim() !== "") {
             socket.emit("sendMessage", { friendId, talker: userId, message });
@@ -56,7 +53,7 @@ const ChatRoom = ({ userId, friendId }) => {
                 {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.talker === userId ? "own-message" : ""}`}>
                         <p>{msg.message}</p>
-                        <span>{new Date(msg.time).toLocaleTimeString()}</span>
+                        <span>{new Date(msg.time).toLocaleString()}</span>
                     </div>
                 ))}
             </div>

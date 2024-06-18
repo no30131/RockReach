@@ -16,9 +16,9 @@ const Header = () => {
             <Link to="/upload" className={`button ${location.pathname === "/upload" ? "active" : ""}`}>新增紀錄</Link>
             <Link to="/explore" className={`button ${location.pathname === "/explore" ? "active" : ""}`}>動態牆</Link>
             <Link to="/friends" className={`button ${location.pathname === "/friends" ? "active" : ""}`}>好友</Link>
+            <Link to="/custom" className={`button ${location.pathname === "/custom" ? "active" : ""}`}>自訂路線</Link>
             <Link to="/achievements" className={`button ${location.pathname === "/achievements" ? "active" : ""}`}>成就</Link>
             <Link to="/footprint" className={`button ${location.pathname === "/footprint" ? "active" : ""}`}>足跡地圖</Link>
-            <Link to="/custom" className={`button ${location.pathname === "/custom" ? "active" : ""}`}>自訂路線</Link>
         </div>
         <div className="menu-login">
           <Link to="/signin" className="button login-button">登入</Link>

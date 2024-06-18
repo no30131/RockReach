@@ -1,6 +1,7 @@
 const express = require("express");
 // const helmet = require("helmet");
 // const fs = require("fs");
+const path = require("path");
 const cors = require("cors");
 const bodyParser = require("body-parser")
 const mongoose = require("mongoose");
@@ -9,6 +10,7 @@ const cookieParser = require("cookie-parser");
 const http = require("http");
 const socketIo = require("socket.io");
 const moment = require("moment-timezone");
+const upload = require("./config/multerConfig");
 
 const usersRoutes = require("./routes/usersRoutes");
 const climbRecordsRoutes = require("./routes/climbRecordsRoutes");
