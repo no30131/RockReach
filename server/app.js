@@ -15,7 +15,7 @@ const upload = require("./config/multerConfig");
 const usersRoutes = require("./routes/usersRoutes");
 const climbRecordsRoutes = require("./routes/climbRecordsRoutes");
 const gymsRoutes = require("./routes/gymsRoutes");
-const customRoutes = require("./routes/customRoutes");
+const customsRoutes = require("./routes/customsRoutes");
 const mapsRoutes = require("./routes/mapsRoutes");
 const friendsRoutes = require("./routes/friendsRoutes");
 const { saveChatMessage } = require("./controllers/friendsController");
@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.use("/uploads", express.static("uploads"));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // app.use(helmet());
 
 mongoose.connect(process.env.MONGODB_URI, {
@@ -83,7 +83,7 @@ app.use("/api/climbRecords", climbRecordsRoutes);
 app.use("/api/friends", friendsRoutes);
 app.use("/api/maps", mapsRoutes);
 app.use("/api/gyms", gymsRoutes);
-app.use("/api/custom", customRoutes);
+app.use("/api/customs", customsRoutes);
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

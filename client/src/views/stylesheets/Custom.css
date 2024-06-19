@@ -1,0 +1,20 @@
+.walls-list {
+    display: flex;
+    justify-content: space-between;
+}
+
+.wall-item {
+    margin-right: 30px;
+}
+
+.wall-item > img {
+    height: 500px;
+}
+
+/* .walls-routes-list > canvas {
+    height: 500px;
+} */
+
+.route-output > img {
+    height: 500px;
+}

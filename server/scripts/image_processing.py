@@ -27,8 +27,7 @@ def process_image(image_path, markers):
     if image is None:
         raise ValueError('Image not found')
 
-    # Create a darkened copy of the original image
-    dark_image = adjust_brightness(image, -45)
+    dark_image = adjust_brightness(image, -35)
     output = dark_image.copy()
 
     hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -48,25 +47,20 @@ def process_image(image_path, markers):
         closest_contour = find_closest_contour(contours, (x, y))
 
         if closest_contour is not None:
-            # Create a mask for the selected region
             selected_mask = np.zeros_like(image)
             cv2.drawContours(selected_mask, [closest_contour], -1, (255, 255, 255), thickness=cv2.FILLED)
             selected_mask_gray = cv2.cvtColor(selected_mask, cv2.COLOR_BGR2GRAY)
 
-            # Extract the selected region from the original image
             selected_region = cv2.bitwise_and(image, image, mask=selected_mask_gray)
 
-            # Brighten the selected region
             bright_region = adjust_brightness(selected_region, 0)
 
-            # Combine the brightened selected region with the darkened background
             inverted_mask = cv2.bitwise_not(selected_mask_gray)
             darkened_background = cv2.bitwise_and(output, output, mask=inverted_mask)
             output = cv2.add(darkened_background, bright_region)
 
-            # Draw the contour on the output image
             cv2.drawContours(output, [closest_contour], -1, (50, 255, 50), 4)
-            print(f"Drew contour for marker at ({x}, {y})", file=sys.stderr)
+            # print(f"Drew contour for marker at ({x}, {y})", file=sys.stderr)
         else:
             print(f"No closest contour found for marker at ({x}, {y}) with color {color}", file=sys.stderr)
 

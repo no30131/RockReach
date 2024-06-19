@@ -6,11 +6,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const routeTypes = [
-    { name: "Crimpy", icon: "../crimpyIcon.png" },
-    { name: "Dyno", icon: "../dynoIcon.png" },
-    { name: "Slope", icon: "../slopeIcon.png" },
-    { name: "Power", icon: "../powerIcon.png" },
-    { name: "Pump", icon: "../pumpIcon.png" }
+    { name: "Crimpy", icon: "../images/crimpyIcon.png" },
+    { name: "Dyno", icon: "../images/dynoIcon.png" },
+    { name: "Slope", icon: "../images/slopeIcon.png" },
+    { name: "Power", icon: "../images/powerIcon.png" },
+    { name: "Pump", icon: "../images/pumpIcon.png" }
 ];
 
 const Upload = () => {
