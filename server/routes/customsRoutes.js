@@ -6,7 +6,7 @@ const customsController = require("../controllers/customsController");
 // const uploadSingle = upload.single("image");
 // router.post("/create", uploadSingle, customsController.createCustoms);
 
-router.post("/create", customsController.confirmAndSaveImage);
+router.post("/create", customsController.createCustoms);
 router.post("/process", customsController.processImage);
 router.get("/walls", customsController.getCustomsWalls);
 

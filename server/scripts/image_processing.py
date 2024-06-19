@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import sys
 import json
+import os
+import time
 
 def find_closest_contour(contours, point):
     min_dist = float('inf')
@@ -35,9 +37,9 @@ def process_image(image_path, markers):
     for marker in markers:
         x, y = int(marker['x']), int(marker['y'])
         color = get_color_at_point(hsv_image, (x, y))
-        mask = create_mask_from_color(hsv_image, color, tolerance=60)
+        mask = create_mask_from_color(hsv_image, color, tolerance=85)
 
-        print(f"Processing marker at ({x}, {y}) with color {color}", file=sys.stderr)
+        # print(f"Processing marker at ({x}, {y}) with color {color}", file=sys.stderr)
 
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if not contours:
@@ -64,7 +66,10 @@ def process_image(image_path, markers):
         else:
             print(f"No closest contour found for marker at ({x}, {y}) with color {color}", file=sys.stderr)
 
-    result_path = 'uploads/output.png'
+    timestamp = int(time.time())
+    random_string = ''.join(np.random.choice(list('abcdefghijklmnopqrstuvwxyz0123456789'), 3))
+    result_filename = f'output_{timestamp}_{random_string}.png'
+    result_path = os.path.join('uploads', result_filename)
     cv2.imwrite(result_path, output)
     return result_path
 

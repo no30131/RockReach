@@ -34,7 +34,7 @@ exports.processImage = async (req, res) => {
   }
 
   const localImagePath = path.join(__dirname, "..", "uploads", path.basename(image));
-  const outputImagePath = path.join(__dirname, "..", "uploads", "output.png"); 
+  // const outputImagePath = path.join(__dirname, "..", "uploads", "output.png"); 
 
   try {
     const response = await axios({
@@ -48,7 +48,7 @@ exports.processImage = async (req, res) => {
 
     writer.on('finish', () => {
       const pythonScriptPath = path.join(__dirname, "..", "scripts", "image_processing.py");
-      const pythonProcess = spawn("python", [pythonScriptPath, localImagePath, JSON.stringify(markers), outputImagePath]);
+      const pythonProcess = spawn("python", [pythonScriptPath, localImagePath, JSON.stringify(markers)]);
 
       let outputData = '';
 
@@ -83,26 +83,39 @@ exports.processImage = async (req, res) => {
   }
 };
 
-exports.confirmAndSaveImage = async (req, res) => {
+exports.createCustoms = async (req, res) => {
   const { wallName, processedImage, customName, customType, memo } = req.body;
+  // console.log(wallName, processedImage, customName, customType, memo);
+
+  if (!wallName || !processedImage || !customName || !customType) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  const localImagePath = path.resolve(__dirname, "..", processedImage);
+
+  if (!fs.existsSync(localImagePath)) {
+    return res.status(400).json({ message: "Processed image not found" });
+  }
+
+  const fileContent = fs.readFileSync(localImagePath);
+  const fileName = `processed/${path.basename(localImagePath)}`;
+  
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET,
+    Key: fileName,
+    Body: fileContent,
+    ContentType: "image/png",
+    // ACL: "public-read"
+  };
 
   try {
-    const imageData = fs.readFileSync(processedImage);
-
-    const s3Params = {
-      Bucket: process.env.AWS_S3_BUCKET,
-      Key: `processed/${path.basename(processedImage)}`,
-      Body: imageData,
-      ContentType: "image/png",
-      ACL: "public-read"
-    };
-
-    const s3Data = await s3.upload(s3Params).promise();
+    const data = await s3.upload(params).promise();
+    const imageUrl = data.Location;
 
     const wall = await Customs.findOne({ wallName });
     if (wall) {
       wall.customs.push({
-        processedImage: s3Data.Location,
+        processedImage: imageUrl,
         customName,
         customType,
         memo,
@@ -113,9 +126,10 @@ exports.confirmAndSaveImage = async (req, res) => {
       res.status(404).json({ message: "Wall not found" });
     }
   } catch (error) {
+    console.error('Error uploading to S3 or saving to DB:', error);
     res.status(500).json({
-      message: "Error saving custom route",
+      message: "Error creating custom route",
       error: error.message,
     });
   }
-}
+};

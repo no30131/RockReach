@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./stylesheets/Custom.css";
+// import { processImage } from "../../../server/controllers/customsController";
 
 const Custom = () => {
   const [walls, setWalls] = useState([]);
   const [selectedWall, setSelectedWall] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [outputImage, setOutputImage] = useState(null);
+  const [outputDBImage, setOutputDBImage] = useState(null);
   const [isEraserActive, setIsEraserActive] = useState(false);
   const [isCanvasActive, setIsCanvasActive] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -32,6 +34,7 @@ const Custom = () => {
     setSelectedWall(wall);
     setMarkers([]);
     setOutputImage(null);
+    setOutputDBImage(null);
     setIsCanvasActive(false);
     setIsProcessing(false);
     setScale(1);
@@ -68,7 +71,8 @@ const Custom = () => {
         markers: markers.map(marker => ({ x: marker.x / scale, y: marker.y / scale })),
       })
       .then((response) => {
-        setOutputImage(`http://localhost:7000/${response.data.processedImage}?timestamp=${new Date().getTime()}`);
+        setOutputImage(`http://localhost:7000/${response.data.processedImage}`);
+        setOutputDBImage(response.data.processedImage);
         setIsProcessing(false);
       })
       .catch((error) => {
@@ -93,14 +97,14 @@ const Custom = () => {
     drawMarkers(ctx);
   };
 
-  const drawMarkers = (ctx) => {
+  const drawMarkers = ((ctx) => {
     markers.forEach((marker) => {
       ctx.fillStyle = isEraserActive ? "blue" : "red";
       ctx.beginPath();
       ctx.arc(marker.x, marker.y, 5, 0, 2 * Math.PI);
       ctx.fill();
     });
-  };
+  }, [markers, isEraserActive]);
 
   useEffect(() => {
     if (selectedWall) {
@@ -116,13 +120,13 @@ const Custom = () => {
         };
       }
     }
-  }, [markers, isEraserActive]);
+  }, [markers, isEraserActive, drawMarkers, selectedWall]);
 
   const handleConfirmClick = () => {
     axios
       .post("http://localhost:7000/api/customs/create", {
         wallName: selectedWall.wallName,
-        processedImage: outputImage,
+        processedImage: outputDBImage,
         customName,
         customType,
         memo,
@@ -163,10 +167,9 @@ const Custom = () => {
             <div className="route-output">
               <h3>Output Image:</h3>
               <img src={outputImage} alt="Output" />
-              <button onClick={handleConfirmClick}>Confirm and Save</button>
             </div>
           )}
-          {!isProcessing && !outputImage && (
+          {!isProcessing && !outputImage && !isCanvasActive && (
             <button onClick={() => setIsCanvasActive(true)}>新增路線</button>
           )}
           {isCanvasActive && (
@@ -184,18 +187,21 @@ const Custom = () => {
                 placeholder="Custom Name"
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
+                required
               />
               <input
                 type="text"
                 placeholder="Custom Type"
                 value={customType}
                 onChange={(e) => setCustomType(e.target.value)}
+                required
               />
               <textarea
                 placeholder="Memo"
                 value={memo}
                 onChange={(e) => setMemo(e.target.value)}
               />
+              <button onClick={handleConfirmClick}>Save</button>
             </div>
           )}
         </div>
