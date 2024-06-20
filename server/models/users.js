@@ -7,8 +7,8 @@ const userSchema = new Schema({
     password: { type: String, required: true },
     provider: String,
     public: String,
-    // provider: { type: String, required: true },
-    // public: { type: String, required: true },
+    provider: { type: String, required: true },
+    public: { type: String, required: true },
     introduce: String,
     image: String,
 });

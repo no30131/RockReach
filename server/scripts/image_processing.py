@@ -37,7 +37,7 @@ def process_image(image_path, markers):
     for marker in markers:
         x, y = int(marker['x']), int(marker['y'])
         color = get_color_at_point(hsv_image, (x, y))
-        mask = create_mask_from_color(hsv_image, color, tolerance=85)
+        mask = create_mask_from_color(hsv_image, color, tolerance=68)
 
         # print(f"Processing marker at ({x}, {y}) with color {color}", file=sys.stderr)
 
@@ -61,7 +61,7 @@ def process_image(image_path, markers):
             darkened_background = cv2.bitwise_and(output, output, mask=inverted_mask)
             output = cv2.add(darkened_background, bright_region)
 
-            cv2.drawContours(output, [closest_contour], -1, (50, 255, 50), 4)
+            cv2.drawContours(output, [closest_contour], -1, (50, 255, 50), 2)
             # print(f"Drew contour for marker at ({x}, {y})", file=sys.stderr)
         else:
             print(f"No closest contour found for marker at ({x}, {y}) with color {color}", file=sys.stderr)
@@ -77,12 +77,12 @@ def get_color_at_point(image, point):
     h, s, v = image[point[1], point[0]]
     return h, s, v
 
-def create_mask_from_color(image, color, tolerance=77):
+def create_mask_from_color(image, color, tolerance=65):
     lower_bound = np.array([max(color[0] - tolerance, 0), max(color[1] - tolerance, 0), max(color[2] - tolerance, 0)])
     upper_bound = np.array([min(color[0] + tolerance, 179), min(color[1] + tolerance, 255), min(color[2] + tolerance, 255)])
     mask = cv2.inRange(image, lower_bound, upper_bound)
     
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (6, 6))
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 

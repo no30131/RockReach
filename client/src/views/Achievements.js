@@ -26,7 +26,7 @@ const Achievement = () => {
   const handleProcessClick = () => {
     if (!selectedWall) return;
     axios
-      .post("http://localhost:7000/api/customs/process", {
+      .post("http://localhost:7000/api/customs/achievement/process", {
         image: selectedWall.originalImage,
       })
       .then((response) => {
@@ -50,14 +50,14 @@ const Achievement = () => {
           ))}
         </div>
       ) : (
-        <div>
+        <div className="wall-data">
           <button onClick={() => setSelectedWall(null)}>Back to Walls</button>
           <h2>{selectedWall.wallName}</h2>
           <img src={selectedWall.originalImage} alt={selectedWall.wallName} />
-          <button onClick={handleProcessClick}>Process</button>
+          {/* <button onClick={handleProcessClick}>Process</button> */}
           {processedImages.length > 0 && (
             <div className="processed-images">
-              <h3>Processed Images:</h3>
+              {/* <h3>Processed Images:</h3> */}
               {processedImages.map((image, index) => (
                 <img key={index} src={`http://localhost:7000/${image}`} alt={`Processed ${index}`} />
               ))}
