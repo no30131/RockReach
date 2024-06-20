@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Explore from "./Explore";
 import ChatRoom from "./ChatRoom";
 import "./stylesheets/Friends.css";
@@ -37,11 +38,8 @@ const Friends = () => {
     if (userId) {
       const fetchFriends = async () => {
         try {
-          const response = await fetch(
-            `http://localhost:7000/api/friends/${userId}`
-          );
-          const data = await response.json();
-          setFriends(data);
+          const response = await axios.get(`http://localhost:7000/api/friends/${userId}`);
+          setFriends(response.data);
         } catch (error) {
           console.error("Error fetching friends: ", error);
         }
@@ -53,13 +51,11 @@ const Friends = () => {
 
   const addFriend = async (name) => {
     try {
-      const userResponse = await fetch(
-        `http://localhost:7000/api/users/name/${name}`
-      );
-      if (!userResponse.ok) {
+      const userResponse = await axios.get(`http://localhost:7000/api/users/name/${name}`);
+      if (!userResponse.data) {
         throw new Error("User not found");
       }
-      const userData = await userResponse.json();
+      const userData = userResponse.data;
       const receiverId = userData._id;
 
       const newFriend = {
@@ -68,16 +64,10 @@ const Friends = () => {
         friendDate: new Date().toISOString().split("T")[0]
       };
       console.log("newFriend: ", newFriend);
-      const response = await fetch("http://localhost:7000/api/friends/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newFriend),
-      });
+      const response = await axios.post("http://localhost:7000/api/friends/create", newFriend);
 
-      if (response.ok) {
-        const addedFriend = await response.json();
+      if (response.status === 200) {
+        const addedFriend = response.data;
         setFriends([...friends, addedFriend]);
       } else {
         console.error("Error adding friend:", response.statusText);

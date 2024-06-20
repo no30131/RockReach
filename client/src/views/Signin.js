@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./stylesheets/Signin.css";
 
 const Signin = () => {
@@ -15,17 +16,15 @@ const Signin = () => {
     const userData = { email, password };
 
     try {
-      const response = await fetch("http://localhost:7000/api/users/login", {
-        method: "POST",
-        credentials: "include",
+      const response = await axios.post("http://localhost:7000/api/users/login", userData, {
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userData),
+        }
       });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("User logged in successfully:", data);
+
+      if (response.status === 200) {
+        console.log("User logged in successfully:", response.data);
         setMessage("登入成功！");
         setShowMessage(true);
         setTimeout(() => {
@@ -33,8 +32,8 @@ const Signin = () => {
           navigate("/personal");
         }, 800);
       } else {
-        console.error("Error logging in:", data);
-        setMessage("信箱或密碼不正確，請重新輸入！");
+        console.error("Error logging in:", response.data);
+        setMessage("密碼不正確，請重新輸入！");
         setShowMessageError(true);
         setTimeout(() => {
           setShowMessageError(false)
@@ -42,7 +41,17 @@ const Signin = () => {
       }
     } catch (error) {
       console.error("Error logging in:", error);        
-      setMessage("伺服器異常，請稍後再試！");
+      if (error.response) {
+        if (error.response.status === 401) {
+          setMessage("密碼不正確，請重新輸入！");
+        } else if (error.response.status === 404) {
+          setMessage("此信箱未註冊！");
+        } else {
+          setMessage("伺服器異常，請稍後再試！");
+        }
+      } else {
+        setMessage("伺服器異常，請稍後再試！");
+      }
       setShowMessageError(true);
       setTimeout(() => {
         setShowMessageError(false)

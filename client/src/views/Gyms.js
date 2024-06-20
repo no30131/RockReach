@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import "./stylesheets/Signin.css";
 
 const Gyms = () => {
@@ -14,23 +15,21 @@ const Gyms = () => {
     const gymData = { name, phone, address };
 
     try {
-      const response = await fetch("http://localhost:7000/api/gyms/create", {
-        method: "POST",
+      const response = await axios.post("http://localhost:7000/api/gyms/create", gymData, {
         headers: {
           "Content-Type": "application/json"
-        },
-        body: JSON.stringify(gymData),
+        }
       });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Gym added successfully:", data);
+
+      if (response.status === 200) {
+        console.log("Gym added successfully:", response.data);
         setMessage("新增成功！");
         setShowMessage(true);
         setTimeout(() => {
           setShowMessage(false);
         }, 4000);
       } else {
-        console.error("Error add gym:", data);
+        console.error("Error adding gym:", response.data);
         setMessage("此岩館已存在！");
         setShowMessageError(true);
         setTimeout(() => {
@@ -38,7 +37,7 @@ const Gyms = () => {
         }, 4000);
       }
     } catch (error) {
-      console.error("Error add gym:", error);        
+      console.error("Error adding gym:", error);        
       setMessage("伺服器異常，請稍後再試！");
       setShowMessageError(true);
       setTimeout(() => {
@@ -53,7 +52,7 @@ const Gyms = () => {
       <p>請輸入要新增的岩館及其資訊</p>
       <form onSubmit={handleSubmit} className="signup-form">
         <input
-          type="name"
+          type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="input-name"
@@ -61,7 +60,7 @@ const Gyms = () => {
           required
         />
         <input
-          type="phone"
+          type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           className="input-name"
@@ -69,7 +68,7 @@ const Gyms = () => {
           required
         />
         <input
-          type="address"
+          type="text"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           className="input-name"

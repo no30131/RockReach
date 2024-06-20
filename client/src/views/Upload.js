@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Upload.css";
 import DatePicker from "react-datepicker";
@@ -23,10 +24,9 @@ const Upload = () => {
     useEffect(() => {
         const fetchGyms = async () => {
             try {
-                const response = await fetch("http://localhost:7000/api/gyms/all")
-                const data = await response.json();
-                setGyms(data);
-                setSelectedGym(data[0]?._id || "");
+                const response = await axios.get("http://localhost:7000/api/gyms/all");
+                setGyms(response.data);
+                setSelectedGym(response.data[0]?._id || "");
             } catch (error) {
                 console.error("Error fetching gyms: ", error);
             }
@@ -114,21 +114,21 @@ const Upload = () => {
         records.forEach(record => {
             Array.from(record.files).forEach(file => {
                 formData.append(`files`, file);
-                // formData.append(`records[${index}][files][${fileIndex}]`, file);
             });
         });
-        // console.log("formData: ", formData);
+
         try {
-            const response = await fetch("http://localhost:7000/api/climbRecords/create", {
-                method: "POST",
-                body: formData,
+            const response = await axios.post("http://localhost:7000/api/climbRecords/create", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
             });
-            const data = await response.json();
-            if (response.ok) {
-                console.log("Records uploaded successfully: ", data);
+
+            if (response.status === 200) {
+                console.log("Records uploaded successfully: ", response.data);
                 // navigate("/personal");
             } else {
-                console.error("Error uploading records: ", data);
+                console.error("Error uploading records: ", response.data);
             }
         } catch (error) {
             console.error("Error uploading file: ", error);

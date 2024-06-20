@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 const customsSchema = new Schema({
   wallName: { type: String, required: true },
   originalImage: { type: String, required: true },
+  type: { type: String, required: true },
   customs: [{
     processedImage: String,
     customName: String,

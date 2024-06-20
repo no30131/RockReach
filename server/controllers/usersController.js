@@ -33,12 +33,12 @@ exports.loginUser = async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(401).send({ error: "Invalid email!" });
+            return res.status(404).send({ message: "此信箱未註冊" });
         }
         
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
-            return res.status(401).send({ error: "Invalid password!"});
+            return res.status(401).send({ message: "密碼不正確" });
         }
 
         const token = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
@@ -49,7 +49,7 @@ exports.loginUser = async (req, res) => {
             credentials: true
         });
 
-        res.status(200).send({ user, token });
+        res.status(200).send({ message: "登入成功", user, token });
     } catch (error) {
         res.status(400).send({ error: error.message });
     }
@@ -79,4 +79,10 @@ exports.getUserByName = async (req, res) => {
     } catch (error) {
         res.status(400).send({ error: error.message });
     }
+};
+
+exports.checkEmail = async (req, res) => {
+    const { email } = req.params;
+    const user = await User.findOne({ email });
+    res.status(200).json({ exists: !!user });
 };

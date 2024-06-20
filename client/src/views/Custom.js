@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import "./stylesheets/Custom.css";
-// import { processImage } from "../../../server/controllers/customsController";
 
 const Custom = () => {
   const [walls, setWalls] = useState([]);
   const [selectedWall, setSelectedWall] = useState(null);
+  const [routes, setRoutes] = useState([]);
+  const [selectedRoute, setSelectedRoute] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [outputImage, setOutputImage] = useState(null);
   const [outputDBImage, setOutputDBImage] = useState(null);
@@ -38,6 +39,19 @@ const Custom = () => {
     setIsCanvasActive(false);
     setIsProcessing(false);
     setScale(1);
+
+    axios
+      .get(`http://localhost:7000/api/customs/walls/${wall.wallName}`)
+      .then((response) => {
+        setRoutes(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching wall details:", error);
+      });
+  };
+
+  const handleRouteSelect = (route) => {
+    setSelectedRoute(route);
   };
 
   const handleImageClick = (event) => {
@@ -97,7 +111,7 @@ const Custom = () => {
     drawMarkers(ctx);
   };
 
-  const drawMarkers = ((ctx) => {
+  const drawMarkers = useCallback((ctx) => {
     markers.forEach((marker) => {
       ctx.fillStyle = isEraserActive ? "blue" : "red";
       ctx.beginPath();
@@ -204,6 +218,28 @@ const Custom = () => {
               <button onClick={handleConfirmClick}>Save</button>
             </div>
           )}
+
+          {routes.length > 0 && (
+            <div className="routes-list">
+              <h3>Routes:</h3>
+              {routes.map((route, index) => (
+                <div key={index} className="route-item" onClick={() => handleRouteSelect(route)}>
+                  <h4>{route.customName}</h4>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {selectedRoute && (
+            <div className="route-details">
+              <h3>Route Details:</h3>
+              <p>Custom Name: {selectedRoute.customName}</p>
+              <p>Custom Type: {selectedRoute.customType}</p>
+              <p>Memo: {selectedRoute.memo}</p>
+              <img src={selectedRoute.processedImage} alt="Processed" />
+            </div>
+          )}
+
         </div>
       )}
     </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import io from "socket.io-client";
 import "./stylesheets/ChatRoom.css";
 
@@ -11,13 +12,8 @@ const ChatRoom = ({ userId, friendId }) => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await fetch(`http://localhost:7000/api/friends/chat/${userId}/${friendId}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setMessages(data || []);
-                } else {
-                    console.error("Failed to fetch messages");
-                }
+                const response = await axios.get(`http://localhost:7000/api/friends/chat/${userId}/${friendId}`);
+                setMessages(response.data || []);
             } catch (error) {
                 console.error("Error fetching messages: ", error);
             }

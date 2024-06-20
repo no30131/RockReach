@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "./stylesheets/Explore.css";
 
 const Explore = ({ userId }) => {
@@ -13,9 +14,8 @@ const Explore = ({ userId }) => {
         const endpoint = userId
           ? `http://localhost:7000/api/climbrecords/exploreWall/${userId}`
           : `http://localhost:7000/api/climbrecords/exploreWall/`;
-        const response = await fetch(endpoint);
-        const data = await response.json();
-        setRecords(data);
+        const response = await axios.get(endpoint);
+        setRecords(response.data);
       } catch (error) {
         console.error("Error fetching records: ", error);
       }
@@ -77,12 +77,9 @@ const Explore = ({ userId }) => {
 
   const handleAddLike = async (recordId, subRecordId) => {
     try {
-      await fetch(`http://localhost:7000/api/climbrecords/addLike/${subRecordId}`, {
-        method: "POST"
-      });
-      const response = await fetch(getEndpoint());
-      const updatedRecord = await response.json();
-      setRecords(updatedRecord);
+      await axios.post(`http://localhost:7000/api/climbrecords/addLike/${subRecordId}`);
+      const response = await axios.get(getEndpoint());
+      setRecords(response.data);
     } catch (error) {
       console.error("Error adding like: ", error);
     }
@@ -93,17 +90,12 @@ const Explore = ({ userId }) => {
     if (!comment) return;
 
     try {
-      await fetch(`http://localhost:7000/api/climbrecords/addComment/${subRecordId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ comment })
+      await axios.post(`http://localhost:7000/api/climbrecords/addComment/${subRecordId}`, {
+        comment
       });
 
-      const response = await fetch(getEndpoint());
-      const updatedRecord = await response.json();
-      setRecords(updatedRecord);
+      const response = await axios.get(getEndpoint());
+      setRecords(response.data);
       setNewComment((prev) => ({ ...prev, [subRecordId]: "" }));
       setShowComments((prev) => ({ ...prev, [subRecordId]: true }));
     } catch (error) {

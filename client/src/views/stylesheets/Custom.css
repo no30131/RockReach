@@ -11,10 +11,6 @@
     height: 500px;
 }
 
-/* .walls-routes-list > canvas {
-    height: 500px;
-} */
-
-.route-output > img {
+.route-output > img, .route-details > img {
     height: 500px;
 }

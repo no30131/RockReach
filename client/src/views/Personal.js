@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "./stylesheets/Personal.css";
+import axios from "axios";
 import Plotly from "plotly.js-dist";
 import { jwtDecode } from "jwt-decode";
+import "./stylesheets/Personal.css";
 
 const Personal = () => {
   const [user, setUser] = useState(null);
@@ -18,28 +19,14 @@ const Personal = () => {
 
       const decoded = jwtDecode(token);
       const userId = decoded.userId;
-      // console.log("userId: ", userId);
 
       try {
-        const userResponse = await fetch(`http://localhost:7000/api/users/${userId}`);
-        if (!userResponse.ok) {
-          throw new Error("Failed to fetch user data");
-        }
+        const userResponse = await axios.get(`http://localhost:7000/api/users/${userId}`);
+        setUser(userResponse.data);
 
-        const userData = await userResponse.json();
-        // console.log("User data fetched: ", userData);
-        setUser(userData);
+        const recordsResponse = await axios.get(`http://localhost:7000/api/climbRecords/${userId}`);
+        setClimbRecords(recordsResponse.data);
 
-        const recordsResponse = await fetch(`http://localhost:7000/api/climbRecords/${userId}`)
-        if (!recordsResponse.ok) {
-          throw new Error("Failed to fetch climb records");
-        }
-
-        const recordsData = await recordsResponse.json();
-        // console.log("Climb records fetched: ", recordsData);
-        setClimbRecords(recordsData);
-
-        // const levelResponse = await fetch
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
@@ -69,7 +56,6 @@ const Personal = () => {
 
   const generateLevelChart = () => {
     const levels = climbRecords.flatMap(record => record.records.map(r => r.level));
-    // console.log(`flatmap: ${levels}`);
     const levelCounts = levels.reduce((acc, level) => {
       acc[level] = (acc[level] || 0) + 1;
       return acc;
@@ -79,7 +65,7 @@ const Personal = () => {
     const completeLevelCounts = allLevels.reduce((acc, level) => {
       acc[level] = levelCounts[level] || 0;
       return acc;
-    }, {});  
+    }, {});
 
     const data = [{
       x: Object.keys(completeLevelCounts),
@@ -90,7 +76,6 @@ const Personal = () => {
 
     const layout = {
       title: "路線等級統計",
-      // xaxis: { title: "數量" },
       yaxis: { 
         categoryorder: "array",
         categoryarray: allLevels
@@ -236,11 +221,6 @@ const Personal = () => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("User state updated: ", user);
-  //   console.log("Climb records state updated: ", climbRecords);
-  // }, [user, climbRecords]);
-
   return (
     <div>
       <h1>個人空間</h1>
@@ -274,7 +254,7 @@ const Personal = () => {
                   <div className="personal-records-memo">Memo: {rec.memo}</div>
                   <div className="personal-records-files">
                     {rec.files.map((file, idx) => (
-                    renderFile(file)
+                      renderFile(file)
                     ))}
                   </div>
                 </div>

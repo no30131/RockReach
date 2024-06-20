@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./stylesheets/Signup.css";
 
 const Signup = () => {
@@ -11,22 +12,40 @@ const Signup = () => {
   const [showMessageError, setShowMessageError] = useState(false);
   const navigate = useNavigate();
 
+  const checkEmailExists = async (email) => {
+    try {
+      const response = await axios.get(`http://localhost:7000/api/users/check-email/${email}`);
+      return response.data.exists;
+    } catch (error) {
+      console.error("Error checking email:", error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userData = { name, email, password };
 
     try {
-      const response = await fetch("http://localhost:7000/api/users/create", {
-        method: "POST",
-        credentials: "include",
+      const emailExists = await checkEmailExists(email);
+      if (emailExists) {
+        setMessage("此信箱已註冊，請前往登入！");
+        setShowMessageError(true);
+        setTimeout(() => {
+          setShowMessageError(false);
+        }, 4000);
+        return;
+      }
+
+      const response = await axios.post("http://localhost:7000/api/users/create", userData, {
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userData),
+        }
       });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("User created successfully:", data);
+
+      if (response.status === 201) {
+        console.log("User created successfully:", response.data);
         setMessage("註冊成功！");
         setShowMessage(true);
         setTimeout(() => {
@@ -34,7 +53,7 @@ const Signup = () => {
           navigate("/personal");
         }, 800);
       } else {
-        console.error("Error creating user:", data);
+        console.error("Error creating user:", response.data);
         setMessage("信箱已註冊，請前往登入！");
         setShowMessageError(true);
         setTimeout(() => {
