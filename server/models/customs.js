@@ -8,7 +8,7 @@ const customsSchema = new Schema({
   customs: [{
     processedImage: String,
     customName: String,
-    customType: String,
+    customType: [ String ],
     achievementStatus: String,
     memo: String,
   }],

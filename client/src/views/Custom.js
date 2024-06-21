@@ -2,6 +2,14 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import "./stylesheets/Custom.css";
 
+const routeTypes = [
+  { name: "Crimpy", icon: "../images/crimpyIcon.png" },
+  { name: "Dyno", icon: "../images/dynoIcon.png" },
+  { name: "Slope", icon: "../images/slopeIcon.png" },
+  { name: "Power", icon: "../images/powerIcon.png" },
+  { name: "Pump", icon: "../images/pumpIcon.png" }
+];
+
 const Custom = () => {
   const [walls, setWalls] = useState([]);
   const [selectedWall, setSelectedWall] = useState(null);
@@ -14,7 +22,7 @@ const Custom = () => {
   const [isCanvasActive, setIsCanvasActive] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [customName, setCustomName] = useState("");
-  const [customType, setCustomType] = useState("");
+  const [customType, setCustomType] = useState([]);
   const [memo, setMemo] = useState("");
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
@@ -111,6 +119,12 @@ const Custom = () => {
     drawMarkers(ctx);
   };
 
+  const toggleRouteType = (type) => {
+    setCustomType((prevTypes) => 
+      prevTypes.includes(type) ? prevTypes.filter(t => t !== type) : [...prevTypes, type]
+    );
+  };
+
   const drawMarkers = useCallback((ctx) => {
     markers.forEach((marker) => {
       ctx.fillStyle = isEraserActive ? "blue" : "red";
@@ -203,13 +217,25 @@ const Custom = () => {
                 onChange={(e) => setCustomName(e.target.value)}
                 required
               />
-              <input
+              <div className="route-types">
+                {routeTypes.map((type) => (
+                  <div 
+                    key={type.name}
+                    className={`route-type ${customType.includes(type.name) ? "selected" : ""}`}
+                    onClick={() => toggleRouteType(type.name)}
+                  >
+                    <img src={type.icon} alt={type.name} />
+                    <p>{type.name}</p>
+                  </div>
+                ))}
+              </div>
+              {/* <input
                 type="text"
                 placeholder="Custom Type"
                 value={customType}
                 onChange={(e) => setCustomType(e.target.value)}
                 required
-              />
+              /> */}
               <textarea
                 placeholder="Memo"
                 value={memo}
@@ -234,7 +260,7 @@ const Custom = () => {
             <div className="route-details">
               <h3>Route Details:</h3>
               <p>Custom Name: {selectedRoute.customName}</p>
-              <p>Custom Type: {selectedRoute.customType}</p>
+              <p>Custom Type: {selectedRoute.customType.join(", ")}</p>
               <p>Memo: {selectedRoute.memo}</p>
               <img src={selectedRoute.processedImage} alt="Processed" />
             </div>

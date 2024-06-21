@@ -11,9 +11,8 @@ router.post("/process", customsController.processImage);
 router.get("/walls", customsController.getCustomsWalls);
 router.get("/walls/:wallName", customsController.getCustomsWallRoutes);
 
-// router.post("/achievement/create", customsController.createAchievement);
-router.post("/achievement/process", customsController.processAchievementImage);
+// router.post("/achievement/process", customsController.processAchievementImage);
 router.get("/achievement/walls", customsController.getAchievementWalls);
-// router.get("/achievement/walls/:wallName", customsController.getAchievementWallRoutes);
+router.get("/achievement/walls/:wallName", customsController.getAchievementRoutes);
 
 module.exports = router;
