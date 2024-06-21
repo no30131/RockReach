@@ -16,6 +16,7 @@ const usersRoutes = require("./routes/usersRoutes");
 const climbRecordsRoutes = require("./routes/climbRecordsRoutes");
 const gymsRoutes = require("./routes/gymsRoutes");
 const customsRoutes = require("./routes/customsRoutes");
+const achievementsRoutes = require("./routes/achievementsRoutes");
 const mapsRoutes = require("./routes/mapsRoutes");
 const friendsRoutes = require("./routes/friendsRoutes");
 const { saveChatMessage } = require("./controllers/friendsController");
@@ -84,6 +85,7 @@ app.use("/api/friends", friendsRoutes);
 app.use("/api/maps", mapsRoutes);
 app.use("/api/gyms", gymsRoutes);
 app.use("/api/customs", customsRoutes);
+app.use("/api/achievements", achievementsRoutes);
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
