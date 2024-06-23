@@ -1,4 +1,23 @@
-/* #map {
-  height: 100vh;
+#map {
+  height: 80vh;
   width: 100%;
-} */
+}
+
+.footprint-container {
+  display: flex;
+}
+
+.map-details {
+  /* display: flex;
+  flex-direction: column; */
+  background-color: rgb(220, 220, 220);
+  width: 40%;
+  /* gap: 20px; */
+  height: 80vh;
+}
+
+.map-detail {
+  /* display: flex;
+  flex-direction: column; */
+  /* padding-bottom: 0px; */
+}

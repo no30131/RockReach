@@ -35,38 +35,3 @@ exports.getGymsById = async (req, res) => {
         res.status(400).send({ error: error.message });
     }
 };
-
-
-const geocodeAddress = async (address) => {
-    const response = await axios.get(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${googleMapsApiKey}`
-    );
-  
-    const data = response.data;
-  
-    if (data.status === "OK") {
-      const { lat, lng } = data.results[0].geometry.location;
-      return { lat, lng };
-    } else {
-      throw new Error(`Geocoding failed: ${data.status}`);
-    }
-  };
-  
-  exports.updateGymsWithCoordinates = async (req, res) => {
-    try {
-      const gyms = await Gyms.find();
-  
-      for (const gym of gyms) {
-        const { address } = gym;
-        const { lat, lng } = await geocodeAddress(address);
-  
-        gym.latitude = lat;
-        gym.longitude = lng;
-        await gym.save();
-      }
-  
-      res.status(200).json({ message: "All gyms updated with coordinates" });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
