@@ -4,6 +4,7 @@ const gymsController = require("../controllers/gymsController");
 
 router.post("/create", gymsController.createGyms);
 router.get("/all", gymsController.getAllGyms);
+router.get("/updateCoordinates", gymsController.updateGymsWithCoordinates);
 router.get("/:id", gymsController.getGymsById);
 
 module.exports = router;

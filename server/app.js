@@ -17,7 +17,7 @@ const climbRecordsRoutes = require("./routes/climbRecordsRoutes");
 const gymsRoutes = require("./routes/gymsRoutes");
 const customsRoutes = require("./routes/customsRoutes");
 const achievementsRoutes = require("./routes/achievementsRoutes");
-const mapsRoutes = require("./routes/mapsRoutes");
+const footprintsRoutes = require("./routes/footprintsRoutes");
 const friendsRoutes = require("./routes/friendsRoutes");
 const { saveChatMessage } = require("./controllers/friendsController");
 
@@ -82,7 +82,7 @@ io.on("connection", (socket) => {
 app.use("/api/users", usersRoutes);
 app.use("/api/climbRecords", climbRecordsRoutes);
 app.use("/api/friends", friendsRoutes);
-app.use("/api/maps", mapsRoutes);
+app.use("/api/footprints", footprintsRoutes);
 app.use("/api/gyms", gymsRoutes);
 app.use("/api/customs", customsRoutes);
 app.use("/api/achievements", achievementsRoutes);

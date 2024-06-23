@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const mapSchema = new Schema({
+const footprintsSchema = new Schema({
     gymId: { type: Schema.Types.ObjectId, ref: 'gyms', required: true },
     userId: { type: Schema.Types.ObjectId, ref: 'users', required: true },
     lastVisit: Date,
@@ -9,5 +9,5 @@ const mapSchema = new Schema({
     expiryDate: Date,
 });
 
-const Maps = mongoose.model("maps", mapSchema);
-module.exports = Maps;
+const Footprints = mongoose.model("maps", footprintsSchema);
+module.exports = Footprints;

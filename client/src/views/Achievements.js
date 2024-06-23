@@ -244,7 +244,7 @@ const Achievement = () => {
       );
 
       if (response.status === 200 || response.status === 201) {
-        console.log("Achievement saved successfully: ", response.data);
+        // console.log("Achievement saved successfully: ", response.data);
         setAchievements({
           ...achievements,
           [selectedRoute.customName]: "completed",

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Upload.css";
@@ -19,7 +19,7 @@ const Upload = () => {
     const [gyms, setGyms] = useState([]);
     const [selectedGym, setSelectedGym] = useState("");
     const [records, setRecords] = useState([{ wall: "", level: "", types: [], times: 0, memo: "", files: [] }]);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     
     useEffect(() => {
         const fetchGyms = async () => {
