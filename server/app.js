@@ -11,6 +11,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const moment = require("moment-timezone");
 const upload = require("./config/multerConfig");
+// const captureRoutes = require("./routes/captureRoutes");
 
 const usersRoutes = require("./routes/usersRoutes");
 const climbRecordsRoutes = require("./routes/climbRecordsRoutes");
@@ -39,7 +40,7 @@ app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -86,6 +87,7 @@ app.use("/api/footprints", footprintsRoutes);
 app.use("/api/gyms", gymsRoutes);
 app.use("/api/customs", customsRoutes);
 app.use("/api/achievements", achievementsRoutes);
+// app.use("/api", captureRoutes);
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

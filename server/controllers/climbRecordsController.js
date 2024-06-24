@@ -165,3 +165,34 @@ exports.getExploresRecordsByUser = async (req, res) => {
     res.status(400).send({ error: error.message });
   }
 };
+
+exports.getExploresRecordsById = async (req, res) => {
+  const id = req.params.id;
+  // console.log(id);
+  try {
+    const records = await ClimbRecords.findById(id)
+      .populate("userId", "name image")
+      .lean();
+    // console.log(records);
+
+    if (!records) {
+      return res.status(404).send({ error: "Records not found" });
+    }
+
+    const formattedRecords = {
+      ...records,
+      user: records.userId,
+      records: records.records
+        .filter((rec) => rec.files && rec.files.length > 0)
+        .map((rec) => ({
+          ...rec,
+          likes: rec.likes || 0,
+          comments: rec.comments || [],
+        })),
+    };
+
+    res.status(200).send(formattedRecords);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+};

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 import "./stylesheets/Explore.css";
 
 const Explore = ({ userId }) => {
+  const { id } = useParams();
   const [records, setRecords] = useState([]);
   const [currentSlides, setCurrentSlides] = useState({});
   const [newComment, setNewComment] = useState({});
@@ -11,18 +13,20 @@ const Explore = ({ userId }) => {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const endpoint = userId
+        const endpoint = id
+          ? `http://localhost:7000/api/climbrecords/exploreWall/share/${id}`
+          : userId
           ? `http://localhost:7000/api/climbrecords/exploreWall/${userId}`
           : `http://localhost:7000/api/climbrecords/exploreWall/`;
         const response = await axios.get(endpoint);
-        setRecords(response.data);
+        setRecords(id ? [response.data] : response.data);
       } catch (error) {
         console.error("Error fetching records: ", error);
       }
     };
 
     fetchRecords();
-  }, [userId]);
+  }, [id, userId]);
 
   const renderFile = (file) => {
     const fileTypeMap = {
@@ -78,8 +82,11 @@ const Explore = ({ userId }) => {
   const handleAddLike = async (recordId, subRecordId) => {
     try {
       await axios.post(`http://localhost:7000/api/climbrecords/addLike/${subRecordId}`);
-      const response = await axios.get(getEndpoint());
-      setRecords(response.data);
+      const endpoint = id
+        ? `http://localhost:7000/api/climbrecords/exploreWall/share/${id}`
+        : getEndpoint();
+      const response = await axios.get(endpoint);
+      setRecords(id ? [response.data] : response.data);
     } catch (error) {
       console.error("Error adding like: ", error);
     }
@@ -93,9 +100,11 @@ const Explore = ({ userId }) => {
       await axios.post(`http://localhost:7000/api/climbrecords/addComment/${subRecordId}`, {
         comment
       });
-
-      const response = await axios.get(getEndpoint());
-      setRecords(response.data);
+      const endpoint = id
+      ? `http://localhost:7000/api/climbrecords/exploreWall/share/${id}`
+      : getEndpoint();
+      const response = await axios.get(endpoint);
+      setRecords(id ? [response.data] : response.data);
       setNewComment((prev) => ({ ...prev, [subRecordId]: "" }));
       setShowComments((prev) => ({ ...prev, [subRecordId]: true }));
     } catch (error) {
@@ -109,6 +118,11 @@ const Explore = ({ userId }) => {
 
   const toggleComments = (subRecordId) => {
     setShowComments((prev) => ({ ...prev, [subRecordId]: !prev[subRecordId] }));
+  };
+
+  const handleShare = (recordId) => {
+    const shareLink = `http://localhost:3000/explore/${recordId}`;
+    prompt("Share this link:", shareLink);
   };
 
   return (
@@ -184,6 +198,9 @@ const Explore = ({ userId }) => {
                       </>
                     )} 
                   </div>
+                  <button onClick={() => handleShare(record._id)} className="share-button">
+                    ➤
+                  </button>
                 </div>
               ))}
             </div>

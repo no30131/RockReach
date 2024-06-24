@@ -33,6 +33,7 @@ function App() {
             <Route path="/friends" element={<Friends />} />
             <Route path="/footprint" element={<Footprint />} />
             <Route path="/explore" element={<Explore />} />
+            <Route path="/explore/:id" element={<Explore />} />
             <Route path="/personal" element={<Personal />} />
             <Route path="/achievements" element={<Achievements />} />
             <Route path="/service" element={<Service />} />

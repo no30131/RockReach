@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+// import html2canvas from "html2canvas";
 import "./stylesheets/Footprint.css";
 
 const Footprint = () => {
@@ -8,12 +9,17 @@ const Footprint = () => {
   const [footprints, setFootprints] = useState([]);
   const [currentGym, setCurrentGym] = useState(null);
   const [footprint, setFootprint] = useState(null);
-  const [visitDate, setVisitDate] = useState(new Date().toISOString().split("T")[0]);
+  const [visitDate, setVisitDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const [visitTimes, setVisitTimes] = useState(1);
   const [expiryDate, setExpiryDate] = useState(
-    new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0]
+    new Date(new Date().setMonth(new Date().getMonth() + 1))
+      .toISOString()
+      .split("T")[0]
   );
   const [showDetails, setShowDetails] = useState(false);
+  // const [snapshotUrl, setSnapshotUrl] = useState(null);
 
   useEffect(() => {
     const getCookie = (name) => {
@@ -35,6 +41,8 @@ const Footprint = () => {
       axios
         .get(`http://localhost:7000/api/footprints/${decoded.userId}`)
         .then((response) => {
+          // console.log("Fetched footprints:", response.data);
+          // response.data.forEach(fp => console.log(`footprint gymId: ${fp.gymId._id}`));
           setFootprints(response.data);
         })
         .catch((error) => {
@@ -87,10 +95,13 @@ const Footprint = () => {
       gyms.forEach(async (gym) => {
         try {
           const geocodeResponse = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(gym.address)}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+              gym.address
+            )}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`
           );
 
-          const { lat, lng } = geocodeResponse.data.results[0].geometry.location;
+          const { lat, lng } =
+            geocodeResponse.data.results[0].geometry.location;
 
           const request = {
             location: { lat, lng },
@@ -101,13 +112,17 @@ const Footprint = () => {
           service.textSearch(request, (results, status) => {
             if (status === window.google.maps.places.PlacesServiceStatus.OK) {
               const existingPlace = results[0];
-              const userFootprint = footprints.find((footprint) => String(footprint.gymId._id) === String(gym._id));
+              const userFootprint = footprints.find(
+                (footprint) => String(footprint.gymId._id) === String(gym._id)
+              );
               const marker = new window.google.maps.Marker({
                 position: existingPlace.geometry.location,
                 map: window.map,
                 title: gym.name,
                 icon: {
-                  url: userFootprint ? "../images/boulder-orange.png" : "../images/boulder-grey.png",
+                  url: userFootprint
+                    ? "../images/boulder-orange.png"
+                    : "../images/boulder-grey.png",
                   scaledSize: new window.google.maps.Size(28, 28),
                 },
               });
@@ -126,7 +141,7 @@ const Footprint = () => {
               const infoWindow = new window.google.maps.InfoWindow({
                 content: infoWindowContent,
               });
-  
+
               marker.addListener("click", () => {
                 if (currentInfoWindow) {
                   currentInfoWindow.close();
@@ -179,9 +194,13 @@ const Footprint = () => {
   const fetchFootprint = async (gymId) => {
     try {
       if (!userId) return;
-      const response = await axios.get(`http://localhost:7000/api/footprints/${userId}`);
+      const response = await axios.get(
+        `http://localhost:7000/api/footprints/${userId}`
+      );
       const userFootprints = response.data;
-      const gymFootprint = userFootprints.find((footprint) => String(footprint.gymId._id) === String(gymId));
+      const gymFootprint = userFootprints.find(
+        (footprint) => String(footprint.gymId._id) === String(gymId)
+      );
       if (gymFootprint) {
         setFootprint(gymFootprint);
         setVisitDate(gymFootprint.lastVisit);
@@ -215,10 +234,15 @@ const Footprint = () => {
         visitTimes: visitTimes,
         expiryDate: expiryDate,
       };
-      const response = await axios.post("http://localhost:7000/api/footprints/create", updatedFootprint);
+      const response = await axios.post(
+        "http://localhost:7000/api/footprints/create",
+        updatedFootprint
+      );
       setFootprint(response.data);
       closeDetails();
-      const footprintsResponse = await axios.get(`http://localhost:7000/api/footprints/${userId}`);
+      const footprintsResponse = await axios.get(
+        `http://localhost:7000/api/footprints/${userId}`
+      );
       setFootprints(footprintsResponse.data);
     } catch (error) {
       console.error("Error creating footprint:", error);
@@ -237,9 +261,23 @@ const Footprint = () => {
     setFootprint(null);
   };
 
+  // const takeSnapshot = async () => {
+  //   const url = window.location.href;
+  //   try {
+  //     const response = await axios.post("http://localhost:7000/api/capture", { url });
+  //     console.log("Screenshot captured successfully:", response.data);
+  //     setSnapshotUrl(response.data.path);
+  //   } catch (error) {
+  //     console.error("Error capturing screenshot:", error);
+  //   }
+  // };
+
   return (
     <div className="footprint-container">
-      <div className="map-details" style={{ display: showDetails ? "block" : "none" }}>
+      <div
+        className="map-details"
+        style={{ display: showDetails ? "block" : "none" }}
+      >
         <button className="close-btn" onClick={closeDetails}>
           X
         </button>
@@ -247,15 +285,27 @@ const Footprint = () => {
           <div>
             <div className="map-detail">
               <h3>上次到訪日期:</h3>
-              <input type="date" value={visitDate} onChange={(e) => setVisitDate(e.target.value)} />
+              <input
+                type="date"
+                value={visitDate}
+                onChange={(e) => setVisitDate(e.target.value)}
+              />
             </div>
             <div className="map-detail">
               <h3>到訪次數:</h3>
-              <input type="number" value={visitTimes} onChange={(e) => setVisitTimes(e.target.value)} />
+              <input
+                type="number"
+                value={visitTimes}
+                onChange={(e) => setVisitTimes(e.target.value)}
+              />
             </div>
             <div className="map-detail">
               <h3>會員到期日:</h3>
-              <input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
+              <input
+                type="date"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+              />
             </div>
             <button onClick={saveVisit}>儲存</button>
           </div>
@@ -266,6 +316,8 @@ const Footprint = () => {
         )}
       </div>
       <div id="map"></div>
+      {/* <button onClick={takeSnapshot}>分享畫面</button>
+      {snapshotUrl && <img src={`http://localhost:7000/${snapshotUrl}`} alt="快照" />} */}
     </div>
   );
 };
