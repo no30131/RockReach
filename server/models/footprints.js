@@ -9,5 +9,5 @@ const footprintsSchema = new Schema({
     expiryDate: String,
 });
 
-const Footprints = mongoose.model("maps", footprintsSchema);
+const Footprints = mongoose.model("footprints", footprintsSchema);
 module.exports = Footprints;
