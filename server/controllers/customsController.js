@@ -41,6 +41,25 @@ exports.getCustomsWallRoutes = async (req, res) => {
   }
 };
 
+exports.getCustomsWallRouteById = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const wall = await Customs.findOne({ "customs._id": id }, { wallName: 1, "customs.$": 1 });
+    // console.log("wall: ", wall);
+    if (wall) {
+      res.status(200).json(wall);
+    } else {
+      res.status(404).json({ message: "Route not found" });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching route data",
+      error: error.message,
+    });
+  }
+};
+
 exports.processImage = async (req, res) => {
   const { image, markers } = req.body;
 

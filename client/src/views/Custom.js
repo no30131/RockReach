@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 import "./stylesheets/Custom.css";
 
 const routeTypes = [
@@ -11,6 +12,7 @@ const routeTypes = [
 ];
 
 const Custom = () => {
+  const { id } = useParams();
   const [walls, setWalls] = useState([]);
   const [selectedWall, setSelectedWall] = useState(null);
   const [routes, setRoutes] = useState([]);
@@ -29,15 +31,30 @@ const Custom = () => {
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:7000/api/customs/walls")
-      .then((response) => {
-        setWalls(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching walls data:", error);
-      });
-  }, []);
+    if (id) {
+      axios
+        .get(`http://localhost:7000/api/customs/walls/share/${id}`)
+        .then((response) => {
+          setSelectedWall({
+            wallName: response.data.wallName,
+            originalImage: response.data.originalImage,
+          });
+          setSelectedRoute(response.data.customs[0]);
+        })
+        .catch((error) => {
+          console.error("Error fetching route data:", error);
+        });
+    } else {
+      axios
+        .get("http://localhost:7000/api/customs/walls")
+        .then((response) => {
+          setWalls(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching walls data:", error);
+        });
+    }
+  }, [id]);
 
   const handleWallSelect = (wall) => {
     setSelectedWall(wall);
@@ -65,6 +82,7 @@ const Custom = () => {
   const handleImageClick = (event) => {
     if (!isCanvasActive) return;
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
@@ -105,6 +123,7 @@ const Custom = () => {
 
   const handleImageLoad = () => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     const img = imgRef.current;
 
@@ -135,7 +154,7 @@ const Custom = () => {
   }, [markers, isEraserActive]);
 
   useEffect(() => {
-    if (selectedWall) {
+    if (selectedWall && canvasRef.current) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
       if (imgRef.current.complete) {
@@ -167,6 +186,11 @@ const Custom = () => {
       });
   };
 
+  const handleShare = (routeId) => {
+    const shareLink = `http://localhost:3000/custom/${routeId}`;
+    prompt("Share this link:", shareLink);
+  };
+
   return (
     <div>
       <h1>自訂路線</h1>
@@ -181,7 +205,7 @@ const Custom = () => {
         </div>
       ) : (
         <div>
-          <button onClick={() => setSelectedWall(null)}>Back to Walls</button>
+          {!id && <button onClick={() => setSelectedWall(null)}>Back to Walls</button>}
           <h2>{selectedWall.wallName}</h2>
           <img
             ref={imgRef}
@@ -190,17 +214,17 @@ const Custom = () => {
             style={{ display: "none" }}
             onLoad={handleImageLoad}
           />
-          <canvas ref={canvasRef} onClick={handleImageClick} />
+          {!id && <canvas ref={canvasRef} onClick={handleImageClick} />}
           {outputImage && (
             <div className="route-output">
               <h3>Output Image:</h3>
               <img src={outputImage} alt="Output" />
             </div>
           )}
-          {!isProcessing && !outputImage && !isCanvasActive && (
+          {!isProcessing && !outputImage && !isCanvasActive && !id && (
             <button onClick={() => setIsCanvasActive(true)}>新增路線</button>
           )}
-          {isCanvasActive && (
+          {isCanvasActive && !id && (
             <div>
               <button onClick={handleProcessClick}>Process</button>
               <button onClick={() => setIsEraserActive(!isEraserActive)}>
@@ -208,7 +232,7 @@ const Custom = () => {
               </button>
             </div>
           )}
-          {outputImage && (
+          {outputImage && !id && (
             <div>
               <input
                 type="text"
@@ -229,13 +253,6 @@ const Custom = () => {
                   </div>
                 ))}
               </div>
-              {/* <input
-                type="text"
-                placeholder="Custom Type"
-                value={customType}
-                onChange={(e) => setCustomType(e.target.value)}
-                required
-              /> */}
               <textarea
                 placeholder="Memo"
                 value={memo}
@@ -244,7 +261,6 @@ const Custom = () => {
               <button onClick={handleConfirmClick}>Save</button>
             </div>
           )}
-
           {routes.length > 0 && (
             <div className="routes-list">
               <h3>Routes:</h3>
@@ -255,17 +271,16 @@ const Custom = () => {
               ))}
             </div>
           )}
-
           {selectedRoute && (
             <div className="route-details">
-              <h3>Route Details:</h3>
+              {/* <h3>Route Details:</h3> */}
               <p>Custom Name: {selectedRoute.customName}</p>
               <p>Custom Type: {selectedRoute.customType.join(", ")}</p>
               <p>Memo: {selectedRoute.memo}</p>
               <img src={selectedRoute.processedImage} alt="Processed" />
+              {!id && <button onClick={() => handleShare(selectedRoute._id)}>分享</button>}
             </div>
           )}
-
         </div>
       )}
     </div>
