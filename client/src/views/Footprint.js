@@ -21,7 +21,6 @@ const Footprint = () => {
       .split("T")[0]
   );
   const [showDetails, setShowDetails] = useState(false);
-  // const [snapshotUrl, setSnapshotUrl] = useState(null);
 
   useEffect(() => {
     const getCookie = (name) => {
@@ -43,8 +42,6 @@ const Footprint = () => {
       axios
         .get(`${apiUrl}/api/footprints/${decoded.userId}`)
         .then((response) => {
-          // console.log("Fetched footprints:", response.data);
-          // response.data.forEach(fp => console.log(`footprint gymId: ${fp.gymId._id}`));
           setFootprints(response.data);
         })
         .catch((error) => {
@@ -52,17 +49,16 @@ const Footprint = () => {
         });
     }
 
-    if (!window.google) {
+    axios.get(`${apiUrl}/api/footprints/google-maps-api-url`).then((response) => {
+      const { url } = response.data;
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}&callback=initMap&libraries=places`;
+      script.src = url;
       script.async = true;
       script.onload = () => {
         initMap();
       };
       document.body.appendChild(script);
-    } else {
-      initMap();
-    }
+    });
 
     return () => {
       if (window.google) {
@@ -96,11 +92,11 @@ const Footprint = () => {
 
       gyms.forEach(async (gym) => {
         try {
-          const geocodeResponse = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-              gym.address
-            )}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`
-          );
+          const geocodeResponse = await axios.get(`${apiUrl}/api/footprints/google-maps/geocode`, {
+            params: {
+              address: gym.address
+            }
+          });
 
           const { lat, lng } =
             geocodeResponse.data.results[0].geometry.location;
@@ -123,8 +119,8 @@ const Footprint = () => {
                 title: gym.name,
                 icon: {
                   url: userFootprint
-                    ? "../images/boulder-orange.png"
-                    : "../images/boulder-grey.png",
+                    ? "/images/boulder-orange.png"
+                    : "/images/boulder-grey.png",
                   scaledSize: new window.google.maps.Size(28, 28),
                 },
               });
