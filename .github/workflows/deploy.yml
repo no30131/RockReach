@@ -46,14 +46,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
-        run: |
-          echo "Logging in to Docker Hub"
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Pull Docker image from Docker Hub
-        run: |
-          echo "Pulling Docker image from Docker Hub"
-          docker pull no30131/rock_reachdocker pull no30131/rock_reach
+        run: docker pull no30131/rock_reach
 
       - name: Clean up unused Docker resources
         run: |
@@ -81,7 +77,7 @@ jobs:
             docker pull no30131/rock_reach && 
             docker stop app || true && 
             docker rm app || true && 
-            docker run -d --name app -p 7000:7000  \
+            docker run -d --name app -p 7000:7000 \
               -e MONGODB_URI=$MONGODB_URI \
               -e PORT=$PORT \
               -e ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET \
@@ -91,5 +87,5 @@ jobs:
               -e AWS_S3_BUCKET=$AWS_S3_BUCKET \
               -e GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY \
               -e REACT_APP_FRONTEND_URL=$REACT_APP_FRONTEND_URL \
-              echo "no30131/rock_reach"
-              no30131/rock_reach"
+              -e REACT_APP_API_URL=$REACT_APP_API_URL \
+              no30131/rock_reach
