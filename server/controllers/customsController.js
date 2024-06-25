@@ -213,7 +213,7 @@ exports.getAchievementRoutes = async (req, res) => {
   try {
     const wall = await Customs.findOne({ type: "achievement", wallName });
     if (wall) {
-      res.status(200).json(wall.customs);
+      res.status(200).json(wall);
     } else {
       res.status(404).json({ message: "Wall not found" });
     }

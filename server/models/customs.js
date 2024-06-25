@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const customsSchema = new Schema({
-  wallName: { type: String, required: true },
+  wallName: { type: String, unique: true, required: true },
   originalImage: { type: String, required: true },
   type: { type: String, required: true },
   customs: [{

@@ -8,7 +8,7 @@ const routeTypes = [
   { name: "Dyno", icon: "../images/dynoIcon.png" },
   { name: "Slope", icon: "../images/slopeIcon.png" },
   { name: "Power", icon: "../images/powerIcon.png" },
-  { name: "Pump", icon: "../images/pumpIcon.png" }
+  { name: "Pump", icon: "../images/pumpIcon.png" },
 ];
 
 const Custom = () => {
@@ -91,9 +91,7 @@ const Custom = () => {
     if (isEraserActive) {
       setMarkers((prevMarkers) =>
         prevMarkers.filter((marker) => {
-          const distance = Math.sqrt(
-            (marker.x - x) ** 2 + (marker.y - y) ** 2
-          );
+          const distance = Math.sqrt((marker.x - x) ** 2 + (marker.y - y) ** 2);
           return distance > 10;
         })
       );
@@ -108,7 +106,10 @@ const Custom = () => {
     axios
       .post("http://localhost:7000/api/customs/process", {
         image: selectedWall.originalImage,
-        markers: markers.map(marker => ({ x: marker.x / scale, y: marker.y / scale })),
+        markers: markers.map((marker) => ({
+          x: marker.x / scale,
+          y: marker.y / scale,
+        })),
       })
       .then((response) => {
         setOutputImage(`http://localhost:7000/${response.data.processedImage}`);
@@ -139,19 +140,24 @@ const Custom = () => {
   };
 
   const toggleRouteType = (type) => {
-    setCustomType((prevTypes) => 
-      prevTypes.includes(type) ? prevTypes.filter(t => t !== type) : [...prevTypes, type]
+    setCustomType((prevTypes) =>
+      prevTypes.includes(type)
+        ? prevTypes.filter((t) => t !== type)
+        : [...prevTypes, type]
     );
   };
 
-  const drawMarkers = useCallback((ctx) => {
-    markers.forEach((marker) => {
-      ctx.fillStyle = isEraserActive ? "blue" : "red";
-      ctx.beginPath();
-      ctx.arc(marker.x, marker.y, 5, 0, 2 * Math.PI);
-      ctx.fill();
-    });
-  }, [markers, isEraserActive]);
+  const drawMarkers = useCallback(
+    (ctx) => {
+      markers.forEach((marker) => {
+        ctx.fillStyle = isEraserActive ? "blue" : "red";
+        ctx.beginPath();
+        ctx.arc(marker.x, marker.y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+    },
+    [markers, isEraserActive]
+  );
 
   useEffect(() => {
     if (selectedWall && canvasRef.current) {
@@ -191,13 +197,22 @@ const Custom = () => {
     prompt("Share this link:", shareLink);
   };
 
+  const getRouteTypeIcon = (typeName) => {
+    const type = routeTypes.find((routeType) => routeType.name === typeName);
+    return type ? type.icon : "";
+  };
+
   return (
     <div>
       <h1>自訂路線</h1>
       {!selectedWall ? (
         <div className="walls-list">
           {walls.map((wall, index) => (
-            <div key={index} className="wall-item" onClick={() => handleWallSelect(wall)}>
+            <div
+              key={index}
+              className="wall-item"
+              onClick={() => handleWallSelect(wall)}
+            >
               <h3>{wall.wallName}</h3>
               <img src={wall.originalImage} alt={wall.wallName} />
             </div>
@@ -205,7 +220,9 @@ const Custom = () => {
         </div>
       ) : (
         <div>
-          {!id && <button onClick={() => setSelectedWall(null)}>Back to Walls</button>}
+          {!id && (
+            <button onClick={() => setSelectedWall(null)}>Back to Walls</button>
+          )}
           <h2>{selectedWall.wallName}</h2>
           <img
             ref={imgRef}
@@ -243,9 +260,11 @@ const Custom = () => {
               />
               <div className="route-types">
                 {routeTypes.map((type) => (
-                  <div 
+                  <div
                     key={type.name}
-                    className={`route-type ${customType.includes(type.name) ? "selected" : ""}`}
+                    className={`route-type ${
+                      customType.includes(type.name) ? "selected" : ""
+                    }`}
                     onClick={() => toggleRouteType(type.name)}
                   >
                     <img src={type.icon} alt={type.name} />
@@ -265,7 +284,11 @@ const Custom = () => {
             <div className="routes-list">
               <h3>Routes:</h3>
               {routes.map((route, index) => (
-                <div key={index} className="route-item" onClick={() => handleRouteSelect(route)}>
+                <div
+                  key={index}
+                  className="route-item"
+                  onClick={() => handleRouteSelect(route)}
+                >
                   <h4>{route.customName}</h4>
                 </div>
               ))}
@@ -275,10 +298,19 @@ const Custom = () => {
             <div className="route-details">
               {/* <h3>Route Details:</h3> */}
               <p>Custom Name: {selectedRoute.customName}</p>
-              <p>Custom Type: {selectedRoute.customType.join(", ")}</p>
+              <div className="route-types">
+                Custom Types: 
+                {selectedRoute.customType.map((type, index) => (
+                  <img key={index} src={getRouteTypeIcon(type)} alt={type} />
+                ))}
+              </div>
               <p>Memo: {selectedRoute.memo}</p>
               <img src={selectedRoute.processedImage} alt="Processed" />
-              {!id && <button onClick={() => handleShare(selectedRoute._id)}>分享</button>}
+              {!id && (
+                <button onClick={() => handleShare(selectedRoute._id)}>
+                  分享
+                </button>
+              )}
             </div>
           )}
         </div>

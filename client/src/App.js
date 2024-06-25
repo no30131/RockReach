@@ -12,6 +12,7 @@ import Friends from "./views/Friends.js";
 import Footprint from "./views/Footprint.js";
 import Personal from "./views/Personal.js";
 import Achievements from "./views/Achievements.js";
+import AchievementDetails from "./views/AchievementDetails.js";
 import Explore from "./views/Explore.js";
 import Service from "./views/Service.js";
 import Policy from "./views/Policy.js";
@@ -39,7 +40,7 @@ function App() {
             <Route path="/personal" element={<Personal />} />
             {/* <Route path="/personal/:id" element={<Personal />} /> */}
             <Route path="/achievements" element={<Achievements />} />
-            <Route path="/achievements/:id" element={<Achievements />} />
+            <Route path="/achievement/:userId/:wallName" element={<AchievementDetails />} />
             <Route path="/service" element={<Service />} />
             <Route path="/policy" element={<Policy />} />
           </Routes>

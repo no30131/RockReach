@@ -3,7 +3,15 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Achievements.css";
 
-const Achievement = () => {
+const routeTypes = [
+  { name: "Crimpy", icon: "/images/crimpyIcon.png" },
+  { name: "Dyno", icon: "/images/dynoIcon.png" },
+  { name: "Slope", icon: "/images/slopeIcon.png" },
+  { name: "Power", icon: "/images/powerIcon.png" },
+  { name: "Pump", icon: "/images/pumpIcon.png" },
+];
+
+const Achievements = () => {
   const [walls, setWalls] = useState([]);
   const [selectedWall, setSelectedWall] = useState(null);
   const [routes, setRoutes] = useState([]);
@@ -52,7 +60,7 @@ const Achievement = () => {
       const routesResponse = await axios.get(
         `http://localhost:7000/api/customs/achievement/walls/${wall.wallName}`
       );
-      setRoutes(routesResponse.data);
+      setRoutes(routesResponse.data.customs);
 
       const achievementsResponse = await axios.get(
         `http://localhost:7000/api/achievements/${userId}`
@@ -98,7 +106,17 @@ const Achievement = () => {
     }
   };
 
+  const handleShare = () => {
+    const shareLink = `http://localhost:3000/achievement/${userId}/${selectedWall.wallName}`;
+    prompt("Share this link:", shareLink);
+  };
+
   const completedCount = routes.filter(route => achievements[route.customName] === "completed").length;
+
+  const getRouteTypeIcon = (typeName) => {
+    const type = routeTypes.find((routeType) => routeType.name === typeName);
+    return type ? type.icon : "";
+  };
 
   return (
     <div>
@@ -122,6 +140,7 @@ const Achievement = () => {
           <h2>{selectedWall.wallName}</h2>
           <img src={selectedWall.originalImage} alt={selectedWall.wallName} />
           <p>已完成數量: {completedCount}/{routes.length}</p>
+          <button onClick={handleShare}>分享</button>
           {routes.length > 0 && (
             <div className="routes-list">
               <h3>Routes:</h3>
@@ -141,7 +160,12 @@ const Achievement = () => {
             <div className="route-details">
               <h3>Route Details:</h3>
               <p>Custom Name: {selectedRoute.customName}</p>
-              <p>Custom Type: {selectedRoute.customType.join(", ")}</p>
+              <div className="route-types">
+                Custom Types: 
+                {selectedRoute.customType.map((type, index) => (
+                  <img key={index} src={getRouteTypeIcon(type)} alt={type} />
+                ))}
+              </div>
               <p>Memo: {selectedRoute.memo}</p>
               <img src={selectedRoute.processedImage} alt="Processed" />
               {achievements[selectedRoute.customName] !== "completed" && (
@@ -155,4 +179,4 @@ const Achievement = () => {
   );
 };
 
-export default Achievement;
+export default Achievements;

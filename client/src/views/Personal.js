@@ -4,6 +4,14 @@ import Plotly from "plotly.js-dist";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Personal.css";
 
+const routeTypes = [
+  { name: "Crimpy", icon: "/images/crimpyIcon.png" },
+  { name: "Dyno", icon: "/images/dynoIcon.png" },
+  { name: "Slope", icon: "/images/slopeIcon.png" },
+  { name: "Power", icon: "/images/powerIcon.png" },
+  { name: "Pump", icon: "/images/pumpIcon.png" },
+];
+
 const Personal = () => {
   const [user, setUser] = useState(null);
   const [climbRecords, setClimbRecords] = useState([]);
@@ -21,12 +29,15 @@ const Personal = () => {
       const userId = decoded.userId;
 
       try {
-        const userResponse = await axios.get(`http://localhost:7000/api/users/${userId}`);
+        const userResponse = await axios.get(
+          `http://localhost:7000/api/users/${userId}`
+        );
         setUser(userResponse.data);
 
-        const recordsResponse = await axios.get(`http://localhost:7000/api/climbRecords/${userId}`);
+        const recordsResponse = await axios.get(
+          `http://localhost:7000/api/climbRecords/${userId}`
+        );
         setClimbRecords(recordsResponse.data);
-
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
@@ -55,35 +66,50 @@ const Personal = () => {
   };
 
   const generateLevelChart = () => {
-    const levels = climbRecords.flatMap(record => record.records.map(r => r.level));
+    const levels = climbRecords.flatMap((record) =>
+      record.records.map((r) => r.level)
+    );
     const levelCounts = levels.reduce((acc, level) => {
       acc[level] = (acc[level] || 0) + 1;
       return acc;
     }, {});
 
-    const allLevels = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
+    const allLevels = [
+      "V0",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "V5",
+      "V6",
+      "V7",
+      "V8",
+      "V9",
+    ];
     const completeLevelCounts = allLevels.reduce((acc, level) => {
       acc[level] = levelCounts[level] || 0;
       return acc;
     }, {});
 
-    const data = [{
-      x: Object.keys(completeLevelCounts),
-      y: Object.values(completeLevelCounts),
-      type: "bar",
-      orientation: 'v'
-    }];
+    const data = [
+      {
+        x: Object.keys(completeLevelCounts),
+        y: Object.values(completeLevelCounts),
+        type: "bar",
+        orientation: "v",
+      },
+    ];
 
     const layout = {
       title: "路線等級統計",
-      yaxis: { 
+      yaxis: {
         categoryorder: "array",
-        categoryarray: allLevels
+        categoryarray: allLevels,
       },
       height: 400,
-      width: 600
+      width: 600,
     };
-    
+
     Plotly.newPlot("level", data, layout);
   };
 
@@ -94,9 +120,9 @@ const Personal = () => {
       return acc;
     }, {});
 
-    climbRecords.forEach(record => {
-      record.records.forEach(r => {
-        r.types.forEach(type => {
+    climbRecords.forEach((record) => {
+      record.records.forEach((r) => {
+        r.types.forEach((type) => {
           if (typeCounts[type]) {
             typeCounts[type].count += 1;
             typeCounts[type].times += r.times;
@@ -105,40 +131,46 @@ const Personal = () => {
       });
     });
 
-    const colors = ['#ff6384', '#36a2eb', '#cc65fe', '#ffce56', '#2ecc71'];
+    const colors = ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56", "#2ecc71"];
 
-    const dataCount = [{
-      values: types.map(type => typeCounts[type].count),
-      labels: types,
-      type: "pie",
-      textinfo: 'label+percent',
-      hole: .4,
-      marker: {
-        colors: colors
-      }
-    }];
+    const dataCount = [
+      {
+        values: types.map((type) => typeCounts[type].count),
+        labels: types,
+        type: "pie",
+        textinfo: "label+percent",
+        hole: 0.4,
+        marker: {
+          colors: colors,
+        },
+      },
+    ];
 
-    const dataTimes = [{
-      values: types.map(type => (typeCounts[type].times / typeCounts[type].count).toFixed(1)),
-      labels: types,
-      type: "pie",
-      textinfo: 'label+value',
-      hole: .4,
-      marker: {
-        colors: colors
-      }
-    }];
+    const dataTimes = [
+      {
+        values: types.map((type) =>
+          (typeCounts[type].times / typeCounts[type].count).toFixed(1)
+        ),
+        labels: types,
+        type: "pie",
+        textinfo: "label+value",
+        hole: 0.4,
+        marker: {
+          colors: colors,
+        },
+      },
+    ];
 
     const layoutCount = {
       title: "路線類型分析",
       height: 400,
-      width: 600
+      width: 600,
     };
 
     const layoutTimes = {
       title: "平均挑戰次數",
       height: 400,
-      width: 600
+      width: 600,
     };
 
     Plotly.newPlot("typesCount", dataCount, layoutCount);
@@ -148,7 +180,7 @@ const Personal = () => {
   const generateFrequencyChart = () => {
     const dateLevelCounts = climbRecords.reduce((acc, record) => {
       const date = new Date(record.date).toISOString().split("T")[0];
-      record.records.forEach(r => {
+      record.records.forEach((r) => {
         const level = r.level;
         if (!acc[date]) {
           acc[date] = {};
@@ -157,18 +189,18 @@ const Personal = () => {
           acc[date][level] = 0;
         }
         acc[date][level] += 1;
-      })
+      });
       return acc;
     }, {});
 
     const dates = Object.keys(dateLevelCounts).sort();
     const levels = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
-    
-    const data = levels.map(level => ({
+
+    const data = levels.map((level) => ({
       x: dates,
-      y: dates.map(date => dateLevelCounts[date][level] || 0),
+      y: dates.map((date) => dateLevelCounts[date][level] || 0),
       name: level,
-      type: "bar"
+      type: "bar",
     }));
 
     const layout = {
@@ -177,7 +209,7 @@ const Personal = () => {
       yaxis: { title: "路線" },
       barmode: "stack",
       height: 400,
-      width: 600
+      width: 600,
     };
 
     Plotly.newPlot("frequency", data, layout);
@@ -185,40 +217,45 @@ const Personal = () => {
 
   const renderFile = (file) => {
     const fileTypeMap = {
-      'mp4': 'video/mp4',
-      'mpeg': 'video/mpeg',
-      'avi': 'video/x-msvideo',
-      'mov': 'video/quicktime',
-      'wmv': 'video/x-ms-wmv',
-      'flv': 'video/x-flv',
-      'mkv': 'video/x-matroska',
-      '3gp': 'video/3gpp',
-      '3g2': 'video/3gpp2',
-      'hevc': 'video/HEVC',
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'png': 'image/png',
-      'gif': 'image/gif',
-      'webp': 'image/webp'
+      mp4: "video/mp4",
+      mpeg: "video/mpeg",
+      avi: "video/x-msvideo",
+      mov: "video/quicktime",
+      wmv: "video/x-ms-wmv",
+      flv: "video/x-flv",
+      mkv: "video/x-matroska",
+      "3gp": "video/3gpp",
+      "3g2": "video/3gpp2",
+      hevc: "video/HEVC",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+      gif: "image/gif",
+      webp: "image/webp",
     };
 
-    const fileExtension = file.split('.').pop().toLowerCase();
+    const fileExtension = file.split(".").pop().toLowerCase();
     const fileType = fileTypeMap[fileExtension];
     const filePath = `http://localhost:7000/${file}`;
-  
+
     const fileStyle = {
-      maxWidth: '320px',
-      maxHeight: '240px',
-      objectFit: 'contain'
+      maxWidth: "320px",
+      maxHeight: "240px",
+      objectFit: "contain",
     };
 
-    if (fileType && fileType.startsWith('video')) {
+    if (fileType && fileType.startsWith("video")) {
       return <video key={file} src={filePath} controls style={fileStyle} />;
-    } else if (fileType && fileType.startsWith('image')) {
+    } else if (fileType && fileType.startsWith("image")) {
       return <img key={file} src={filePath} alt="file" style={fileStyle} />;
     } else {
       return <p key={file}>Unsupported file type</p>;
     }
+  };
+
+  const getRouteTypeIcon = (typeName) => {
+    const type = routeTypes.find((routeType) => routeType.name === typeName);
+    return type ? type.icon : "";
   };
 
   return (
@@ -249,13 +286,22 @@ const Personal = () => {
                     <p>牆面: {rec.wall}</p>
                     <p>等級: {rec.level}</p>
                     <p>類型: {rec.types.join(", ")}</p>
+                    <div className="route-types">
+                      Custom Types:
+                      {rec.types.map((type, index) => (
+                        <img
+                          key={index}
+                          src={getRouteTypeIcon(type)}
+                          alt={type}
+                          style={{ width: "40px", height: "48px" }}
+                        />
+                      ))}
+                    </div>
                     <p>嘗試次數: {rec.times}</p>
                   </div>
                   <div className="personal-records-memo">Memo: {rec.memo}</div>
                   <div className="personal-records-files">
-                    {rec.files.map((file, idx) => (
-                      renderFile(file)
-                    ))}
+                    {rec.files.map((file, idx) => renderFile(file))}
                   </div>
                 </div>
               ))}

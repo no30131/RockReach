@@ -10,7 +10,7 @@ const Header = () => {
       <nav className="header-menu">
         <div className="menu-links">
             <Link to="/">
-                <img src="../images/logo3.png" alt="Logo" className="logo" />
+                <img src="/images/logo3.png" alt="Logo" className="logo" />
             </Link>
             <Link to="/personal" className={`button ${location.pathname === "/personal" ? "active" : ""}`}>個人空間</Link>
             <Link to="/upload" className={`button ${location.pathname === "/upload" ? "active" : ""}`}>新增紀錄</Link>
