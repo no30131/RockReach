@@ -86,5 +86,4 @@ jobs:
               -e GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY \
               -e REACT_APP_FRONTEND_URL=$REACT_APP_FRONTEND_URL \
               -e REACT_APP_API_URL=$REACT_APP_API_URL \
-              no30131/rock_reach \
-              node app.js" 
+              no30131/rock_reach"
