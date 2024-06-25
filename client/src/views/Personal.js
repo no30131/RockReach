@@ -4,6 +4,9 @@ import Plotly from "plotly.js-dist";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Personal.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+
 const routeTypes = [
   { name: "Crimpy", icon: "/images/crimpyIcon.png" },
   { name: "Dyno", icon: "/images/dynoIcon.png" },
@@ -30,12 +33,12 @@ const Personal = () => {
 
       try {
         const userResponse = await axios.get(
-          `http://localhost:7000/api/users/${userId}`
+          `${apiUrl}/api/users/${userId}`
         );
         setUser(userResponse.data);
 
         const recordsResponse = await axios.get(
-          `http://localhost:7000/api/climbRecords/${userId}`
+          `${apiUrl}/api/climbRecords/${userId}`
         );
         setClimbRecords(recordsResponse.data);
       } catch (error) {
@@ -236,7 +239,7 @@ const Personal = () => {
 
     const fileExtension = file.split(".").pop().toLowerCase();
     const fileType = fileTypeMap[fileExtension];
-    const filePath = `http://localhost:7000/${file}`;
+    const filePath = `${apiUrl}/${file}`;
 
     const fileStyle = {
       maxWidth: "320px",
@@ -285,7 +288,6 @@ const Personal = () => {
                   <div className="personal-records">
                     <p>牆面: {rec.wall}</p>
                     <p>等級: {rec.level}</p>
-                    <p>類型: {rec.types.join(", ")}</p>
                     <div className="route-types">
                       Custom Types:
                       {rec.types.map((type, index) => (

@@ -3,7 +3,10 @@ import axios from "axios";
 import io from "socket.io-client";
 import "./stylesheets/ChatRoom.css";
 
-const socket = io("http://localhost:7000");
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+
+const socket = io(apiUrl);
 
 const ChatRoom = ({ userId, friendId }) => {
     const [messages, setMessages] = useState([]);
@@ -12,7 +15,7 @@ const ChatRoom = ({ userId, friendId }) => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await axios.get(`http://localhost:7000/api/friends/chat/${userId}/${friendId}`);
+                const response = await axios.get(`${apiUrl}/api/friends/chat/${userId}/${friendId}`);
                 setMessages(response.data || []);
             } catch (error) {
                 console.error("Error fetching messages: ", error);

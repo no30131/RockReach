@@ -5,6 +5,9 @@ import ChatRoom from "./ChatRoom";
 import "./stylesheets/Friends.css";
 import { jwtDecode } from "jwt-decode";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+
 const getCookie = (name) => {
   const cookieArr = document.cookie.split("; ");
   for (let i = 0; i < cookieArr.length; i++) {
@@ -38,7 +41,7 @@ const Friends = () => {
     if (userId) {
       const fetchFriends = async () => {
         try {
-          const response = await axios.get(`http://localhost:7000/api/friends/${userId}`);
+          const response = await axios.get(`${apiUrl}/api/friends/${userId}`);
           setFriends(response.data);
         } catch (error) {
           console.error("Error fetching friends: ", error);
@@ -51,7 +54,7 @@ const Friends = () => {
 
   const addFriend = async (name) => {
     try {
-      const userResponse = await axios.get(`http://localhost:7000/api/users/name/${name}`);
+      const userResponse = await axios.get(`${apiUrl}/api/users/name/${name}`);
       if (!userResponse.data) {
         throw new Error("User not found");
       }
@@ -64,7 +67,7 @@ const Friends = () => {
         friendDate: new Date().toISOString().split("T")[0]
       };
       console.log("newFriend: ", newFriend);
-      const response = await axios.post("http://localhost:7000/api/friends/create", newFriend);
+      const response = await axios.post(`${apiUrl}/api/friends/create`, newFriend);
 
       if (response.status === 200) {
         const addedFriend = response.data;

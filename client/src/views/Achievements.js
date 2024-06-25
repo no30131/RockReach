@@ -3,6 +3,9 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Achievements.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+
 const routeTypes = [
   { name: "Crimpy", icon: "/images/crimpyIcon.png" },
   { name: "Dyno", icon: "/images/dynoIcon.png" },
@@ -24,7 +27,7 @@ const Achievements = () => {
     const fetchWalls = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:7000/api/customs/achievement/walls"
+          `${apiUrl}/api/customs/achievement/walls`
         );
         setWalls(response.data);
       } catch (error) {
@@ -58,12 +61,12 @@ const Achievements = () => {
 
     try {
       const routesResponse = await axios.get(
-        `http://localhost:7000/api/customs/achievement/walls/${wall.wallName}`
+        `${apiUrl}/api/customs/achievement/walls/${wall.wallName}`
       );
       setRoutes(routesResponse.data.customs);
 
       const achievementsResponse = await axios.get(
-        `http://localhost:7000/api/achievements/${userId}`
+        `${apiUrl}/api/achievements/${userId}`
       );
       const userAchievements = achievementsResponse.data.reduce((acc, achievement) => {
         acc[achievement.customName] = achievement.status;
@@ -84,7 +87,7 @@ const Achievements = () => {
     if (!userId || !selectedRoute) return;
     try {
       const response = await axios.post(
-        "http://localhost:7000/api/achievements/create",
+        `${apiUrl}/api/achievements/create`,
         {
           userId,
           customName: selectedRoute.customName,
@@ -107,7 +110,7 @@ const Achievements = () => {
   };
 
   const handleShare = () => {
-    const shareLink = `http://localhost:3000/achievement/${userId}/${selectedWall.wallName}`;
+    const shareLink = `${frontendUrl}/achievement/${userId}/${selectedWall.wallName}`;
     prompt("Share this link:", shareLink);
   };
 

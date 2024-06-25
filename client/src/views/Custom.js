@@ -3,6 +3,9 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./stylesheets/Custom.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+
 const routeTypes = [
   { name: "Crimpy", icon: "../images/crimpyIcon.png" },
   { name: "Dyno", icon: "../images/dynoIcon.png" },
@@ -33,7 +36,7 @@ const Custom = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:7000/api/customs/walls/share/${id}`)
+        .get(`${apiUrl}/api/customs/walls/share/${id}`)
         .then((response) => {
           setSelectedWall({
             wallName: response.data.wallName,
@@ -46,7 +49,7 @@ const Custom = () => {
         });
     } else {
       axios
-        .get("http://localhost:7000/api/customs/walls")
+        .get(`${apiUrl}/api/customs/walls`)
         .then((response) => {
           setWalls(response.data);
         })
@@ -66,7 +69,7 @@ const Custom = () => {
     setScale(1);
 
     axios
-      .get(`http://localhost:7000/api/customs/walls/${wall.wallName}`)
+      .get(`${apiUrl}/api/customs/walls/${wall.wallName}`)
       .then((response) => {
         setRoutes(response.data);
       })
@@ -104,7 +107,7 @@ const Custom = () => {
     if (!selectedWall) return;
     setIsProcessing(true);
     axios
-      .post("http://localhost:7000/api/customs/process", {
+      .post(`${apiUrl}/api/customs/process`, {
         image: selectedWall.originalImage,
         markers: markers.map((marker) => ({
           x: marker.x / scale,
@@ -112,7 +115,7 @@ const Custom = () => {
         })),
       })
       .then((response) => {
-        setOutputImage(`http://localhost:7000/${response.data.processedImage}`);
+        setOutputImage(`${apiUrl}/${response.data.processedImage}`);
         setOutputDBImage(response.data.processedImage);
         setIsProcessing(false);
       })
@@ -177,7 +180,7 @@ const Custom = () => {
 
   const handleConfirmClick = () => {
     axios
-      .post("http://localhost:7000/api/customs/create", {
+      .post(`${apiUrl}/api/customs/create`, {
         wallName: selectedWall.wallName,
         processedImage: outputDBImage,
         customName,

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-// import html2canvas from "html2canvas";
 import "./stylesheets/Footprint.css";
+
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const Footprint = () => {
   const [userId, setUserId] = useState(null);
@@ -39,7 +41,7 @@ const Footprint = () => {
       setUserId(decoded.userId);
 
       axios
-        .get(`http://localhost:7000/api/footprints/${decoded.userId}`)
+        .get(`${apiUrl}/api/footprints/${decoded.userId}`)
         .then((response) => {
           // console.log("Fetched footprints:", response.data);
           // response.data.forEach(fp => console.log(`footprint gymId: ${fp.gymId._id}`));
@@ -87,7 +89,7 @@ const Footprint = () => {
     let currentInfoWindow = null;
 
     try {
-      const response = await axios.get("http://localhost:7000/api/gyms/all");
+      const response = await axios.get(`${apiUrl}/api/gyms/all`);
       const gyms = response.data;
 
       const service = new window.google.maps.places.PlacesService(window.map);
@@ -195,7 +197,7 @@ const Footprint = () => {
     try {
       if (!userId) return;
       const response = await axios.get(
-        `http://localhost:7000/api/footprints/${userId}`
+        `${apiUrl}/api/footprints/${userId}`
       );
       const userFootprints = response.data;
       const gymFootprint = userFootprints.find(
@@ -235,13 +237,13 @@ const Footprint = () => {
         expiryDate: expiryDate,
       };
       const response = await axios.post(
-        "http://localhost:7000/api/footprints/create",
+        `${apiUrl}/api/footprints/create`,
         updatedFootprint
       );
       setFootprint(response.data);
       closeDetails();
       const footprintsResponse = await axios.get(
-        `http://localhost:7000/api/footprints/${userId}`
+        `${apiUrl}/api/footprints/${userId}`
       );
       setFootprints(footprintsResponse.data);
     } catch (error) {
@@ -260,17 +262,6 @@ const Footprint = () => {
     setCurrentGym(null);
     setFootprint(null);
   };
-
-  // const takeSnapshot = async () => {
-  //   const url = window.location.href;
-  //   try {
-  //     const response = await axios.post("http://localhost:7000/api/capture", { url });
-  //     console.log("Screenshot captured successfully:", response.data);
-  //     setSnapshotUrl(response.data.path);
-  //   } catch (error) {
-  //     console.error("Error capturing screenshot:", error);
-  //   }
-  // };
 
   return (
     <div className="footprint-container">
@@ -316,8 +307,6 @@ const Footprint = () => {
         )}
       </div>
       <div id="map"></div>
-      {/* <button onClick={takeSnapshot}>分享畫面</button>
-      {snapshotUrl && <img src={`http://localhost:7000/${snapshotUrl}`} alt="快照" />} */}
     </div>
   );
 };

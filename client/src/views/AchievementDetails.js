@@ -3,6 +3,9 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./stylesheets/Achievements.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+
 const routeTypes = [
   { name: "Crimpy", icon: "/images/crimpyIcon.png" },
   { name: "Dyno", icon: "/images/dynoIcon.png" },
@@ -22,12 +25,12 @@ const AchievementDetails = () => {
     const fetchWallAndAchievements = async () => {
       try {
         const wallResponse = await axios.get(
-          `http://localhost:7000/api/customs/achievement/walls/${wallName}`
+          `${apiUrl}/api/customs/achievement/walls/${wallName}`
         );
         setWall(wallResponse.data);
         setRoutes(wallResponse.data.customs);
         const achievementsResponse = await axios.get(
-          `http://localhost:7000/api/achievements/${userId}`
+          `${apiUrl}/api/achievements/${userId}`
         );
         const userAchievements = achievementsResponse.data.reduce(
           (acc, achievement) => {

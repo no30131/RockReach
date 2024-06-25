@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./stylesheets/Signin.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+
 const Gyms = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -15,7 +18,7 @@ const Gyms = () => {
     const gymData = { name, phone, address };
 
     try {
-      const response = await axios.post("http://localhost:7000/api/gyms/create", gymData, {
+      const response = await axios.post(`${apiUrl}/api/gyms/create`, gymData, {
         headers: {
           "Content-Type": "application/json"
         }

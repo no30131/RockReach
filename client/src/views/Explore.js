@@ -3,6 +3,9 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./stylesheets/Explore.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+
 const Explore = ({ userId }) => {
   const { id } = useParams();
   const [records, setRecords] = useState([]);
@@ -14,10 +17,10 @@ const Explore = ({ userId }) => {
     const fetchRecords = async () => {
       try {
         const endpoint = id
-          ? `http://localhost:7000/api/climbrecords/exploreWall/share/${id}`
+          ? `${apiUrl}/api/climbrecords/exploreWall/share/${id}`
           : userId
-          ? `http://localhost:7000/api/climbrecords/exploreWall/${userId}`
-          : `http://localhost:7000/api/climbrecords/exploreWall/`;
+          ? `${apiUrl}/api/climbrecords/exploreWall/${userId}`
+          : `${apiUrl}/api/climbrecords/exploreWall/`;
         const response = await axios.get(endpoint);
         setRecords(id ? [response.data] : response.data);
       } catch (error) {
@@ -49,7 +52,7 @@ const Explore = ({ userId }) => {
 
     const fileExtension = file.split(".").pop().toLowerCase();
     const fileType = fileTypeMap[fileExtension];
-    const filePath = `http://localhost:7000/${file}`;
+    const filePath = `${apiUrl}/${file}`;
 
     const fileStyle = {
       maxWidth: "320px",
@@ -75,15 +78,15 @@ const Explore = ({ userId }) => {
 
   const getEndpoint = () => {
     return userId
-      ? `http://localhost:7000/api/climbrecords/exploreWall/${userId}`
-      : `http://localhost:7000/api/climbrecords/exploreWall`;
+      ? `${apiUrl}/api/climbrecords/exploreWall/${userId}`
+      : `${apiUrl}/api/climbrecords/exploreWall`;
   };
 
   const handleAddLike = async (recordId, subRecordId) => {
     try {
-      await axios.post(`http://localhost:7000/api/climbrecords/addLike/${subRecordId}`);
+      await axios.post(`${apiUrl}/api/climbrecords/addLike/${subRecordId}`);
       const endpoint = id
-        ? `http://localhost:7000/api/climbrecords/exploreWall/share/${id}`
+        ? `${apiUrl}/api/climbrecords/exploreWall/share/${id}`
         : getEndpoint();
       const response = await axios.get(endpoint);
       setRecords(id ? [response.data] : response.data);
@@ -97,11 +100,11 @@ const Explore = ({ userId }) => {
     if (!comment) return;
 
     try {
-      await axios.post(`http://localhost:7000/api/climbrecords/addComment/${subRecordId}`, {
+      await axios.post(`${apiUrl}/api/climbrecords/addComment/${subRecordId}`, {
         comment
       });
       const endpoint = id
-      ? `http://localhost:7000/api/climbrecords/exploreWall/share/${id}`
+      ? `${apiUrl}/api/climbrecords/exploreWall/share/${id}`
       : getEndpoint();
       const response = await axios.get(endpoint);
       setRecords(id ? [response.data] : response.data);
@@ -121,7 +124,7 @@ const Explore = ({ userId }) => {
   };
 
   const handleShare = (recordId) => {
-    const shareLink = `http://localhost:3000/explore/${recordId}`;
+    const shareLink = `${frontendUrl}/explore/${recordId}`;
     prompt("Share this link:", shareLink);
   };
 
