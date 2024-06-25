@@ -51,6 +51,10 @@ jobs:
       - name: Pull Docker image from Docker Hub
         run: docker pull no30131/rock_reach
 
+      - name: Clean up unused Docker resources
+        run: |
+          docker system prune -af
+
       - name: Deploy Docker container to EC2
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
