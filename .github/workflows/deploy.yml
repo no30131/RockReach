@@ -27,9 +27,7 @@ jobs:
       #   run: npm test
 
       - name: Build Docker image
-        run: |
-          cd server  
-          docker build -t no30131/rock_reach .
+        run: docker build -t no30131/rock_reach .
 
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
@@ -52,8 +50,7 @@ jobs:
         run: docker pull no30131/rock_reach
 
       - name: Clean up unused Docker resources
-        run: |
-          docker system prune -af
+        run: docker system prune -af
 
       - name: Deploy Docker container to EC2
         env:
@@ -88,5 +85,4 @@ jobs:
               -e GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY \
               -e REACT_APP_FRONTEND_URL=$REACT_APP_FRONTEND_URL \
               -e REACT_APP_API_URL=$REACT_APP_API_URL \
-              no30131/rock_reach node /app/app.js"
- 
+              no30131/rock_reach:latest node app.js"
