@@ -10,72 +10,76 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '22'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
 
-    - name: Install dependencies for server
-      run: |
-        cd server
-        npm install
+      - name: Install dependencies for server
+        run: |
+          cd server
+          npm install
 
-    # - name: Run tests
-    #   run: npm test
+      # - name: Run tests
+      #   run: npm test
 
-    - name: Build Docker image
-      run: |
-        cd server  
-        docker build -t no30131/rock_reach .
+      - name: Build Docker image
+        run: |
+          cd server  
+          docker build -t no30131/rock_reach .
 
-    - name: Log in to Docker Hub
-      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Log in to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-    - name: Push Docker image to Docker Hub
-      run: docker push no30131/rock_reach
+      - name: Push Docker image to Docker Hub
+        run: docker push no30131/rock_reach
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Log in to Docker Hub
-      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      - name: Log in to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-    - name: Pull Docker image from Docker Hub
-      run: docker pull no30131/rock_reach
+      - name: Pull Docker image from Docker Hub
+        run: docker pull no30131/rock_reach
 
-    - name: Deploy Docker container to EC2
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        EC2_HOST: ${{ secrets.EC2_HOST }}
-        EC2_USER: ${{ secrets.EC2_USER }}
-        MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-        GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-        REACT_APP_FRONTEND_URL: ${{ secrets.REACT_APP_FRONTEND_URL }}
-        REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
-      run: |
-        echo "$SSH_PRIVATE_KEY" > m3.pem
-        chmod 600 m3.pem
-        ssh -o StrictHostKeyChecking=no -i m3.pem $EC2_USER@$EC2_HOST "docker pull no30131/rock_reach && docker stop app || true && docker rm app || true && docker run -d --name app -p 7000:7000 \
-        -e MONGODB_URI=$MONGODB_URI \
-        -e ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET \
-        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
-        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
-        -e AWS_REGION=$AWS_REGION \
-        -e AWS_S3_BUCKET=$AWS_S3_BUCKET \
-        -e GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY \
-        -e REACT_APP_FRONTEND_URL=$REACT_APP_FRONTEND_URL \
-        -e REACT_APP_API_URL=$REACT_APP_API_URL \
-        no30131/rock_reach"
+      - name: Deploy Docker container to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          REACT_APP_FRONTEND_URL: ${{ secrets.REACT_APP_FRONTEND_URL }}
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > m3.pem
+          chmod 600 m3.pem
+          ssh -o StrictHostKeyChecking=no -i m3.pem $EC2_USER@$EC2_HOST "
+            docker pull no30131/rock_reach && 
+            docker stop app || true && 
+            docker rm app || true && 
+            docker run -d --name app -p 7000:7000 \
+              -e MONGODB_URI=$MONGODB_URI \
+              -e ACCESS_TOKEN_SECRET=$ACCESS_TOKEN_SECRET \
+              -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+              -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+              -e AWS_REGION=$AWS_REGION \
+              -e AWS_S3_BUCKET=$AWS_S3_BUCKET \
+              -e GOOGLE_MAPS_API_KEY=$GOOGLE_MAPS_API_KEY \
+              -e REACT_APP_FRONTEND_URL=$REACT_APP_FRONTEND_URL \
+              -e REACT_APP_API_URL=$REACT_APP_API_URL \
+              no30131/rock_reach"
