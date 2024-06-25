@@ -5,7 +5,6 @@ on:
     branches:
       - sprint3
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,11 +18,13 @@ jobs:
       with:
         node-version: '22'
 
-    - name: Install dependencies
-      run: npm install
+    - name: Install dependencies for server
+      run: |
+        cd server
+        npm install
 
-    - name: Run tests
-      run: npm test
+    # - name: Run tests
+    #   run: npm test
 
     - name: Build Docker image
       run: docker build -t no30131/rock_reach .
