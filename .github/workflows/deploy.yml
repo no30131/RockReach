@@ -42,6 +42,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Create .env file
+        run: |
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> server/.env
+          echo "PORT=${{ secrets.PORT }}" >> server/.env
+          echo "ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}" >> server/.env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> server/.env
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> server/.env
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> server/.env
+          echo "AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}" >> server/.env
+          echo "GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> server/.env
+          echo "REACT_APP_FRONTEND_URL=${{ secrets.REACT_APP_FRONTEND_URL }}" >> server/.env
+          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" >> server/.env
+
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
@@ -56,20 +69,11 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
-          # MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          # PORT: ${{ secrets.PORT }}
-          # ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-          # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # AWS_REGION: ${{ secrets.AWS_REGION }}
-          # AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          # GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-          # REACT_APP_FRONTEND_URL: ${{ secrets.REACT_APP_FRONTEND_URL }}
-          # REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
         run: |
           echo "$SSH_PRIVATE_KEY" > m3.pem
           chmod 600 m3.pem
-          scp -o StrictHostKeyChecking=no -i m3.pem .env $EC2_USER@$EC2_HOST:/home/$EC2_USER/.env
+          echo "Connecting to EC2 and deploying Docker container"
+          scp -o StrictHostKeyChecking=no -i m3.pem server/.env $EC2_USER@$EC2_HOST:/home/$EC2_USER/.env
           ssh -o StrictHostKeyChecking=no -i m3.pem $EC2_USER@$EC2_HOST '
             docker pull no30131/rock_reach &&
             docker stop app || true &&
