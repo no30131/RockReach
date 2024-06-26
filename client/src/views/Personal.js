@@ -239,7 +239,7 @@ const Personal = () => {
 
     const fileExtension = file.split(".").pop().toLowerCase();
     const fileType = fileTypeMap[fileExtension];
-    const filePath = `${apiUrl}/${file}`;
+    const filePath = file;
 
     const fileStyle = {
       maxWidth: "320px",

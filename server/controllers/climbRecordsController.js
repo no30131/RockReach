@@ -1,4 +1,13 @@
 const ClimbRecords = require("../models/climbRecords");
+const AWS = require("aws-sdk");
+const path = require("path");
+const fs = require("fs");
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
 
 exports.createClimbRecords = async (req, res) => {
   try {
@@ -7,13 +16,30 @@ exports.createClimbRecords = async (req, res) => {
     const files = req.files;
 
     // if (!files || files.length === 0) {
-    //   console.log("No files uploaded");
+    //   return res.status(400).json({ message: "No files uploaded" });
     // }
-    const filePaths = files.map((file) => file.path);
+
+    const uploadPromises = files.map(async (file) => {
+      const fileContent = fs.readFileSync(file.path);
+      const fileName = `climb_records/${path.basename(file.path)}`;
+
+      const params = {
+        Bucket: process.env.AWS_S3_BUCKET,
+        Key: fileName,
+        Body: fileContent,
+        ContentType: file.mimetype,
+      };
+
+      const data = await s3.upload(params).promise();
+      // fs.unlinkSync(file.path);
+      return data.Location;
+    });
+
+    const fileUrls = await Promise.all(uploadPromises);
 
     const updatedRecords = records.map((record, index) => ({
       ...record,
-      files: filePaths.slice(index * 5, (index + 1) * 5),
+      files: fileUrls.slice(index * 5, (index + 1) * 5),
     }));
 
     const dateOnly = new Date(date).toISOString().split("T")[0];
@@ -24,12 +50,15 @@ exports.createClimbRecords = async (req, res) => {
       gymName,
       records: updatedRecords,
     });
-    // console.log("Received files: ", files);
-    // console.log("climbRecords: ", climbRecords);
+
     await climbRecords.save();
     res.status(201).send(climbRecords);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    console.error("Error uploading to S3 or saving to DB:", error);
+    res.status(500).json({
+      message: "Error creating climb records",
+      error: error.message,
+    });
   }
 };
 

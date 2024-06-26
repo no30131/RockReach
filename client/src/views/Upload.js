@@ -6,6 +6,9 @@ import "./stylesheets/Upload.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
+
 const routeTypes = [
     { name: "Crimpy", icon: "/images/crimpyIcon.png" },
     { name: "Dyno", icon: "/images/dynoIcon.png" },
@@ -24,7 +27,7 @@ const Upload = () => {
     useEffect(() => {
         const fetchGyms = async () => {
             try {
-                const response = await axios.get("http://localhost:7000/api/gyms/all");
+                const response = await axios.get(`${apiUrl}/api/gyms/all`);
                 setGyms(response.data);
                 setSelectedGym(response.data[0]?._id || "");
             } catch (error) {
@@ -112,19 +115,19 @@ const Upload = () => {
         formData.append("records", JSON.stringify(recordsData));
 
         records.forEach(record => {
-            Array.from(record.files).forEach(file => {
-                formData.append(`files`, file);
+            record.files.forEach(file => {
+                formData.append("files", file);
             });
         });
 
         try {
-            const response = await axios.post("http://localhost:7000/api/climbRecords/create", formData, {
+            const response = await axios.post(`${apiUrl}/api/climbRecords/create`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
             });
 
-            if (response.status === 200) {
+            if (response.status === 201) {
                 console.log("Records uploaded successfully: ", response.data);
                 // navigate("/personal");
             } else {

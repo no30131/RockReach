@@ -7,11 +7,11 @@ const apiUrl = process.env.REACT_APP_API_URL;
 const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const routeTypes = [
-  { name: "Crimpy", icon: "../images/crimpyIcon.png" },
-  { name: "Dyno", icon: "../images/dynoIcon.png" },
-  { name: "Slope", icon: "../images/slopeIcon.png" },
-  { name: "Power", icon: "../images/powerIcon.png" },
-  { name: "Pump", icon: "../images/pumpIcon.png" },
+  { name: "Crimpy", icon: "/images/crimpyIcon.png" },
+  { name: "Dyno", icon: "/images/dynoIcon.png" },
+  { name: "Slope", icon: "/images/slopeIcon.png" },
+  { name: "Power", icon: "/images/powerIcon.png" },
+  { name: "Pump", icon: "/images/pumpIcon.png" },
 ];
 
 const Custom = () => {
@@ -196,7 +196,7 @@ const Custom = () => {
   };
 
   const handleShare = (routeId) => {
-    const shareLink = `http://localhost:3000/custom/${routeId}`;
+    const shareLink = `${frontendUrl}/custom/${routeId}`;
     prompt("Share this link:", shareLink);
   };
 
