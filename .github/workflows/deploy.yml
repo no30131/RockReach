@@ -69,7 +69,7 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > m3.pem
           chmod 600 m3.pem
-          scp -o StrictHostKeyChecking=no -i m3.pem server/.env $EC2_USER@$EC2_HOST:/home/$EC2_USER/.env
+          scp -o StrictHostKeyChecking=no -i m3.pem .env $EC2_USER@$EC2_HOST:/home/$EC2_USER/.env
           ssh -o StrictHostKeyChecking=no -i m3.pem $EC2_USER@$EC2_HOST '
             docker pull no30131/rock_reach &&
             docker stop app || true &&
