@@ -34,7 +34,7 @@ function App() {
             <Route path="/custom/:id" element={<Custom />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/footprint" element={<Footprint />} />
-            {/* <Route path="/footprint/:id" element={<Footprint />} /> */}
+            <Route path="/footprint/:id" element={<Footprint />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/explore/:id" element={<Explore />} />
             <Route path="/personal" element={<Personal />} />

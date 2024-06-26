@@ -31,7 +31,7 @@ exports.createClimbRecords = async (req, res) => {
       };
 
       const data = await s3.upload(params).promise();
-      // fs.unlinkSync(file.path);
+      fs.unlinkSync(file.path);
       return data.Location;
     });
 

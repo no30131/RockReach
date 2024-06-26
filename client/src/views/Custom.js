@@ -7,11 +7,11 @@ const apiUrl = process.env.REACT_APP_API_URL;
 const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const routeTypes = [
-  { name: "Crimpy", icon: "/images/crimpyIcon.png" },
-  { name: "Dyno", icon: "/images/dynoIcon.png" },
-  { name: "Slope", icon: "/images/slopeIcon.png" },
-  { name: "Power", icon: "/images/powerIcon.png" },
-  { name: "Pump", icon: "/images/pumpIcon.png" },
+  { name: "Crimpy", icon: "/images/icon_crimpy.png" },
+  { name: "Dyno", icon: "/images/icon_dyno.png" },
+  { name: "Slope", icon: "/images/icon_slope.png" },
+  { name: "Power", icon: "/images/icon_power.png" },
+  { name: "Pump", icon: "/images/icon_pump.png" }
 ];
 
 const Custom = () => {

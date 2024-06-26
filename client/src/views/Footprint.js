@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useParams } from "react-router-dom";
 import "./stylesheets/Footprint.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const Footprint = () => {
+  const { id } = useParams();
   const [userId, setUserId] = useState(null);
   const [footprints, setFootprints] = useState([]);
   const [currentGym, setCurrentGym] = useState(null);
@@ -34,44 +36,74 @@ const Footprint = () => {
       return null;
     };
 
-    const token = getCookie("token");
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUserId(decoded.userId);
+    const fetchUserFootprints = async (userId) => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/footprints/${userId}`);
+        setFootprints(response.data);
+      } catch (error) {
+        console.error("Error fetching footprints:", error);
+      }
+    };
 
-      axios
-        .get(`${apiUrl}/api/footprints/${decoded.userId}`)
-        .then((response) => {
-          setFootprints(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching footprints:", error);
-        });
+    if (id) {
+      fetchUserFootprints(id);
+    } else {
+      const token = getCookie("token");
+      if (token) {
+        const decoded = jwtDecode(token);
+        setUserId(decoded.userId);
+        fetchUserFootprints(decoded.userId);
+      }
     }
 
-    axios.get(`${apiUrl}/api/footprints/google-maps-api-url`).then((response) => {
-      const { url } = response.data;
-      const script = document.createElement("script");
-      script.src = url;
-      script.async = true;
-      script.onload = () => {
-        initMap();
-      };
-      document.body.appendChild(script);
-    });
+    axios
+      .get(`${apiUrl}/api/footprints/google-maps-api-url`)
+      .then((response) => {
+        const { url } = response.data;
+        const script = document.createElement("script");
+        script.src = url;
+        script.async = true;
+        script.onload = () => {
+          initMap();
+        };
+        document.body.appendChild(script);
+      });
 
     return () => {
       if (window.google) {
         window.google.maps.event.clearInstanceListeners(window.map);
       }
     };
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (window.google && footprints.length > 0) {
       initMap();
     }
   }, [footprints]);
+
+  const fetchFootprint = async (gymId) => {
+    try {
+      const fetchId = id || userId;
+      if (!fetchId) return;
+
+      const response = await axios.get(`${apiUrl}/api/footprints/${fetchId}`);
+      const userFootprints = response.data;
+      const gymFootprint = userFootprints.find(
+        (footprint) => String(footprint.gymId._id) === String(gymId)
+      );
+      if (gymFootprint) {
+        setFootprint(gymFootprint);
+        setVisitDate(gymFootprint.lastVisit);
+        setVisitTimes(gymFootprint.visitTimes);
+        setExpiryDate(gymFootprint.expiryDate);
+      } else {
+        setFootprint(null);
+      }
+    } catch (error) {
+      console.error("Error fetching footprints:", error);
+    }
+  };
 
   const initMap = async () => {
     const mapElement = document.getElementById("map");
@@ -92,11 +124,14 @@ const Footprint = () => {
 
       gyms.forEach(async (gym) => {
         try {
-          const geocodeResponse = await axios.get(`${apiUrl}/api/footprints/google-maps/geocode`, {
-            params: {
-              address: gym.address
+          const geocodeResponse = await axios.get(
+            `${apiUrl}/api/footprints/google-maps/geocode`,
+            {
+              params: {
+                address: gym.address,
+              },
             }
-          });
+          );
 
           const { lat, lng } =
             geocodeResponse.data.results[0].geometry.location;
@@ -125,14 +160,19 @@ const Footprint = () => {
                 },
               });
 
+              const visitTimesText = "到訪次數：";
+              const visitDateText = "上次到訪：";
+
               const infoWindowContent = `
                 <div>
+                  ${userFootprint ? `${visitTimesText}${userFootprint.visitTimes}<br/>` : "" }
+                  ${userFootprint ? `${visitDateText}${userFootprint.lastVisit}<br/><br/>` : ""}
                   <strong>${existingPlace.name}</strong><br/>
                   ${existingPlace.formatted_address || gym.address}<br/>
-                  ${existingPlace.formatted_phone_number || gym.phone}<br/>
+                  ${existingPlace.formatted_phone_number || gym.phone}<br/><br/>
                   <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">在 Google 地圖上查看</a>
                   <br></br>
-                  <button onclick="manageGym('${gym._id}')">足跡管理</button>
+                  ${id ? '' : `<button onclick="manageGym('${gym._id}')">足跡管理</button>`}
                 </div>
               `;
 
@@ -162,7 +202,7 @@ const Footprint = () => {
                   ${gym.phone}<br/>
                   <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">在 Google 地圖上查看</a>
                   <br></br>
-                  <button onclick="manageGym('${gym._id}')">足跡管理</button>
+                  ${id ? '' : `<button onclick="manageGym('${gym._id}')">足跡管理</button>`}
                 </div>
               `;
 
@@ -186,29 +226,6 @@ const Footprint = () => {
       });
     } catch (error) {
       console.error("Error fetching gyms:", error);
-    }
-  };
-
-  const fetchFootprint = async (gymId) => {
-    try {
-      if (!userId) return;
-      const response = await axios.get(
-        `${apiUrl}/api/footprints/${userId}`
-      );
-      const userFootprints = response.data;
-      const gymFootprint = userFootprints.find(
-        (footprint) => String(footprint.gymId._id) === String(gymId)
-      );
-      if (gymFootprint) {
-        setFootprint(gymFootprint);
-        setVisitDate(gymFootprint.lastVisit);
-        setVisitTimes(gymFootprint.visitTimes);
-        setExpiryDate(gymFootprint.expiryDate);
-      } else {
-        setFootprint(null);
-      }
-    } catch (error) {
-      console.error("Error fetching footprints:", error);
     }
   };
 
@@ -259,6 +276,11 @@ const Footprint = () => {
     setFootprint(null);
   };
 
+  const handleShare = () => {
+    const shareLink = `${frontendUrl}/footprint/${userId}`;
+    prompt("Share this link:", shareLink);
+  };
+
   return (
     <div className="footprint-container">
       <div
@@ -303,6 +325,7 @@ const Footprint = () => {
         )}
       </div>
       <div id="map"></div>
+      {!id && <button onClick={() => handleShare()}>分享</button>}
     </div>
   );
 };
