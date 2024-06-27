@@ -90,7 +90,7 @@ app.get("*", (req, res) => {
       console.error("Error fetching from S3:", err);
       return res.status(404).send("File not found");
     }
-    res.set("Content-Type", data.ContentType);
+    res.set("Content-Type", "text/html");
     res.send(data.Body);
   });
 });
