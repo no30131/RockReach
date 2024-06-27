@@ -83,7 +83,18 @@ io.on("connection", (socket) => {
 
 app.use(express.static(path.join(__dirname, 'build')));
 
+app.use("/api/users", usersRoutes);
+app.use("/api/climbRecords", climbRecordsRoutes);
+app.use("/api/friends", friendsRoutes);
+app.use("/api/footprints", footprintsRoutes);
+app.use("/api/gyms", gymsRoutes);
+app.use("/api/customs", customsRoutes);
+app.use("/api/achievements", achievementsRoutes);
+
 // app.get("*", (req, res) => {
+//   if (req.path.startsWith('/api')) {
+//     return res.status(404).send("API route not found");
+//   }
 //   const s3Path = `build${req.path === '/' ? '/index.html' : req.path}`;
 //   console.log("s3Path: ", s3Path);
 //   s3.getObject({ Bucket: bucketName, Key: s3Path }, (err, data) => {
@@ -112,14 +123,6 @@ app.get("*", (req, res) => {
     res.send(data.Body);
   });
 });
-
-app.use("/api/users", usersRoutes);
-app.use("/api/climbRecords", climbRecordsRoutes);
-app.use("/api/friends", friendsRoutes);
-app.use("/api/footprints", footprintsRoutes);
-app.use("/api/gyms", gymsRoutes);
-app.use("/api/customs", customsRoutes);
-app.use("/api/achievements", achievementsRoutes);
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

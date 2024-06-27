@@ -6,7 +6,9 @@ import "./stylesheets/Upload.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const apiUrl = "https://me2vegan.com";
+
+const apiUrl = process.env.REACT_APP_API_URL;
+// const apiUrl = "https://me2vegan.com";
 console.log("apiUrl: ", apiUrl);
 
 const routeTypes = [
