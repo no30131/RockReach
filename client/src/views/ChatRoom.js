@@ -4,7 +4,6 @@ import io from "socket.io-client";
 import "./stylesheets/ChatRoom.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const socket = io(apiUrl);
 

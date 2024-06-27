@@ -19,7 +19,7 @@ const Achievements = () => {
   const [selectedWall, setSelectedWall] = useState(null);
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
-  const [status, setStatus] = useState("incomplete");
+  // const [status, setStatus] = useState("incomplete");
   const [userId, setUserId] = useState(null);
   const [achievements, setAchievements] = useState({});
 
@@ -57,7 +57,7 @@ const Achievements = () => {
 
   const handleWallSelect = async (wall) => {
     setSelectedWall(wall);
-    setStatus("incomplete");
+    // setStatus("incomplete");
 
     try {
       const routesResponse = await axios.get(
@@ -80,7 +80,7 @@ const Achievements = () => {
 
   const handleRouteSelect = (route) => {
     setSelectedRoute(route);
-    setStatus(achievements[route.customName] || "incomplete");
+    // setStatus(achievements[route.customName] || "incomplete");
   };
 
   const handleSaveAchievement = async () => {

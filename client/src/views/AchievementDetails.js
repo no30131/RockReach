@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import "./stylesheets/Achievements.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
