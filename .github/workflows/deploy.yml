@@ -52,6 +52,11 @@ jobs:
       - name: Upload to S3
         run: |
           aws s3 sync client/build s3://rockreach-0618/build --delete
+      
+      # - name:     
+      #   run: |
+      #     aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/index.html"
+
 
       - name: Build Docker image
         run: |
