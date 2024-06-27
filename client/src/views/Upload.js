@@ -7,7 +7,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const routeTypes = [
     { name: "Crimpy", icon: "/images/icon_crimpy.png" },

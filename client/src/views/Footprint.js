@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useParams } from "react-router-dom";
@@ -23,8 +23,8 @@ const Footprint = () => {
       .split("T")[0]
   );
   const [showDetails, setShowDetails] = useState(false);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
-  useEffect(() => {
     const getCookie = (name) => {
       const cookieArr = document.cookie.split("; ");
       for (let i = 0; i < cookieArr.length; i++) {
@@ -36,15 +36,16 @@ const Footprint = () => {
       return null;
     };
 
-    const fetchUserFootprints = async (userId) => {
+    const fetchUserFootprints = useCallback(async (userId) => {
       try {
         const response = await axios.get(`${apiUrl}/api/footprints/${userId}`);
         setFootprints(response.data);
       } catch (error) {
         console.error("Error fetching footprints:", error);
       }
-    };
+    }, []);
 
+    useEffect(() => {
     if (id) {
       fetchUserFootprints(id);
     } else {
@@ -64,7 +65,7 @@ const Footprint = () => {
         script.src = url;
         script.async = true;
         script.onload = () => {
-          initMap();
+          setIsMapLoaded(true);
         };
         document.body.appendChild(script);
       });
@@ -74,13 +75,7 @@ const Footprint = () => {
         window.google.maps.event.clearInstanceListeners(window.map);
       }
     };
-  }, [id]);
-
-  useEffect(() => {
-    if (window.google && footprints.length > 0) {
-      initMap();
-    }
-  }, [footprints]);
+  }, [id, fetchUserFootprints]);
 
   const fetchFootprint = async (gymId) => {
     try {
@@ -105,7 +100,7 @@ const Footprint = () => {
     }
   };
 
-  const initMap = async () => {
+  const initMap = useCallback(async () => {
     const mapElement = document.getElementById("map");
     if (!mapElement) return;
 
@@ -227,7 +222,13 @@ const Footprint = () => {
     } catch (error) {
       console.error("Error fetching gyms:", error);
     }
-  };
+  }, [id, footprints]);
+
+  useEffect(() => {
+    if (isMapLoaded && footprints.length > 0) {
+      initMap();
+    }
+  }, [isMapLoaded, footprints, initMap]);
 
   const registerVisit = async () => {
     setFootprint({

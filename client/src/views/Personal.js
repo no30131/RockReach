@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Plotly from "plotly.js-dist";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Personal.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
   { name: "Dyno", icon: "/images/icon_dyno.png" },
   { name: "Slope", icon: "/images/icon_slope.png" },
   { name: "Power", icon: "/images/icon_power.png" },
-  { name: "Pump", icon: "/images/icon_pump.png" }
+  { name: "Pump", icon: "/images/icon_pump.png" },
 ];
 
 const Personal = () => {
@@ -32,14 +31,10 @@ const Personal = () => {
       const userId = decoded.userId;
 
       try {
-        const userResponse = await axios.get(
-          `${apiUrl}/api/users/${userId}`
-        );
+        const userResponse = await axios.get(`${apiUrl}/api/users/${userId}`);
         setUser(userResponse.data);
 
-        const recordsResponse = await axios.get(
-          `${apiUrl}/api/climbRecords/${userId}`
-        );
+        const recordsResponse = await axios.get(`${apiUrl}/api/climbRecords/${userId}`);
         setClimbRecords(recordsResponse.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -49,46 +44,14 @@ const Personal = () => {
     fetchUserData();
   }, []);
 
-  useEffect(() => {
-    if (climbRecords.length > 0) {
-      generateLevelChart();
-      generateTypesChart();
-      generateFrequencyChart();
-    }
-  }, [climbRecords]);
-
-  const getCookie = (name) => {
-    const cookieArr = document.cookie.split("; ");
-    for (let i = 0; i < cookieArr.length; i++) {
-      const cookiePair = cookieArr[i].split("=");
-      if (name === cookiePair[0]) {
-        return decodeURIComponent(cookiePair[1]);
-      }
-    }
-    return null;
-  };
-
-  const generateLevelChart = () => {
-    const levels = climbRecords.flatMap((record) =>
-      record.records.map((r) => r.level)
-    );
+  const generateLevelChart = useCallback(() => {
+    const levels = climbRecords.flatMap((record) => record.records.map((r) => r.level));
     const levelCounts = levels.reduce((acc, level) => {
       acc[level] = (acc[level] || 0) + 1;
       return acc;
     }, {});
 
-    const allLevels = [
-      "V0",
-      "V1",
-      "V2",
-      "V3",
-      "V4",
-      "V5",
-      "V6",
-      "V7",
-      "V8",
-      "V9",
-    ];
+    const allLevels = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
     const completeLevelCounts = allLevels.reduce((acc, level) => {
       acc[level] = levelCounts[level] || 0;
       return acc;
@@ -114,9 +77,9 @@ const Personal = () => {
     };
 
     Plotly.newPlot("level", data, layout);
-  };
+  }, [climbRecords]);
 
-  const generateTypesChart = () => {
+  const generateTypesChart = useCallback(() => {
     const types = ["Crimpy", "Dyno", "Slope", "Power", "Pump"];
     const typeCounts = types.reduce((acc, type) => {
       acc[type] = { count: 0, times: 0 };
@@ -151,9 +114,7 @@ const Personal = () => {
 
     const dataTimes = [
       {
-        values: types.map((type) =>
-          (typeCounts[type].times / typeCounts[type].count).toFixed(1)
-        ),
+        values: types.map((type) => (typeCounts[type].times / typeCounts[type].count).toFixed(1)),
         labels: types,
         type: "pie",
         textinfo: "label+value",
@@ -178,9 +139,9 @@ const Personal = () => {
 
     Plotly.newPlot("typesCount", dataCount, layoutCount);
     Plotly.newPlot("typesTimes", dataTimes, layoutTimes);
-  };
+  }, [climbRecords]);
 
-  const generateFrequencyChart = () => {
+  const generateFrequencyChart = useCallback(() => {
     const dateLevelCounts = climbRecords.reduce((acc, record) => {
       const date = new Date(record.date).toISOString().split("T")[0];
       record.records.forEach((r) => {
@@ -216,6 +177,25 @@ const Personal = () => {
     };
 
     Plotly.newPlot("frequency", data, layout);
+  }, [climbRecords]);
+
+  useEffect(() => {
+    if (climbRecords.length > 0) {
+      generateLevelChart();
+      generateTypesChart();
+      generateFrequencyChart();
+    }
+  }, [climbRecords, generateLevelChart, generateTypesChart, generateFrequencyChart]);
+
+  const getCookie = (name) => {
+    const cookieArr = document.cookie.split("; ");
+    for (let i = 0; i < cookieArr.length; i++) {
+      const cookiePair = cookieArr[i].split("=");
+      if (name === cookiePair[0]) {
+        return decodeURIComponent(cookiePair[1]);
+      }
+    }
+    return null;
   };
 
   const renderFile = (file) => {

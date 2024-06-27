@@ -4,7 +4,6 @@ import axios from "axios";
 import "./stylesheets/Signup.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const Signup = () => {
   const [name, setName] = useState("");

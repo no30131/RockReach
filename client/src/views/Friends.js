@@ -6,7 +6,6 @@ import "./stylesheets/Friends.css";
 import { jwtDecode } from "jwt-decode";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const getCookie = (name) => {
   const cookieArr = document.cookie.split("; ");
