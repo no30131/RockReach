@@ -68,8 +68,7 @@ jobs:
 
       - name: List client/build files
         run: |
-          cd client/build
-          ls -la
+          ls -la client/build
   
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
