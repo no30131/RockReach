@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const http = require("http");
 const socketIo = require("socket.io");
 const moment = require("moment-timezone");
-const { S3 } = require("aws-sdk");
+const AWS = require("aws-sdk");
 // const upload = require("./config/multerConfig");
 
 const usersRoutes = require("./routes/usersRoutes");
@@ -24,7 +24,12 @@ const app = express();
 const PORT = process.env.PORT || 7000;
 dotenv.config();
 const server = http.createServer(app);
-const s3 = new S3();
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
 const bucketName = process.env.AWS_S3_BUCKET;
 
 const corsOptions = {
@@ -79,7 +84,7 @@ io.on("connection", (socket) => {
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get("*", (req, res) => {
-  const s3Path = `build${req.path === '/' ? '/index.html' : req.path}`;
+  const s3Path = 'build/index.html';
   s3.getObject({ Bucket: bucketName, Key: s3Path }, (err, data) => {
     if (err) {
       console.error("Error fetching from S3:", err);
