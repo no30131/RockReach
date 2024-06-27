@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const http = require("http");
 const socketIo = require("socket.io");
 const moment = require("moment-timezone");
-const AWS = require("aws-sdk");
+const { S3 }= require("aws-sdk");
 // const upload = require("./config/multerConfig");
 
 const usersRoutes = require("./routes/usersRoutes");
@@ -25,11 +25,7 @@ const PORT = process.env.PORT || 7000;
 dotenv.config();
 const server = http.createServer(app);
 
-const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
+const s3 = new S3();
 const bucketName = process.env.AWS_S3_BUCKET;
 
 const corsOptions = {
