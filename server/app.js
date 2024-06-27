@@ -56,6 +56,7 @@ mongoose.connect(process.env.MONGODB_URI, {
   console.error("Error connecting to MongoDB", err);
 });
 
+
 const io = socketIo(server, { cors: corsOptions });
 io.on("connection", (socket) => {
   // console.log("New connection");
