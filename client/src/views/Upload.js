@@ -28,8 +28,9 @@ const Upload = () => {
         const fetchGyms = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/api/gyms/all`);
-                setGyms(response.data);
-                setSelectedGym(response.data[0]?._id || "");
+                const gymsWithPlaceholder = [{ _id: "", name: "請選擇岩館" }, ...response.data];
+                setGyms(gymsWithPlaceholder);
+                setSelectedGym("");
             } catch (error) {
                 console.error("Error fetching gyms: ", error);
             }
@@ -89,6 +90,11 @@ const Upload = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!selectedGym) {
+            alert("請選擇岩館");
+            return;
+        }
+    
         const token = getCookie("token");
 
         if (!token) {
@@ -167,6 +173,7 @@ const Upload = () => {
                                 className="upload-form-hori-div-vert-select" 
                                 value={selectedGym} 
                                 onChange={handleChange}
+                                required
                             >
                                 {gyms.map((gym) => (
                                     <option key={gym._id} value={gym.name}>
@@ -192,7 +199,6 @@ const Upload = () => {
                                 value={record.wall}
                                 onChange={(e) => handleRecordChange(index, e)}
                                 placeholder="Wall"
-                                required
                             />
                             <input
                                 type="text"

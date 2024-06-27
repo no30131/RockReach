@@ -7,9 +7,9 @@ const climbRecordSchema = new Schema({
   gymName: { type: String, required: true },
   records: [
     {
-      wall: { type: String, required: true },
+      wall: { type: String, required: false },
       level: { type: String, required: true },
-      types: { type: [String], required: true },
+      types: { type: [String], required: false },
       times: { type: Number, required: false },
       memo: { type: String, required: false },
       files: { type: [String], required: false },
