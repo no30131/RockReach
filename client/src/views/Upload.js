@@ -27,7 +27,6 @@ const Upload = () => {
         const fetchGyms = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/api/gyms/all`);
-                console.log("apiUrl: ", apiUrl);
                 const gymsWithPlaceholder = [{ _id: "", name: "請選擇岩館" }, ...response.data];
                 setGyms(gymsWithPlaceholder);
                 setSelectedGym("");
