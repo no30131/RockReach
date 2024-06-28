@@ -3,9 +3,6 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./stylesheets/Custom.css";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
-
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
   { name: "Dyno", icon: "/images/icon_dyno.png" },
@@ -36,7 +33,7 @@ const Custom = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`${apiUrl}/api/customs/walls/share/${id}`)
+        .get(`https://node.me2vegan.com/api/customs/walls/share/${id}`)
         .then((response) => {
           setSelectedWall({
             wallName: response.data.wallName,
@@ -49,7 +46,7 @@ const Custom = () => {
         });
     } else {
       axios
-        .get(`${apiUrl}/api/customs/walls`)
+        .get(`https://node.me2vegan.com/api/customs/walls`)
         .then((response) => {
           setWalls(response.data);
         })
@@ -69,7 +66,7 @@ const Custom = () => {
     setScale(1);
 
     axios
-      .get(`${apiUrl}/api/customs/walls/${wall.wallName}`)
+      .get(`https://node.me2vegan.com/api/customs/walls/${wall.wallName}`)
       .then((response) => {
         setRoutes(response.data);
       })
@@ -107,7 +104,7 @@ const Custom = () => {
     if (!selectedWall) return;
     setIsProcessing(true);
     axios
-      .post(`${apiUrl}/api/customs/process`, {
+      .post(`https://node.me2vegan.com/api/customs/process`, {
         image: selectedWall.originalImage,
         markers: markers.map((marker) => ({
           x: marker.x / scale,
@@ -115,7 +112,7 @@ const Custom = () => {
         })),
       })
       .then((response) => {
-        setOutputImage(`${apiUrl}/${response.data.processedImage}`);
+        setOutputImage(`https://node.me2vegan.com/${response.data.processedImage}`);
         setOutputDBImage(response.data.processedImage);
         setIsProcessing(false);
       })
@@ -180,7 +177,7 @@ const Custom = () => {
 
   const handleConfirmClick = () => {
     axios
-      .post(`${apiUrl}/api/customs/create`, {
+      .post(`https://node.me2vegan.com/api/customs/create`, {
         wallName: selectedWall.wallName,
         processedImage: outputDBImage,
         customName,
@@ -196,7 +193,7 @@ const Custom = () => {
   };
 
   const handleShare = (routeId) => {
-    const shareLink = `${frontendUrl}/custom/${routeId}`;
+    const shareLink = `https://rockreach.me2vegan.com/custom/${routeId}`;
     prompt("Share this link:", shareLink);
   };
 

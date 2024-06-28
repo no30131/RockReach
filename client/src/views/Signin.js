@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./stylesheets/Signin.css";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-
 const Signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +16,7 @@ const Signin = () => {
     const userData = { email, password };
 
     try {
-      const response = await axios.post(`${apiUrl}/api/users/login`, userData, {
+      const response = await axios.post(`https://node.me2vegan.com/api/users/login`, userData, {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json"

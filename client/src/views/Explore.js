@@ -3,9 +3,6 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./stylesheets/Explore.css";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
-
 const Explore = ({ userId }) => {
   const { id } = useParams();
   const [records, setRecords] = useState([]);
@@ -17,10 +14,10 @@ const Explore = ({ userId }) => {
     const fetchRecords = async () => {
       try {
         const endpoint = id
-          ? `${apiUrl}/api/climbrecords/exploreWall/share/${id}`
+          ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
           : userId
-          ? `${apiUrl}/api/climbrecords/exploreWall/${userId}`
-          : `${apiUrl}/api/climbrecords/exploreWall/`;
+          ? `https://node.me2vegan.com/api/climbrecords/exploreWall/${userId}`
+          : `https://node.me2vegan.com/api/climbrecords/exploreWall/`;
         const response = await axios.get(endpoint);
         setRecords(id ? [response.data] : response.data);
       } catch (error) {
@@ -78,15 +75,15 @@ const Explore = ({ userId }) => {
 
   const getEndpoint = () => {
     return userId
-      ? `${apiUrl}/api/climbrecords/exploreWall/${userId}`
-      : `${apiUrl}/api/climbrecords/exploreWall`;
+      ? `https://node.me2vegan.com/api/climbrecords/exploreWall/${userId}`
+      : `https://node.me2vegan.com/api/climbrecords/exploreWall`;
   };
 
   const handleAddLike = async (recordId, subRecordId) => {
     try {
-      await axios.post(`${apiUrl}/api/climbrecords/addLike/${subRecordId}`);
+      await axios.post(`https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`);
       const endpoint = id
-        ? `${apiUrl}/api/climbrecords/exploreWall/share/${id}`
+        ? `$https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
         : getEndpoint();
       const response = await axios.get(endpoint);
       setRecords(id ? [response.data] : response.data);
@@ -100,11 +97,11 @@ const Explore = ({ userId }) => {
     if (!comment) return;
 
     try {
-      await axios.post(`${apiUrl}/api/climbrecords/addComment/${subRecordId}`, {
+      await axios.post(`https://node.me2vegan.com/api/climbrecords/addComment/${subRecordId}`, {
         comment
       });
       const endpoint = id
-      ? `${apiUrl}/api/climbrecords/exploreWall/share/${id}`
+      ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
       : getEndpoint();
       const response = await axios.get(endpoint);
       setRecords(id ? [response.data] : response.data);
@@ -124,7 +121,7 @@ const Explore = ({ userId }) => {
   };
 
   const handleShare = (recordId) => {
-    const shareLink = `${frontendUrl}/explore/${recordId}`;
+    const shareLink = `https://rockreach.me2vegan.com/explore/${recordId}`;
     prompt("Share this link:", shareLink);
   };
 

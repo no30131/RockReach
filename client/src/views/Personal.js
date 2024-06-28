@@ -4,8 +4,6 @@ import Plotly from "plotly.js-dist";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Personal.css";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
   { name: "Dyno", icon: "/images/icon_dyno.png" },
@@ -31,10 +29,10 @@ const Personal = () => {
       const userId = decoded.userId;
 
       try {
-        const userResponse = await axios.get(`${apiUrl}/api/users/${userId}`);
+        const userResponse = await axios.get(`https://node.me2vegan.com/api/users/${userId}`);
         setUser(userResponse.data);
 
-        const recordsResponse = await axios.get(`${apiUrl}/api/climbRecords/${userId}`);
+        const recordsResponse = await axios.get(`https://node.me2vegan.com/api/climbRecords/${userId}`);
         setClimbRecords(recordsResponse.data);
       } catch (error) {
         console.error("Error fetching data: ", error);

@@ -4,9 +4,6 @@ import { jwtDecode } from "jwt-decode";
 import { useParams } from "react-router-dom";
 import "./stylesheets/Footprint.css";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
-
 const Footprint = () => {
   const { id } = useParams();
   const [userId, setUserId] = useState(null);
@@ -38,7 +35,7 @@ const Footprint = () => {
 
     const fetchUserFootprints = useCallback(async (userId) => {
       try {
-        const response = await axios.get(`${apiUrl}/api/footprints/${userId}`);
+        const response = await axios.get(`https://node.me2vegan.com/api/footprints/${userId}`);
         setFootprints(response.data);
       } catch (error) {
         console.error("Error fetching footprints:", error);
@@ -58,7 +55,7 @@ const Footprint = () => {
     }
 
     axios
-      .get(`${apiUrl}/api/footprints/google-maps-api-url`)
+      .get(`https://node.me2vegan.com/api/footprints/google-maps-api-url`)
       .then((response) => {
         const { url } = response.data;
         const script = document.createElement("script");
@@ -82,7 +79,7 @@ const Footprint = () => {
       const fetchId = id || userId;
       if (!fetchId) return;
 
-      const response = await axios.get(`${apiUrl}/api/footprints/${fetchId}`);
+      const response = await axios.get(`https://node.me2vegan.com/api/footprints/${fetchId}`);
       const userFootprints = response.data;
       const gymFootprint = userFootprints.find(
         (footprint) => String(footprint.gymId._id) === String(gymId)
@@ -112,7 +109,7 @@ const Footprint = () => {
     let currentInfoWindow = null;
 
     try {
-      const response = await axios.get(`${apiUrl}/api/gyms/all`);
+      const response = await axios.get(`https://node.me2vegan.com/api/gyms/all`);
       const gyms = response.data;
 
       const service = new window.google.maps.places.PlacesService(window.map);
@@ -120,7 +117,7 @@ const Footprint = () => {
       gyms.forEach(async (gym) => {
         try {
           const geocodeResponse = await axios.get(
-            `${apiUrl}/api/footprints/google-maps/geocode`,
+            `https://node.me2vegan.com/api/footprints/google-maps/geocode`,
             {
               params: {
                 address: gym.address,
@@ -251,13 +248,13 @@ const Footprint = () => {
         expiryDate: expiryDate,
       };
       const response = await axios.post(
-        `${apiUrl}/api/footprints/create`,
+        `https://node.me2vegan.com/api/footprints/create`,
         updatedFootprint
       );
       setFootprint(response.data);
       closeDetails();
       const footprintsResponse = await axios.get(
-        `${apiUrl}/api/footprints/${userId}`
+        `https://node.me2vegan.com/api/footprints/${userId}`
       );
       setFootprints(footprintsResponse.data);
     } catch (error) {
@@ -278,7 +275,7 @@ const Footprint = () => {
   };
 
   const handleShare = () => {
-    const shareLink = `${frontendUrl}/footprint/${userId}`;
+    const shareLink = `https://rockreach.me2vegan.com/footprint/${userId}`;
     prompt("Share this link:", shareLink);
   };
 

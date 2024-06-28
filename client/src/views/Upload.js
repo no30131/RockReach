@@ -6,9 +6,6 @@ import "./stylesheets/Upload.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-// const apiUrl = process.env.REACT_APP_API_URL;
-// const frontUrl = process.env.REACT_APP_FRONTEND_URL;
-
 const routeTypes = [
     { name: "Crimpy", icon: "/images/icon_crimpy.png" },
     { name: "Dyno", icon: "/images/icon_dyno.png" },
@@ -28,8 +25,6 @@ const Upload = () => {
         const fetchGyms = async () => {
             try {
                 const response = await axios.get(`https://node.me2vegan.com/api/gyms/all`);
-                // console.log("apiUrl: ", apiUrl);
-                // console.log("frontUrl: ", frontUrl);
                 const gymsWithPlaceholder = [{ _id: "", name: "請選擇岩館" }, ...response.data];
                 setGyms(gymsWithPlaceholder);
                 setSelectedGym("");

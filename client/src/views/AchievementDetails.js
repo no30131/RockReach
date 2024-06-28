@@ -3,8 +3,6 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./stylesheets/Achievements.css";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
   { name: "Dyno", icon: "/images/icon_dyno.png" },
@@ -24,12 +22,12 @@ const AchievementDetails = () => {
     const fetchWallAndAchievements = async () => {
       try {
         const wallResponse = await axios.get(
-          `${apiUrl}/api/customs/achievement/walls/${wallName}`
+          `https://node.me2vegan.com/api/customs/achievement/walls/${wallName}`
         );
         setWall(wallResponse.data);
         setRoutes(wallResponse.data.customs);
         const achievementsResponse = await axios.get(
-          `${apiUrl}/api/achievements/${userId}`
+          `https://node.me2vegan.com/api/achievements/${userId}`
         );
         const userAchievements = achievementsResponse.data.reduce(
           (acc, achievement) => {

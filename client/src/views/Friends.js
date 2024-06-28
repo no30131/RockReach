@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Explore from "./Explore";
-// import ChatRoom from "./ChatRoom";
+import ChatRoom from "./ChatRoom";
 import "./stylesheets/Friends.css";
 import { jwtDecode } from "jwt-decode";
-
-// const apiUrl = process.env.REACT_APP_API_URL;
-const apiUrl = "https://node.me2vegan.com";
-const frontUrl = "https://rockreach.me2vegan.com";
 
 const getCookie = (name) => {
   const cookieArr = document.cookie.split("; ");
@@ -26,7 +22,7 @@ const Friends = () => {
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [selectedFriendId, setSelectedFriendId] = useState(null);
-  // const [isChatVisible, setIsChatVisible] = useState(false);
+  const [isChatVisible, setIsChatVisible] = useState(false);
 
   useEffect(() => {
     const token = getCookie("token");
@@ -42,9 +38,7 @@ const Friends = () => {
     if (userId) {
       const fetchFriends = async () => {
         try {
-          const response = await axios.get(`${apiUrl}/api/friends/${userId}`);
-          console.log("apiUrl: ", apiUrl);
-          console.log("frontUrl: ", frontUrl);
+          const response = await axios.get(`https://node.me2vegan.com/api/friends/${userId}`);
           setFriends(response.data);
         } catch (error) {
           console.error("Error fetching friends: ", error);
@@ -57,7 +51,7 @@ const Friends = () => {
 
   const addFriend = async (name) => {
     try {
-      const userResponse = await axios.get(`${apiUrl}/api/users/name/${name}`);
+      const userResponse = await axios.get(`https://node.me2vegan.com/api/users/name/${name}`);
       if (!userResponse.data) {
         throw new Error("User not found");
       }
@@ -70,7 +64,7 @@ const Friends = () => {
         friendDate: new Date().toISOString().split("T")[0]
       };
       console.log("newFriend: ", newFriend);
-      const response = await axios.post(`${apiUrl}/api/friends/create`, newFriend);
+      const response = await axios.post(`https://node.me2vegan.com/api/friends/create`, newFriend);
 
       if (response.status === 200) {
         const addedFriend = response.data;
@@ -91,18 +85,18 @@ const Friends = () => {
     setSelectedFriendId(friendId);
   };
 
-  // const handleChat = (friendId) => {
-  //   setSelectedFriendId(friendId);
-  //   setIsChatVisible(true);
-  // }
+  const handleChat = (friendId) => {
+    setSelectedFriendId(friendId);
+    setIsChatVisible(true);
+  }
 
   if (!token) {
     return <div>請先登入！</div>;
   }
 
-  // if (selectedFriendId && isChatVisible) {
-  //   return <ChatRoom userId={userId} friendId={selectedFriendId} />;
-  // }
+  if (selectedFriendId && isChatVisible) {
+    return <ChatRoom userId={userId} friendId={selectedFriendId} />;
+  }
 
   if (selectedFriendId) {
     return <Explore userId={selectedFriendId} />;
@@ -127,11 +121,11 @@ const Friends = () => {
                 onClick={() => handleViewExplore(friendInfo._id)}>
                   查看
                 </button>
-              {/* <button 
+              <button 
                 className="btn-chat"
                 onClick={() => handleChat(friendInfo._id)}>
                   聊天  
-              </button> */}
+              </button>
             </div>
           );
         })}

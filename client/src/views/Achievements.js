@@ -3,9 +3,6 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Achievements.css";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
-
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
   { name: "Dyno", icon: "/images/icon_dyno.png" },
@@ -27,7 +24,7 @@ const Achievements = () => {
     const fetchWalls = async () => {
       try {
         const response = await axios.get(
-          `${apiUrl}/api/customs/achievement/walls`
+          `https://node.me2vegan.com/api/customs/achievement/walls`
         );
         setWalls(response.data);
       } catch (error) {
@@ -61,12 +58,12 @@ const Achievements = () => {
 
     try {
       const routesResponse = await axios.get(
-        `${apiUrl}/api/customs/achievement/walls/${wall.wallName}`
+        `https://node.me2vegan.com/api/customs/achievement/walls/${wall.wallName}`
       );
       setRoutes(routesResponse.data.customs);
 
       const achievementsResponse = await axios.get(
-        `${apiUrl}/api/achievements/${userId}`
+        `https://node.me2vegan.com/api/achievements/${userId}`
       );
       const userAchievements = achievementsResponse.data.reduce((acc, achievement) => {
         acc[achievement.customName] = achievement.status;
@@ -87,7 +84,7 @@ const Achievements = () => {
     if (!userId || !selectedRoute) return;
     try {
       const response = await axios.post(
-        `${apiUrl}/api/achievements/create`,
+        `https://node.me2vegan.com/api/achievements/create`,
         {
           userId,
           customName: selectedRoute.customName,
@@ -110,7 +107,7 @@ const Achievements = () => {
   };
 
   const handleShare = () => {
-    const shareLink = `${frontendUrl}/achievement/${userId}/${selectedWall.wallName}`;
+    const shareLink = `https://rockreach.me2vegan.com/achievement/${userId}/${selectedWall.wallName}`;
     prompt("Share this link:", shareLink);
   };
 

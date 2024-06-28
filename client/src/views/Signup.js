@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./stylesheets/Signup.css";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -16,7 +14,7 @@ const Signup = () => {
 
   const checkEmailExists = async (email) => {
     try {
-      const response = await axios.get(`${apiUrl}/api/users/check-email/${email}`);
+      const response = await axios.get(`https://node.me2vegan.com/api/users/check-email/${email}`);
       return response.data.exists;
     } catch (error) {
       console.error("Error checking email:", error);
@@ -39,7 +37,7 @@ const Signup = () => {
         return;
       }
 
-      const response = await axios.post(`${apiUrl}/api/users/create`, userData, {
+      const response = await axios.post(`https://node.me2vegan.com/api/users/create`, userData, {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json"
