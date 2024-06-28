@@ -127,11 +127,11 @@ const Friends = () => {
                 onClick={() => handleViewExplore(friendInfo._id)}>
                   查看
                 </button>
-              <button 
+              {/* <button 
                 className="btn-chat"
                 onClick={() => handleChat(friendInfo._id)}>
                   聊天  
-              </button>
+              </button> */}
             </div>
           );
         })}

@@ -29,7 +29,7 @@ const server = http.createServer(app);
 // const bucketName = process.env.AWS_S3_BUCKET;
 
 const corsOptions = {
-  origin: ["https://me2vegan.com", "http://localhost:3000"],
+  origin: ["https://rockreach.me2vegan.com", "http://localhost:3000"],
   methods: "GET, HEAD, PUT, PATCH, DELETE",
   credentials: true,
   optionsSuccessStatus: 200,
