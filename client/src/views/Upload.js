@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const apiUrl = process.env.REACT_APP_API_URL;
+const frontUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const routeTypes = [
     { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -27,6 +28,8 @@ const Upload = () => {
         const fetchGyms = async () => {
             try {
                 const response = await axios.get(`${apiUrl}/api/gyms/all`);
+                console.log("apiUrl: ", apiUrl);
+                console.log("frontUrl: ", frontUrl);
                 const gymsWithPlaceholder = [{ _id: "", name: "請選擇岩館" }, ...response.data];
                 setGyms(gymsWithPlaceholder);
                 setSelectedGym("");

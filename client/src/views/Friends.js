@@ -5,7 +5,9 @@ import ChatRoom from "./ChatRoom";
 import "./stylesheets/Friends.css";
 import { jwtDecode } from "jwt-decode";
 
-const apiUrl = process.env.REACT_APP_API_URL;
+// const apiUrl = process.env.REACT_APP_API_URL;
+const apiUrl = "https://node.me2vegan.com";
+const frontUrl = "https://rockreach.me2vegan.com";
 
 const getCookie = (name) => {
   const cookieArr = document.cookie.split("; ");
@@ -41,6 +43,8 @@ const Friends = () => {
       const fetchFriends = async () => {
         try {
           const response = await axios.get(`${apiUrl}/api/friends/${userId}`);
+          console.log("apiUrl: ", apiUrl);
+          console.log("frontUrl: ", frontUrl);
           setFriends(response.data);
         } catch (error) {
           console.error("Error fetching friends: ", error);
