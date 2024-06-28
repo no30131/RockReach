@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const http = require("http");
 const socketIo = require("socket.io");
 const moment = require("moment-timezone");
-// const { S3 }= require("aws-sdk");
+const { S3 }= require("aws-sdk");
 // const upload = require("./config/multerConfig");
 
 const usersRoutes = require("./routes/usersRoutes");
@@ -25,8 +25,8 @@ const PORT = process.env.PORT || 7000;
 dotenv.config();
 const server = http.createServer(app);
 
-// const s3 = new S3();
-// const bucketName = process.env.AWS_S3_BUCKET;
+const s3 = new S3();
+const bucketName = process.env.AWS_S3_BUCKET;
 
 const corsOptions = {
   origin: ["https://me2vegan.com", "http://localhost:3000"],
@@ -105,22 +105,22 @@ app.use(express.static(path.join(__dirname, 'build')));
 //   });
 // });
 
-// app.get("*", (req, res) => {
-//   if (req.path.startsWith('/api')) {
-//     return res.status(404).send("API route not found");
-//   }
+app.get("*", (req, res) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).send("API route not found");
+  }
 
-//   const s3Path = 'build/index.html';
-//   console.log("s3Path: ", s3Path);
-//   s3.getObject({ Bucket: bucketName, Key: s3Path }, (err, data) => {
-//     if (err) {
-//       console.error("Error fetching from S3:", err);
-//       return res.status(404).send("File not found");
-//     }
-//     res.set("Content-Type", data.ContentType);
-//     res.send(data.Body);
-//   });
-// });
+  const s3Path = 'build/index.html';
+  console.log("s3Path: ", s3Path);
+  s3.getObject({ Bucket: bucketName, Key: s3Path }, (err, data) => {
+    if (err) {
+      console.error("Error fetching from S3:", err);
+      return res.status(404).send("File not found");
+    }
+    res.set("Content-Type", data.ContentType);
+    res.send(data.Body);
+  });
+});
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
