@@ -51,7 +51,8 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 sync client/build s3://rockreach-0618/build --delete
+          aws s3 sync client/build s3://rock0628 --delete &&
+          aws cloudfront create-invalidation --distribution-id E2A437UX7P4AMM --paths "/*"
       
       # - name:     
       #   run: |

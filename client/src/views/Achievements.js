@@ -3,12 +3,8 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import "./stylesheets/Achievements.css";
 
-const apiUrl = "https://me2vegan.com";
-const frontendUrl = "https://me2vegan.com";
-// const apiUrl = process.env.REACT_APP_API_URL;
-// const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
-console.log("apiUrl: ", apiUrl);
-console.log("frontendUrl: ", frontendUrl);
+const apiUrl = process.env.REACT_APP_API_URL;
+const frontendUrl = process.env.REACT_APP_FRONTEND_URL;
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
