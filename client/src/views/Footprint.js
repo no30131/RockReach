@@ -22,27 +22,29 @@ const Footprint = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
 
-    const getCookie = (name) => {
-      const cookieArr = document.cookie.split("; ");
-      for (let i = 0; i < cookieArr.length; i++) {
-        const cookiePair = cookieArr[i].split("=");
-        if (name === cookiePair[0]) {
-          return decodeURIComponent(cookiePair[1]);
-        }
+  const getCookie = (name) => {
+    const cookieArr = document.cookie.split("; ");
+    for (let i = 0; i < cookieArr.length; i++) {
+      const cookiePair = cookieArr[i].split("=");
+      if (name === cookiePair[0]) {
+        return decodeURIComponent(cookiePair[1]);
       }
-      return null;
-    };
+    }
+    return null;
+  };
 
-    const fetchUserFootprints = useCallback(async (userId) => {
-      try {
-        const response = await axios.get(`https://node.me2vegan.com/api/footprints/${userId}`);
-        setFootprints(response.data);
-      } catch (error) {
-        console.error("Error fetching footprints:", error);
-      }
-    }, []);
+  const fetchUserFootprints = useCallback(async (userId) => {
+    try {
+      const response = await axios.get(
+        `https://node.me2vegan.com/api/footprints/${userId}`
+      );
+      setFootprints(response.data);
+    } catch (error) {
+      console.error("Error fetching footprints:", error);
+    }
+  }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     if (id) {
       fetchUserFootprints(id);
     } else {
@@ -77,9 +79,14 @@ const Footprint = () => {
   const fetchFootprint = async (gymId) => {
     try {
       const fetchId = id || userId;
-      if (!fetchId) return;
+      if (!fetchId) {
+        console.log("please log in");
+        return;
+      }
 
-      const response = await axios.get(`https://node.me2vegan.com/api/footprints/${fetchId}`);
+      const response = await axios.get(
+        `https://node.me2vegan.com/api/footprints/${fetchId}`
+      );
       const userFootprints = response.data;
       const gymFootprint = userFootprints.find(
         (footprint) => String(footprint.gymId._id) === String(gymId)
@@ -109,7 +116,9 @@ const Footprint = () => {
     let currentInfoWindow = null;
 
     try {
-      const response = await axios.get(`https://node.me2vegan.com/api/gyms/all`);
+      const response = await axios.get(
+        `https://node.me2vegan.com/api/gyms/all`
+      );
       const gyms = response.data;
 
       const service = new window.google.maps.places.PlacesService(window.map);
@@ -157,14 +166,26 @@ const Footprint = () => {
 
               const infoWindowContent = `
                 <div>
-                  ${userFootprint ? `${visitTimesText}${userFootprint.visitTimes}<br/>` : "" }
-                  ${userFootprint ? `${visitDateText}${userFootprint.lastVisit}<br/><br/>` : ""}
+                  ${
+                    userFootprint
+                      ? `${visitTimesText}${userFootprint.visitTimes}<br/>`
+                      : ""
+                  }
+                  ${
+                    userFootprint
+                      ? `${visitDateText}${userFootprint.lastVisit}<br/><br/>`
+                      : ""
+                  }
                   <strong>${existingPlace.name}</strong><br/>
                   ${existingPlace.formatted_address || gym.address}<br/>
                   ${existingPlace.formatted_phone_number || gym.phone}<br/><br/>
                   <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">在 Google 地圖上查看</a>
                   <br></br>
-                  ${id ? '' : `<button onclick="manageGym('${gym._id}')">足跡管理</button>`}
+                  ${
+                    id
+                      ? ""
+                      : `<button onclick="manageGym('${gym._id}')">足跡管理</button>`
+                  }
                 </div>
               `;
 
@@ -194,7 +215,11 @@ const Footprint = () => {
                   ${gym.phone}<br/>
                   <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">在 Google 地圖上查看</a>
                   <br></br>
-                  ${id ? '' : `<button onclick="manageGym('${gym._id}')">足跡管理</button>`}
+                  ${
+                    id
+                      ? ""
+                      : `<button onclick="manageGym('${gym._id}')">足跡管理</button>`
+                  }
                 </div>
               `;
 
@@ -281,49 +306,56 @@ const Footprint = () => {
 
   return (
     <div className="footprint-container">
-      <div
-        className="map-details"
-        style={{ display: showDetails ? "block" : "none" }}
-      >
-        <button className="close-btn" onClick={closeDetails}>
-          X
-        </button>
-        {footprint ? (
-          <div>
-            <div className="map-detail">
-              <h3>上次到訪日期:</h3>
-              <input
-                type="date"
-                value={visitDate}
-                onChange={(e) => setVisitDate(e.target.value)}
-              />
-            </div>
-            <div className="map-detail">
-              <h3>到訪次數:</h3>
-              <input
-                type="number"
-                value={visitTimes}
-                onChange={(e) => setVisitTimes(e.target.value)}
-              />
-            </div>
-            <div className="map-detail">
-              <h3>會員到期日:</h3>
-              <input
-                type="date"
-                value={expiryDate}
-                onChange={(e) => setExpiryDate(e.target.value)}
-              />
-            </div>
-            <button onClick={saveVisit}>儲存</button>
+      <h1>足跡地圖</h1>
+      {!userId ? (
+        <p>請先登入！</p>
+      ) : (
+        <div className="footprint_container">
+          <div
+            className="map-details"
+            style={{ display: showDetails ? "block" : "none" }}
+          >
+            <button className="close-btn" onClick={closeDetails}>
+              X
+            </button>
+            {footprint ? (
+              <div>
+                <div className="map-detail">
+                  <h3>上次到訪日期:</h3>
+                  <input
+                    type="date"
+                    value={visitDate}
+                    onChange={(e) => setVisitDate(e.target.value)}
+                  />
+                </div>
+                <div className="map-detail">
+                  <h3>到訪次數:</h3>
+                  <input
+                    type="number"
+                    value={visitTimes}
+                    onChange={(e) => setVisitTimes(e.target.value)}
+                  />
+                </div>
+                <div className="map-detail">
+                  <h3>會員到期日:</h3>
+                  <input
+                    type="date"
+                    value={expiryDate}
+                    onChange={(e) => setExpiryDate(e.target.value)}
+                  />
+                </div>
+                <button onClick={saveVisit}>儲存</button>
+              </div>
+            ) : (
+              <div>
+                <button onClick={registerVisit}>登記到訪</button>
+              </div>
+            )}
           </div>
-        ) : (
-          <div>
-            <button onClick={registerVisit}>登記到訪</button>
-          </div>
-        )}
-      </div>
-      <div id="map"></div>
-      {!id && <button onClick={() => handleShare()}>分享</button>}
+          <div id="map"></div>
+          {!id && <button onClick={() => handleShare()}>分享</button>}
+        </div>
+      )}
     </div>
   );
 };

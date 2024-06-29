@@ -38,7 +38,9 @@ const Friends = () => {
     if (userId) {
       const fetchFriends = async () => {
         try {
-          const response = await axios.get(`https://node.me2vegan.com/api/friends/${userId}`);
+          const response = await axios.get(
+            `https://node.me2vegan.com/api/friends/${userId}`
+          );
           setFriends(response.data);
         } catch (error) {
           console.error("Error fetching friends: ", error);
@@ -51,7 +53,9 @@ const Friends = () => {
 
   const addFriend = async (name) => {
     try {
-      const userResponse = await axios.get(`https://node.me2vegan.com/api/users/name/${name}`);
+      const userResponse = await axios.get(
+        `https://node.me2vegan.com/api/users/name/${name}`
+      );
       if (!userResponse.data) {
         throw new Error("User not found");
       }
@@ -61,10 +65,13 @@ const Friends = () => {
       const newFriend = {
         inviterId: userId,
         receiverId: receiverId,
-        friendDate: new Date().toISOString().split("T")[0]
+        friendDate: new Date().toISOString().split("T")[0],
       };
       console.log("newFriend: ", newFriend);
-      const response = await axios.post(`https://node.me2vegan.com/api/friends/create`, newFriend);
+      const response = await axios.post(
+        `https://node.me2vegan.com/api/friends/create`,
+        newFriend
+      );
 
       if (response.status === 200) {
         const addedFriend = response.data;
@@ -88,11 +95,11 @@ const Friends = () => {
   const handleChat = (friendId) => {
     setSelectedFriendId(friendId);
     setIsChatVisible(true);
-  }
+  };
 
-  if (!token) {
-    return <div>請先登入！</div>;
-  }
+  // if (!token) {
+  //   return <div>請先登入！</div>;
+  // }
 
   if (selectedFriendId && isChatVisible) {
     return <ChatRoom userId={userId} friendId={selectedFriendId} />;
@@ -105,53 +112,62 @@ const Friends = () => {
   return (
     <div>
       <h1>好友</h1>
-      <div className="friend-list-container">
-        {friends.map((friend) => {
-          const friendInfo = friend.inviterId._id === userId ? friend.receiverId : friend.inviterId;
-          return (
-            <div className="friend-item" key={friend._id}>
-              <img
-                src={friendInfo.image}
-                alt={friendInfo.name}
-                className="friend-image"
-              />
-              <span className="friend-name">{friendInfo.name}</span>
-              <button 
-                className="btn-view" 
-                onClick={() => handleViewExplore(friendInfo._id)}>
+      {!token ? (
+        <p>請先登入！</p>
+      ) : (
+        <div className="friend-list-container">
+          {friends.map((friend) => {
+            const friendInfo =
+              friend.inviterId._id === userId
+                ? friend.receiverId
+                : friend.inviterId;
+            return (
+              <div className="friend-item" key={friend._id}>
+                <img
+                  src={friendInfo.image}
+                  alt={friendInfo.name}
+                  className="friend-image"
+                />
+                <span className="friend-name">{friendInfo.name}</span>
+                <button
+                  className="btn-view"
+                  onClick={() => handleViewExplore(friendInfo._id)}
+                >
                   查看
                 </button>
-              <button 
-                className="btn-chat"
-                onClick={() => handleChat(friendInfo._id)}>
-                  聊天  
-              </button>
+                <button
+                  className="btn-chat"
+                  onClick={() => handleChat(friendInfo._id)}
+                >
+                  聊天
+                </button>
+              </div>
+            );
+          })}
+          <button className="btn-add-friend" onClick={handleToggleAddFriend}>
+            +
+          </button>
+          {isAddFriendVisible && (
+            <div className="add-friend-overlay">
+              <div className="add-friend-container">
+                <h2>新增好友</h2>
+                <input
+                  type="text"
+                  placeholder="輸入使用者名稱 ..."
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      addFriend(e.target.value);
+                      handleToggleAddFriend();
+                      e.target.value = "";
+                    }
+                  }}
+                />
+                <button onClick={handleToggleAddFriend}>取消</button>
+              </div>
             </div>
-          );
-        })}
-        <button className="btn-add-friend" onClick={handleToggleAddFriend}>
-          +
-        </button>
-        {isAddFriendVisible && (
-          <div className="add-friend-overlay">
-            <div className="add-friend-container">
-              <h2>新增好友</h2>
-              <input
-                type="text"
-                placeholder="輸入使用者名稱 ..."
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    addFriend(e.target.value);
-                    handleToggleAddFriend();
-                    e.target.value = "";
-                  }
-                }}
-              />
-              <button onClick={handleToggleAddFriend}>取消</button>
-            </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

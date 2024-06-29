@@ -19,7 +19,7 @@ const Personal = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       const token = getCookie("token");
-      console.log("token: ", token);
+      // console.log("token: ", token);
 
       if (!token) {
         console.error("No token found");
@@ -30,10 +30,14 @@ const Personal = () => {
       const userId = decoded.userId;
 
       try {
-        const userResponse = await axios.get(`https://node.me2vegan.com/api/users/${userId}`);
+        const userResponse = await axios.get(
+          `https://node.me2vegan.com/api/users/${userId}`
+        );
         setUser(userResponse.data);
 
-        const recordsResponse = await axios.get(`https://node.me2vegan.com/api/climbRecords/${userId}`);
+        const recordsResponse = await axios.get(
+          `https://node.me2vegan.com/api/climbRecords/${userId}`
+        );
         setClimbRecords(recordsResponse.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -44,13 +48,26 @@ const Personal = () => {
   }, []);
 
   const generateLevelChart = useCallback(() => {
-    const levels = climbRecords.flatMap((record) => record.records.map((r) => r.level));
+    const levels = climbRecords.flatMap((record) =>
+      record.records.map((r) => r.level)
+    );
     const levelCounts = levels.reduce((acc, level) => {
       acc[level] = (acc[level] || 0) + 1;
       return acc;
     }, {});
 
-    const allLevels = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
+    const allLevels = [
+      "V0",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "V5",
+      "V6",
+      "V7",
+      "V8",
+      "V9",
+    ];
     const completeLevelCounts = allLevels.reduce((acc, level) => {
       acc[level] = levelCounts[level] || 0;
       return acc;
@@ -113,7 +130,9 @@ const Personal = () => {
 
     const dataTimes = [
       {
-        values: types.map((type) => (typeCounts[type].times / typeCounts[type].count).toFixed(1)),
+        values: types.map((type) =>
+          (typeCounts[type].times / typeCounts[type].count).toFixed(1)
+        ),
         labels: types,
         type: "pie",
         textinfo: "label+value",
@@ -184,7 +203,12 @@ const Personal = () => {
       generateTypesChart();
       generateFrequencyChart();
     }
-  }, [climbRecords, generateLevelChart, generateTypesChart, generateFrequencyChart]);
+  }, [
+    climbRecords,
+    generateLevelChart,
+    generateTypesChart,
+    generateFrequencyChart,
+  ]);
 
   const getCookie = (name) => {
     const cookieArr = document.cookie.split("; ");
@@ -243,53 +267,58 @@ const Personal = () => {
   return (
     <div>
       <h1>個人空間</h1>
-      {user ? (
-        <div>
-          <p>{user.name}</p>
-          <p>{user.introduce}</p>
-          <img src={user.image} alt={user.name} />
-        </div>
-      ) : (
+      {!user ? (
         <p>請先登入！</p>
-      )}
-      <div id="level" style={{ width: 600, height: 400 }}></div>
-      <div id="typesCount" style={{ width: 600, height: 400 }}></div>
-      <div id="typesTimes" style={{ width: 600, height: 400 }}></div>
-      <div id="frequency" style={{ width: 600, height: 400 }}></div>
-      <div>
-        {climbRecords.map((record) => (
-          <div key={record._id} className="personal-records-box">
-            <p>日期: {new Date(record.date).toLocaleDateString()}</p>
-            <p>岩館: {record.gymName}</p>
-            <div>
-              {record.records.map((rec, index) => (
-                <div key={index}>
-                  <div className="personal-records">
-                    <p>牆面: {rec.wall}</p>
-                    <p>等級: {rec.level}</p>
-                    <div className="route-types">
-                      Custom Types:
-                      {rec.types.map((type, index) => (
-                        <img
-                          key={index}
-                          src={getRouteTypeIcon(type)}
-                          alt={type}
-                          style={{ width: "40px", height: "48px" }}
-                        />
-                      ))}
-                    </div>
-                    <p>嘗試次數: {rec.times}</p>
-                  </div>
-                  <div className="personal-records-memo">Memo: {rec.memo}</div>
-                  <div className="personal-records-files">
-                    {rec.files.map((file, idx) => renderFile(file))}
-                  </div>
-                </div>
-              ))}
-            </div>
+      ) : (
+        <div className="personal-container">
+          <div id="userData">
+            <p>{user.name}</p>
+            <p>{user.introduce}</p>
+            <img src={user.image} alt={user.name} />
           </div>
-        ))}
-      </div>
+
+          <div id="level" style={{ width: 600, height: 400 }}></div>
+          <div id="typesCount" style={{ width: 600, height: 400 }}></div>
+          <div id="typesTimes" style={{ width: 600, height: 400 }}></div>
+          <div id="frequency" style={{ width: 600, height: 400 }}></div>
+          <div>
+            {climbRecords.map((record) => (
+              <div key={record._id} className="personal-records-box">
+                <p>日期: {new Date(record.date).toLocaleDateString()}</p>
+                <p>岩館: {record.gymName}</p>
+                <div>
+                  {record.records.map((rec, index) => (
+                    <div key={index}>
+                      <div className="personal-records">
+                        <p>牆面: {rec.wall}</p>
+                        <p>等級: {rec.level}</p>
+                        <div className="route-types">
+                          Custom Types:
+                          {rec.types.map((type, index) => (
+                            <img
+                              key={index}
+                              src={getRouteTypeIcon(type)}
+                              alt={type}
+                              style={{ width: "40px", height: "48px" }}
+                            />
+                          ))}
+                        </div>
+                        <p>嘗試次數: {rec.times}</p>
+                      </div>
+                      <div className="personal-records-memo">
+                        Memo: {rec.memo}
+                      </div>
+                      <div className="personal-records-files">
+                        {rec.files.map((file, idx) => renderFile(file))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

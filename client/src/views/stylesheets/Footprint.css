@@ -5,6 +5,7 @@
 
 .footprint-container {
   display: flex;
+  flex-direction: column;
 }
 
 .map-details {

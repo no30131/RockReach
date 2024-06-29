@@ -8,8 +8,6 @@ const cookieParser = require("cookie-parser");
 const http = require("http");
 const socketIo = require("socket.io");
 const moment = require("moment-timezone");
-// const { S3 }= require("aws-sdk");
-// const upload = require("./config/multerConfig");
 
 const usersRoutes = require("./routes/usersRoutes");
 const climbRecordsRoutes = require("./routes/climbRecordsRoutes");
@@ -24,9 +22,6 @@ const app = express();
 const PORT = process.env.PORT || 7000;
 dotenv.config();
 const server = http.createServer(app);
-
-// const s3 = new S3();
-// const bucketName = process.env.AWS_S3_BUCKET;
 
 const corsOptions = {
   origin: ["https://rockreach.me2vegan.com", "http://localhost:3000"],
@@ -51,7 +46,6 @@ mongoose.connect(process.env.MONGODB_URI, {
 }).catch((err) => {
   console.error("Error connecting to MongoDB", err);
 });
-
 
 const io = socketIo(server, { cors: corsOptions });
 io.on("connection", (socket) => {

@@ -17,6 +17,7 @@ import Explore from "./views/Explore.js";
 import Service from "./views/Service.js";
 import Policy from "./views/Policy.js";
 import "./App.css";
+// import 'antd/dist/antd.css';
 
 function App() {
   return (
