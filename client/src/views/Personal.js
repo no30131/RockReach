@@ -19,6 +19,7 @@ const Personal = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       const token = getCookie("token");
+      console.log("token: ", token);
 
       if (!token) {
         console.error("No token found");

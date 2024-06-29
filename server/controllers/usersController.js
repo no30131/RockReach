@@ -18,8 +18,8 @@ exports.createUser = async (req, res) => {
         res.cookie("token", token, {
             domain: ".me2vegan.com",
             sameSite: "None",
-            // httpOnly: true,
-            // secure: true,
+            httpOnly: false,
+            secure: true,
             maxAge: 3600000,
         });
 
@@ -44,10 +44,11 @@ exports.loginUser = async (req, res) => {
 
         const token = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
         res.cookie("token", token, {
-            // httpOnly: true,
-            // secure: true,
+            domain: ".me2vegan.com",
+            sameSite: "None",
+            httpOnly: false,
+            secure: true,
             maxAge: 3600000,
-            credentials: true
         });
 
         res.status(200).send({ message: "登入成功", user, token });
