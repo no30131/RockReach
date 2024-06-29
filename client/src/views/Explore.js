@@ -83,7 +83,7 @@ const Explore = ({ userId }) => {
     try {
       await axios.post(`https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`);
       const endpoint = id
-        ? `$https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
+        ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
         : getEndpoint();
       const response = await axios.get(endpoint);
       setRecords(id ? [response.data] : response.data);

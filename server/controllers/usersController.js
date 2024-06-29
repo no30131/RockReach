@@ -16,9 +16,10 @@ exports.createUser = async (req, res) => {
 
         const token = jwt.sign({ userId: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
         res.cookie("token", token, {
+            domain: ".me2vegan.com",
+            sameSite: "None",
             // httpOnly: true,
             // secure: true,
-            credentials: true,
             maxAge: 3600000,
         });
 
