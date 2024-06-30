@@ -120,7 +120,6 @@ const Achievements = () => {
 
   return (
     <div>
-      <h1>成就系統</h1>
       {!selectedWall ? (
         <div className="walls-list">
           {walls.map((wall, index) => (

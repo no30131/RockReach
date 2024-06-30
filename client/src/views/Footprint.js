@@ -3,6 +3,9 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useParams } from "react-router-dom";
 import "./stylesheets/Footprint.css";
+import { Layout } from "antd";
+
+const { Sider, Content } = Layout;
 
 const Footprint = () => {
   const { id } = useParams();
@@ -290,54 +293,38 @@ const Footprint = () => {
   };
 
   return (
-    <div className="footprint-container">
-      <h1>足跡地圖</h1>
-        <div className="footprint_container">
-          <div
-            className="map-details"
-            style={{ display: showDetails ? "block" : "none" }}
-          >
-            <button className="close-btn" onClick={closeDetails}>
-              X
-            </button>
+      <Layout>
+        <Sider className="map-details" style={{ display: showDetails ? "block" : "none", background: "rgb(245, 245, 245)" }}>
+          <div>
+            <button className="close-btn" onClick={closeDetails}>X</button>
             {footprint ? (
               <div>
                 <div className="map-detail">
                   <h3>上次到訪日期:</h3>
-                  <input
-                    type="date"
-                    value={visitDate}
-                    onChange={(e) => setVisitDate(e.target.value)}
-                  />
+                  <input type="date" value={visitDate} onChange={(e) => setVisitDate(e.target.value)} />
                 </div>
                 <div className="map-detail">
                   <h3>到訪次數:</h3>
-                  <input
-                    type="number"
-                    value={visitTimes}
-                    onChange={(e) => setVisitTimes(e.target.value)}
-                  />
+                  <input type="number" value={visitTimes} onChange={(e) => setVisitTimes(e.target.value)} />
                 </div>
                 <div className="map-detail">
                   <h3>會員到期日:</h3>
-                  <input
-                    type="date"
-                    value={expiryDate}
-                    onChange={(e) => setExpiryDate(e.target.value)}
-                  />
+                  <input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
                 </div>
-                <button onClick={saveVisit}>儲存</button>
+                <button onClick={saveVisit} className="save-button">儲存</button>
               </div>
             ) : (
               <div>
-                <button onClick={registerVisit}>登記到訪</button>
+                <button onClick={registerVisit} className="register-button">登記到訪</button>
               </div>
             )}
           </div>
+        </Sider>
+        <Content>
           <div id="map" style={{ height: "500px", width: "100%" }}></div>
           {(!id && userId) && <button onClick={() => handleShare()}>分享</button>}
-        </div>
-    </div>
+        </Content>
+      </Layout>
   );
 };
 

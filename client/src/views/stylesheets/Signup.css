@@ -1,7 +1,7 @@
 .signup-form {
   display: flex;
   flex-direction: column;
-  margin: 10px 150px;
+  margin: 10px 50px;
 }
 
 .input-email,
@@ -11,6 +11,7 @@
   padding: 15px;
   background-color: rgba(243, 243, 243, 0.946);
   border: none;
+  border-radius: 10px;
 }
 
 h1, p {

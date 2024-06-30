@@ -77,7 +77,7 @@ const Signin = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="input-password"
-          placeholder="密碼"
+          placeholder="Password"
           required
         />
         <p>或點此<a href="/signup">註冊</a></p>

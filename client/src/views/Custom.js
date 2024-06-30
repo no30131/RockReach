@@ -204,7 +204,6 @@ const Custom = () => {
 
   return (
     <div>
-      <h1>自訂路線</h1>
       {!selectedWall ? (
         <div className="walls-list">
           {walls.map((wall, index) => (

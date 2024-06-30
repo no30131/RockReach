@@ -62,6 +62,67 @@ exports.createClimbRecords = async (req, res) => {
   }
 };
 
+// exports.createClimbRecords = async (req, res) => {
+//   try {
+//     const { userId, date, gymName } = req.body;
+//     const records = JSON.parse(req.body.records); // 確保 records 被正確解析
+//     const files = req.files;
+
+//     if (!files || Object.keys(files).length === 0) {
+//       return res.status(400).json({ message: "No files uploaded" });
+//     }
+
+//     // 處理文件上傳
+//     const fileUrls = {};
+//     for (let key in files) {
+//       const fileArray = files[key];
+//       for (let file of fileArray) {
+//         const fileContent = fs.readFileSync(file.path);
+//         const fileName = `climb_records/${path.basename(file.path)}`;
+
+//         const params = {
+//           Bucket: process.env.AWS_S3_BUCKET,
+//           Key: fileName,
+//           Body: fileContent,
+//           ContentType: file.mimetype,
+//         };
+
+//         const data = await s3.upload(params).promise();
+//         fs.unlinkSync(file.path);
+
+//         if (!fileUrls[key]) {
+//           fileUrls[key] = [];
+//         }
+//         fileUrls[key].push(data.Location);
+//       }
+//     }
+
+//     // 更新 records 將對應的文件 URL 加入
+//     const updatedRecords = records.map((record, index) => ({
+//       ...record,
+//       files: fileUrls[`records[${index}][files]`] || [],
+//     }));
+
+//     const dateOnly = new Date(date).toISOString().split("T")[0];
+
+//     const climbRecords = new ClimbRecords({
+//       userId,
+//       date: dateOnly,
+//       gymName,
+//       records: updatedRecords,
+//     });
+
+//     await climbRecords.save();
+//     res.status(201).send(climbRecords);
+//   } catch (error) {
+//     console.error("Error uploading to S3 or saving to DB:", error);
+//     res.status(500).json({
+//       message: "Error creating climb records",
+//       error: error.message,
+//     });
+//   }
+// };
+
 exports.getClimbRecordsByUserId = async (req, res) => {
   const userId = req.params.userId;
   try {

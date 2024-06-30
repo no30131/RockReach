@@ -127,7 +127,6 @@ const Explore = ({ userId }) => {
 
   return (
     <div>
-      <h1>動態牆</h1>
       <div className="explore-container">
         {records.map((record) => {
           const currentSlideIndex = currentSlides[record._id] || 0;

@@ -7,7 +7,7 @@
 .home-title {
     /* display: flex; */
     /* flex-direction: column; */
-    margin-top: 40px;
+    margin-top: 30px;
     margin-right: 50px;
 }
 
@@ -37,8 +37,8 @@
     background-color: rgb(255, 98, 0);
     color: white;
     font-size: 18px;
-    margin-top: 50px;
-    margin-bottom: 200px;
+    margin-top: 30px;
+    /* margin-bottom: 200px; */
 }
 
 .home-signup-button:hover {

@@ -111,7 +111,6 @@ const Friends = () => {
 
   return (
     <div>
-      <h1>好友</h1>
       {!token ? (
         <p>請先登入！</p>
       ) : (

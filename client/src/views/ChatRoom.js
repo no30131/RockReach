@@ -44,7 +44,6 @@ const ChatRoom = ({ userId, friendId }) => {
 
     return (
         <div className="chat-room">
-            <h2>聊天室</h2>
             <div className="chat-messages">
                 {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.talker === userId ? "own-message" : ""}`}>

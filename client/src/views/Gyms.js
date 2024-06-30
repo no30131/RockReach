@@ -48,7 +48,6 @@ const Gyms = () => {
   
   return (
     <div className="box">
-      <h1>新增岩館</h1>
       <p>請輸入要新增的岩館及其資訊</p>
       <form onSubmit={handleSubmit} className="signup-form">
         <input

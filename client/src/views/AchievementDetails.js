@@ -60,7 +60,6 @@ const AchievementDetails = () => {
 
   return (
     <div>
-      <h1>成就系統</h1>
       {routes.length > 0 && (
         <div className="wall-data">
           <h2>{wallName}</h2>

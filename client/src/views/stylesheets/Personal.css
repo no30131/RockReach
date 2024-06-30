@@ -1,4 +1,4 @@
-button[type="submit"] {
+/* button[type="submit"] {
     display: block;
     width: 150px;
     padding: 10px;
@@ -11,7 +11,7 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
     background-color: #0056b3;
-}
+} */
 
 .personal-records-box {
     display: flex;
@@ -28,4 +28,38 @@ button[type="submit"]:hover {
 
 .personal-records-memo {
     display: flex;
+}
+
+.userData {
+    display: flex;
+    justify-content: center;
+}
+
+.userData-img {
+    /* max-width: 70px; */
+    max-height: 100px;
+    align-content: center;
+    margin-right: 10px;
+}
+
+.userData-img img {
+    width: 60px;
+}
+
+/* .userData-details { */
+    /* display: flex;
+    flex-direction: column; */
+    /* border: 1px solid black; */
+    /* margin-top: -5px; */
+/* } */
+
+/* .userData-details p{ */
+    /* max-height: 5px; */
+    /* text-align: top; */
+/* } */
+
+.user-name {
+    font-size: 18px;
+    margin-top: 15px;
+    margin-bottom: -1px;
 }

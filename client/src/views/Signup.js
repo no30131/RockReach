@@ -88,7 +88,7 @@ const Signup = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="input-name"
-            placeholder="使用者名稱"
+            placeholder="Name"
             required
           />
           <input
@@ -96,7 +96,7 @@ const Signup = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="input-password"
-            placeholder="密碼"
+            placeholder="Password"
             required
           />
       <p>或點此<a href="/signin">登入</a></p>

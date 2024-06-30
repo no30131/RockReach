@@ -266,21 +266,24 @@ const Personal = () => {
 
   return (
     <div>
-      <h1>個人空間</h1>
       {!user ? (
         <p>請先登入！</p>
       ) : (
         <div className="personal-container">
-          <div id="userData">
-            <p>{user.name}</p>
-            <p>{user.introduce}</p>
-            <img src={user.image} alt={user.name} />
+          <div className="userData">
+            <div className="userData-img">
+              <img src={user.image} alt={user.name} />
+            </div>
+            <div className="userData-details">
+              <p className="user-name">{user.name}</p>
+              <p>{user.introduce}</p>
+            </div>
           </div>
 
-          <div id="level" style={{ width: 600, height: 400 }}></div>
-          <div id="typesCount" style={{ width: 600, height: 400 }}></div>
-          <div id="typesTimes" style={{ width: 600, height: 400 }}></div>
-          <div id="frequency" style={{ width: 600, height: 400 }}></div>
+          <div className="level" style={{ width: 600, height: 400 }}></div>
+          <div className="typesCount" style={{ width: 600, height: 400 }}></div>
+          <div className="typesTimes" style={{ width: 600, height: 400 }}></div>
+          <div className="frequency" style={{ width: 600, height: 400 }}></div>
           <div>
             {climbRecords.map((record) => (
               <div key={record._id} className="personal-records-box">
