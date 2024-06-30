@@ -51,6 +51,8 @@ exports.createClimbRecords = async (req, res) => {
       records: updatedRecords,
     });
 
+    console.log("climbRecords: ", climbRecords);
+
     await climbRecords.save();
     res.status(201).send(climbRecords);
   } catch (error) {
@@ -65,14 +67,13 @@ exports.createClimbRecords = async (req, res) => {
 // exports.createClimbRecords = async (req, res) => {
 //   try {
 //     const { userId, date, gymName } = req.body;
-//     const records = JSON.parse(req.body.records); // 確保 records 被正確解析
+//     const records = JSON.parse(req.body.records);
 //     const files = req.files;
 
 //     if (!files || Object.keys(files).length === 0) {
 //       return res.status(400).json({ message: "No files uploaded" });
 //     }
 
-//     // 處理文件上傳
 //     const fileUrls = {};
 //     for (let key in files) {
 //       const fileArray = files[key];
@@ -97,7 +98,6 @@ exports.createClimbRecords = async (req, res) => {
 //       }
 //     }
 
-//     // 更新 records 將對應的文件 URL 加入
 //     const updatedRecords = records.map((record, index) => ({
 //       ...record,
 //       files: fileUrls[`records[${index}][files]`] || [],
@@ -122,6 +122,7 @@ exports.createClimbRecords = async (req, res) => {
 //     });
 //   }
 // };
+
 
 exports.getClimbRecordsByUserId = async (req, res) => {
   const userId = req.params.userId;
