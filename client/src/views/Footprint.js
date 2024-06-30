@@ -10,15 +10,9 @@ const Footprint = () => {
   const [footprints, setFootprints] = useState([]);
   const [currentGym, setCurrentGym] = useState(null);
   const [footprint, setFootprint] = useState(null);
-  const [visitDate, setVisitDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
+  const [visitDate, setVisitDate] = useState(new Date().toISOString().split("T")[0]);
   const [visitTimes, setVisitTimes] = useState(1);
-  const [expiryDate, setExpiryDate] = useState(
-    new Date(new Date().setMonth(new Date().getMonth() + 1))
-      .toISOString()
-      .split("T")[0]
-  );
+  const [expiryDate, setExpiryDate] = useState(new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0]);
   const [showDetails, setShowDetails] = useState(false);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
 
@@ -35,9 +29,7 @@ const Footprint = () => {
 
   const fetchUserFootprints = useCallback(async (userId) => {
     try {
-      const response = await axios.get(
-        `https://node.me2vegan.com/api/footprints/${userId}`
-      );
+      const response = await axios.get(`https://node.me2vegan.com/api/footprints/${userId}`);
       setFootprints(response.data);
     } catch (error) {
       console.error("Error fetching footprints:", error);
@@ -45,20 +37,23 @@ const Footprint = () => {
   }, []);
 
   useEffect(() => {
-    if (id) {
-      fetchUserFootprints(id);
-    } else {
-      const token = getCookie("token");
-      if (token) {
-        const decoded = jwtDecode(token);
-        setUserId(decoded.userId);
+    const token = getCookie("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      setUserId(decoded.userId);
+      if (!id) {
         fetchUserFootprints(decoded.userId);
       }
     }
 
-    axios
-      .get(`https://node.me2vegan.com/api/footprints/google-maps-api-url`)
-      .then((response) => {
+    if (id) {
+      fetchUserFootprints(id);
+    } else if (!token) {
+      setIsMapLoaded(true);
+    }
+
+    if (!window.google) {
+      axios.get(`https://node.me2vegan.com/api/footprints/google-maps-api-url`).then((response) => {
         const { url } = response.data;
         const script = document.createElement("script");
         script.src = url;
@@ -68,12 +63,9 @@ const Footprint = () => {
         };
         document.body.appendChild(script);
       });
-
-    return () => {
-      if (window.google) {
-        window.google.maps.event.clearInstanceListeners(window.map);
-      }
-    };
+    } else {
+      setIsMapLoaded(true);
+    }
   }, [id, fetchUserFootprints]);
 
   const fetchFootprint = async (gymId) => {
@@ -84,9 +76,7 @@ const Footprint = () => {
         return;
       }
 
-      const response = await axios.get(
-        `https://node.me2vegan.com/api/footprints/${fetchId}`
-      );
+      const response = await axios.get(`https://node.me2vegan.com/api/footprints/${fetchId}`);
       const userFootprints = response.data;
       const gymFootprint = userFootprints.find(
         (footprint) => String(footprint.gymId._id) === String(gymId)
@@ -105,6 +95,11 @@ const Footprint = () => {
   };
 
   const initMap = useCallback(async () => {
+    if (!window.google) {
+      console.error("Google Maps API未加載");
+      return;
+    }
+
     const mapElement = document.getElementById("map");
     if (!mapElement) return;
 
@@ -116,9 +111,7 @@ const Footprint = () => {
     let currentInfoWindow = null;
 
     try {
-      const response = await axios.get(
-        `https://node.me2vegan.com/api/gyms/all`
-      );
+      const response = await axios.get(`https://node.me2vegan.com/api/gyms/all`);
       const gyms = response.data;
 
       const service = new window.google.maps.places.PlacesService(window.map);
@@ -128,14 +121,11 @@ const Footprint = () => {
           const geocodeResponse = await axios.get(
             `https://node.me2vegan.com/api/footprints/google-maps/geocode`,
             {
-              params: {
-                address: gym.address,
-              },
+              params: { address: gym.address },
             }
           );
 
-          const { lat, lng } =
-            geocodeResponse.data.results[0].geometry.location;
+          const { lat, lng } = geocodeResponse.data.results[0].geometry.location;
 
           const request = {
             location: { lat, lng },
@@ -182,9 +172,9 @@ const Footprint = () => {
                   <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">在 Google 地圖上查看</a>
                   <br></br>
                   ${
-                    id
-                      ? ""
-                      : `<button onclick="manageGym('${gym._id}')">足跡管理</button>`
+                    (!id && userId)
+                      ? `<button onclick="manageGym('${gym._id}')">足跡管理</button>`
+                      : ""
                   }
                 </div>
               `;
@@ -216,9 +206,9 @@ const Footprint = () => {
                   <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">在 Google 地圖上查看</a>
                   <br></br>
                   ${
-                    id
-                      ? ""
-                      : `<button onclick="manageGym('${gym._id}')">足跡管理</button>`
+                    (!id && userId)
+                      ? `<button onclick="manageGym('${gym._id}')">足跡管理</button>`
+                      : ""
                   }
                 </div>
               `;
@@ -244,10 +234,10 @@ const Footprint = () => {
     } catch (error) {
       console.error("Error fetching gyms:", error);
     }
-  }, [id, footprints]);
+  }, [id, userId, footprints]);
 
   useEffect(() => {
-    if (isMapLoaded && footprints.length > 0) {
+    if (isMapLoaded) {
       initMap();
     }
   }, [isMapLoaded, footprints, initMap]);
@@ -272,15 +262,10 @@ const Footprint = () => {
         visitTimes: visitTimes,
         expiryDate: expiryDate,
       };
-      const response = await axios.post(
-        `https://node.me2vegan.com/api/footprints/create`,
-        updatedFootprint
-      );
+      const response = await axios.post(`https://node.me2vegan.com/api/footprints/create`, updatedFootprint);
       setFootprint(response.data);
       closeDetails();
-      const footprintsResponse = await axios.get(
-        `https://node.me2vegan.com/api/footprints/${userId}`
-      );
+      const footprintsResponse = await axios.get(`https://node.me2vegan.com/api/footprints/${userId}`);
       setFootprints(footprintsResponse.data);
     } catch (error) {
       console.error("Error creating footprint:", error);
@@ -307,9 +292,6 @@ const Footprint = () => {
   return (
     <div className="footprint-container">
       <h1>足跡地圖</h1>
-      {!userId ? (
-        <p>請先登入！</p>
-      ) : (
         <div className="footprint_container">
           <div
             className="map-details"
@@ -352,10 +334,9 @@ const Footprint = () => {
               </div>
             )}
           </div>
-          <div id="map"></div>
-          {!id && <button onClick={() => handleShare()}>分享</button>}
+          <div id="map" style={{ height: "500px", width: "100%" }}></div>
+          {(!id && userId) && <button onClick={() => handleShare()}>分享</button>}
         </div>
-      )}
     </div>
   );
 };
