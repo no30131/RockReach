@@ -39,7 +39,7 @@ const Upload = () => {
   useEffect(() => {
     const fetchGyms = async () => {
       try {
-        const response = await axios.get(`http://localhost:7000/api/gyms/all`);
+        const response = await axios.get(`https://node.me2vegan.com/api/gyms/all`);
         const gymsWithPlaceholder = [
           { _id: "", name: "請選擇岩館" },
           ...response.data,
@@ -186,7 +186,7 @@ const Upload = () => {
     });
     try {
       const response = await axios.post(
-        `http://localhost:7000/api/climbRecords/create`,
+        `https://node.me2vegan.com/api/climbRecords/create`,
         formData,
         {
           headers: {
@@ -510,7 +510,7 @@ export default Upload;
 //     useEffect(() => {
 //         const fetchGyms = async () => {
 //             try {
-//                 const response = await axios.get("http://localhost:7000/api/gyms/all");
+//                 const response = await axios.get("https://node.me2vegan.com/api/gyms/all");
 //                 setGyms(response.data);
 //                 setSelectedGym(response.data[0]?._id || "");
 //             } catch (error) {
@@ -607,7 +607,7 @@ export default Upload;
 //         console.log("formData: ", formData[0]);
 
 //         try {
-//             const response = await axios.post("http://localhost:7000/api/climbRecords/create", formData, {
+//             const response = await axios.post("https://node.me2vegan.com/api/climbRecords/create", formData, {
 //                 headers: {
 //                     "Content-Type": "multipart/form-data"
 //                 }

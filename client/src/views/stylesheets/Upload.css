@@ -75,7 +75,7 @@ button[type="submit"]:hover {
 .upload-form-hori-div-hori {
   display: flex;
 }
-
+ 
 .upload-form-hori-div-vert textarea {
   min-width: 300px;
   border: 1px solid rgb(201, 201, 201);
