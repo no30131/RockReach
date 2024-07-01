@@ -12,5 +12,5 @@ router.get("/exploreWall/share/:id", climbRecordsController.getExploresRecordsBy
 router.post("/addLike/:id", climbRecordsController.addExploresLike);
 router.post("/addComment/:id", climbRecordsController.addExploresComment);
 router.get("/:userId", climbRecordsController.getClimbRecordsByUserId);
-
+ 
 module.exports = router;

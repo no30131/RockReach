@@ -21,3 +21,4 @@ const climbRecordSchema = new Schema({
 
 const ClimbRecords = mongoose.model("climbRecords", climbRecordSchema);
 module.exports = ClimbRecords;
+ 

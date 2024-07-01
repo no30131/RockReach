@@ -64,7 +64,7 @@ const s3 = new AWS.S3({
 //   }
 // };
 
-
+ 
 
 exports.createClimbRecords = async (req, res) => {
   try {
