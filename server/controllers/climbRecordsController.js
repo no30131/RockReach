@@ -69,7 +69,7 @@ const s3 = new AWS.S3({
 exports.createClimbRecords = async (req, res) => {
   try {
     const { userId, date, gymName, records } = req.body;
-
+ 
     let parsedRecords;
     try {
       parsedRecords = typeof records === 'string' ? JSON.parse(records) : records;

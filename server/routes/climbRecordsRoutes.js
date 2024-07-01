@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const climbRecordsController = require("../controllers/climbRecordsController");
 const upload = require("../config/multerConfig");
-
+ 
 const uploadFiles = upload.array('files', 5);
 
 router.post("/create", uploadFiles, climbRecordsController.createClimbRecords);

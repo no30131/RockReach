@@ -27,7 +27,7 @@
     text-decoration: none;
     color: rgb(67, 67, 67);
 }
-
+ 
 .button.active {
     color: #bb1c00;
     font-weight: bold;
