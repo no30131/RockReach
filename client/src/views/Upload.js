@@ -170,15 +170,6 @@ const Upload = () => {
       )
     );
 
-    // records.forEach((record, index) => {
-    //   record.files.forEach((file, fileIndex) => {
-    //     formData.append(`records[${index}][files]`, file);
-    //   });
-    // formData.append(`records[${index}][data]`, JSON.stringify(recordData));
-
-    // record.files.forEach((file, fileIndex) => {
-    //   formData.append(`records[${index}][files][${fileIndex}]`, file);
-    // });
     records.forEach((record) => {
       record.files.forEach((file) => {
         formData.append("files", file);
@@ -194,8 +185,6 @@ const Upload = () => {
           },
         }
       );
-
-      //   console.log("response.data: ", response.data);
 
       if (response.status === 201) {
         console.log("Records uploaded successfully: ", response.data);
@@ -403,38 +392,6 @@ const Upload = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* <div className="upload-form-hori">
-                  <div className="upload-form-hori-div">
-                    <div className="upload-form-hori-div-hori">
-                      <p className="upload-steps">5</p>
-                      <p className="upload-steps-title">上傳圖片 / 影片</p>
-                    </div>
-                    <div className="upload-form-hori-div-vert">
-                      <input
-                        type="file"
-                        name="files"
-                        multiple
-                        onChange={handleFileChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="upload-form-hori-div">
-                    <div className="upload-form-hori-div-hori">
-                      <p className="upload-steps">4</p>
-                      <p className="upload-steps-title">備註</p>
-                    </div>
-                    <div className="upload-form-hori-div-vert">
-                    <textarea
-                        name="memo"
-                        rows="3"
-                        value={currentRecord.memo || ""}
-                        onChange={handleRecordChange}
-                        placeholder="Memo"
-                      ></textarea>
-                    </div>
-                  </div>
-                </div> */}
 
                 <div className="upload-form-details">
                   <div className="upload-form-hori-div">

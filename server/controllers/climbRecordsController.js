@@ -57,7 +57,7 @@ exports.createClimbRecords = async (req, res) => {
       gymName,
       records: updatedRecords,
     });
-
+ 
     await climbRecords.save();
     res.status(201).send(climbRecords);
   } catch (error) {
