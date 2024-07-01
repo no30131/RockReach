@@ -1,70 +1,13 @@
 const ClimbRecords = require("../models/climbRecords");
 const AWS = require("aws-sdk");
-const path = require("path");
-const fs = require("fs");
+// const path = require("path");
+// const fs = require("fs");
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION,
 });
-
-// exports.createClimbRecords = async (req, res) => {
-//   try {
-//     const { userId, date, gymName } = req.body;
-//     const records = JSON.parse(req.body.records);
-//     const files = req.files;
-
-//     // if (!files || files.length === 0) {
-//     //   return res.status(400).json({ message: "No files uploaded" });
-//     // }
-
-//     const uploadPromises = files.map(async (file) => {
-//       const fileContent = fs.readFileSync(file.path);
-//       const fileName = `climb_records/${path.basename(file.path)}`;
-
-//       const params = {
-//         Bucket: process.env.AWS_S3_BUCKET,
-//         Key: fileName,
-//         Body: fileContent,
-//         ContentType: file.mimetype,
-//       };
-
-//       const data = await s3.upload(params).promise();
-//       fs.unlinkSync(file.path);
-//       return data.Location;
-//     });
-
-//     const fileUrls = await Promise.all(uploadPromises);
-
-//     const updatedRecords = records.map((record, index) => ({
-//       ...record,
-//       files: fileUrls.slice(index * 5, (index + 1) * 5),
-//     }));
-
-//     const dateOnly = new Date(date).toISOString().split("T")[0];
-
-//     const climbRecords = new ClimbRecords({
-//       userId,
-//       date: dateOnly,
-//       gymName,
-//       records: updatedRecords,
-//     });
-
-//     console.log("climbRecords: ", climbRecords);
-
-//     await climbRecords.save();
-//     res.status(201).send(climbRecords);
-//   } catch (error) {
-//     console.error("Error uploading to S3 or saving to DB:", error);
-//     res.status(500).json({
-//       message: "Error creating climb records",
-//       error: error.message,
-//     });
-//   }
-// };
-
- 
 
 exports.createClimbRecords = async (req, res) => {
   try {
@@ -81,21 +24,21 @@ exports.createClimbRecords = async (req, res) => {
     const files = req.files || [];
 
     const uploadPromises = files.map(async (file) => {
-      const fileContent = fs.readFileSync(file.path);
-      const fileName = `climb_records/${path.basename(file.path)}`;
+      // const fileContent = fs.readFileSync(file.path);
+      // const fileName = `climb_records/${path.basename(file.path)}`;
 
-      // const fileName = `climb_records/${file.originalname}`;
+      const fileName = `climb_records/${file.originalname}`;
 
       const params = {
         Bucket: process.env.AWS_S3_BUCKET,
         Key: fileName,
-        Body: fileContent,
-        // Body: file.buffer,
+        // Body: fileContent,
+        Body: file.buffer,
         ContentType: file.mimetype,
       };
 
       const data = await s3.upload(params).promise();
-      fs.unlinkSync(file.path);
+      // fs.unlinkSync(file.path);
       return data.Location;
     });
 
@@ -125,68 +68,6 @@ exports.createClimbRecords = async (req, res) => {
     });
   }
 };
-
-
-
-// exports.createClimbRecords = async (req, res) => {
-//   try {
-//     const { userId, date, gymName } = req.body;
-//     const records = JSON.parse(req.body.records);
-//     const files = req.files;
-
-//     if (!files || Object.keys(files).length === 0) {
-//       return res.status(400).json({ message: "No files uploaded" });
-//     }
-
-//     const fileUrls = {};
-//     for (let key in files) {
-//       const fileArray = files[key];
-//       for (let file of fileArray) {
-//         const fileContent = fs.readFileSync(file.path);
-//         const fileName = `climb_records/${path.basename(file.path)}`;
-
-//         const params = {
-//           Bucket: process.env.AWS_S3_BUCKET,
-//           Key: fileName,
-//           Body: fileContent,
-//           ContentType: file.mimetype,
-//         };
-
-//         const data = await s3.upload(params).promise();
-//         fs.unlinkSync(file.path);
-
-//         if (!fileUrls[key]) {
-//           fileUrls[key] = [];
-//         }
-//         fileUrls[key].push(data.Location);
-//       }
-//     }
-
-//     const updatedRecords = records.map((record, index) => ({
-//       ...record,
-//       files: fileUrls[`records[${index}][files]`] || [],
-//     }));
-
-//     const dateOnly = new Date(date).toISOString().split("T")[0];
-
-//     const climbRecords = new ClimbRecords({
-//       userId,
-//       date: dateOnly,
-//       gymName,
-//       records: updatedRecords,
-//     });
-
-//     await climbRecords.save();
-//     res.status(201).send(climbRecords);
-//   } catch (error) {
-//     console.error("Error uploading to S3 or saving to DB:", error);
-//     res.status(500).json({
-//       message: "Error creating climb records",
-//       error: error.message,
-//     });
-//   }
-// };
-
 
 exports.getClimbRecordsByUserId = async (req, res) => {
   const userId = req.params.userId;
