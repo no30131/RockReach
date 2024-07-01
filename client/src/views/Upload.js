@@ -26,7 +26,7 @@ const difficultyLevels = [
   "V9",
 ];
 
-const Upload = () => {
+const Upload = ({ showMessage }) => {
   const [climbDate, setClimbDate] = useState(new Date());
   const [gyms, setGyms] = useState([]);
   const [selectedGym, setSelectedGym] = useState("");
@@ -188,12 +188,15 @@ const Upload = () => {
 
       if (response.status === 201) {
         console.log("Records uploaded successfully: ", response.data);
+        showMessage("紀錄上傳成功！", "success");
         // navigate("/personal");
       } else {
         console.error("Error uploading records: ", response.data);
+        showMessage("紀錄上傳失敗！", "error");
       }
     } catch (error) {
       console.error("Error uploading file: ", error);
+      showMessage("伺服器異常，請稍後再試！", "error");
     }
   };
 

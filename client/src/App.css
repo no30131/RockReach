@@ -39,7 +39,8 @@
 
 .container {
   width: 100%;
-  max-width: 70%;
+  max-width: 80%;
+  min-height: 750px;
   margin: 0 auto;
   padding: 20px;
   box-sizing: border-box;

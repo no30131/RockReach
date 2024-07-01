@@ -39,36 +39,3 @@ h1, p {
     justify-content: center;
     text-decoration: none;
 }
-
-.message-box {
-  position: fixed;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #4caf50;
-  color: white;
-  padding: 16px;
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  animation: fadeinout 5s ease-in-out;
-}
-
-.message-error-box {
-  position: fixed;
-  top: 60px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #af4c4c;
-  color: white;
-  padding: 16px;
-  border-radius: 4px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  animation: fadeinout 5s ease-in-out;
-}
-
-@keyframes fadeinout {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
-}

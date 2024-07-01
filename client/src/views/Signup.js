@@ -3,13 +3,10 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./stylesheets/Signup.css";
 
-const Signup = () => {
+const Signup = ({ showMessage }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [showMessage, setShowMessage] = useState(false);
-  const [showMessageError, setShowMessageError] = useState(false);
   const navigate = useNavigate();
 
   const checkEmailExists = async (email) => {
@@ -29,11 +26,7 @@ const Signup = () => {
     try {
       const emailExists = await checkEmailExists(email);
       if (emailExists) {
-        setMessage("此信箱已註冊，請前往登入！");
-        setShowMessageError(true);
-        setTimeout(() => {
-          setShowMessageError(false);
-        }, 4000);
+        showMessage("此信箱已註冊，請前往登入！", "error");
         return;
       }
 
@@ -45,28 +38,18 @@ const Signup = () => {
       });
 
       if (response.status === 201) {
-        console.log("User created successfully:", response.data);
-        setMessage("註冊成功！");
-        setShowMessage(true);
+        // console.log("User created successfully:", response.data);
+        showMessage("註冊成功！", "success");
         setTimeout(() => {
-          setShowMessage(false);
           navigate("/personal");
         }, 800);
       } else {
         console.error("Error creating user:", response.data);
-        setMessage("信箱已註冊，請前往登入！");
-        setShowMessageError(true);
-        setTimeout(() => {
-          setShowMessageError(false)
-        }, 4000);
+        showMessage("信箱已註冊，請前往登入！", "error");
       }
     } catch (error) {
       console.error("Error creating user:", error);
-      setMessage("伺服器異常，請稍後再試！");
-      setShowMessageError(true);
-      setTimeout(() => {
-        setShowMessageError(false)
-      }, 4000);
+      showMessage("伺服器異常，請稍後再試！", "error");
     }
   };
   
@@ -104,12 +87,6 @@ const Signup = () => {
         <button type="submit" className="signup-submit">送出</button>
       </div>
       </form>
-      {showMessage && (
-        <div className="message-box">{message}</div>
-      )}
-      {showMessageError && (
-        <div className="message-error-box">{message}</div>
-      )}
     </div>
   );
 };

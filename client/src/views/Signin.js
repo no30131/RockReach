@@ -3,12 +3,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./stylesheets/Signin.css";
 
-const Signin = () => {
+const Signin = ({ showMessage }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [showMessage, setShowMessage] = useState(false);
-  const [showMessageError, setShowMessageError] = useState(false);
   const navigate = useNavigate();
   
   const handleSubmit = async (e) => {
@@ -24,38 +21,28 @@ const Signin = () => {
       });
 
       if (response.status === 200) {
-        console.log("User logged in successfully:", response.data);
-        setMessage("登入成功！");
-        setShowMessage(true);
+        // console.log("User logged in successfully:", response.data);
+        showMessage("登入成功！", "success");
         setTimeout(() => {
-          setShowMessage(false);
           navigate("/personal");
         }, 800);
       } else {
         console.error("Error logging in:", response.data);
-        setMessage("密碼不正確，請重新輸入！");
-        setShowMessageError(true);
-        setTimeout(() => {
-          setShowMessageError(false)
-        }, 4000);
+        showMessage("密碼不正確，請重新輸入！", "error");
       }
     } catch (error) {
-      console.error("Error logging in:", error);        
+      // console.error("Error logging in:", error);        
       if (error.response) {
         if (error.response.status === 401) {
-          setMessage("密碼不正確，請重新輸入！");
+          showMessage("密碼不正確，請重新輸入！", "error");
         } else if (error.response.status === 404) {
-          setMessage("此信箱未註冊！");
+          showMessage("此信箱未註冊！", "error");
         } else {
-          setMessage("伺服器異常，請稍後再試！");
+          showMessage("伺服器異常，請稍後再試！", "error");
         }
       } else {
-        setMessage("伺服器異常，請稍後再試！");
+        showMessage("伺服器異常，請稍後再試！", "error");
       }
-      setShowMessageError(true);
-      setTimeout(() => {
-        setShowMessageError(false)
-      }, 4000);
     }
   };
   
@@ -85,12 +72,6 @@ const Signin = () => {
             <button className="signin-submit">送出</button>
         </div>
       </form>
-      {showMessage && (
-        <div className="message-box">{message}</div>
-      )}
-      {showMessageError && (
-        <div className="message-error-box">{message}</div>
-      )}
     </div>
   );
 };
