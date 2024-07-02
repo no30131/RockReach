@@ -42,7 +42,7 @@ const Signup = ({ showMessage }) => {
         showMessage("註冊成功！", "success");
         setTimeout(() => {
           navigate("/personal");
-        }, 800);
+        }, 500);
       } else {
         console.error("Error creating user:", response.data);
         showMessage("信箱已註冊，請前往登入！", "error");
@@ -82,7 +82,7 @@ const Signup = ({ showMessage }) => {
             placeholder="Password"
             required
           />
-      <p>或點此<a href="/signin">登入</a></p>
+      <p>或點此 <button type="button" onClick={() => navigate("/signin")} style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, font: 'inherit' }}>登入</button></p>
       <div className="signup-link">
         <button type="submit" className="signup-submit">送出</button>
       </div>

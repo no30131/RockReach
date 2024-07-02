@@ -25,7 +25,7 @@ const Signin = ({ showMessage }) => {
         showMessage("登入成功！", "success");
         setTimeout(() => {
           navigate("/personal");
-        }, 800);
+        }, 500);
       } else {
         console.error("Error logging in:", response.data);
         showMessage("密碼不正確，請重新輸入！", "error");
@@ -67,7 +67,7 @@ const Signin = ({ showMessage }) => {
           placeholder="Password"
           required
         />
-        <p>或點此<a href="/signup">註冊</a></p>
+        <p>或點此 <button type="button" onClick={() => navigate("/signup")} style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, font: 'inherit' }}>註冊</button></p>
         <div className="signin-link">
             <button className="signin-submit">送出</button>
         </div>

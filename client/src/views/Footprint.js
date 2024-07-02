@@ -321,7 +321,7 @@ const Footprint = () => {
           </div>
         </Sider>
         <Content>
-          <div id="map" style={{ height: "500px", width: "100%" }}></div>
+          <div id="map" style={{ height: "74.7vh", width: "100%" }}></div>
           {(!id && userId) && <button onClick={() => handleShare()}>分享</button>}
         </Content>
       </Layout>

@@ -49,6 +49,8 @@ exports.createClimbRecords = async (req, res) => {
       files: fileUrls.slice(index * 5, (index + 1) * 5),
     }));
 
+    // console.log("Updated records:", updatedRecords); 
+
     const dateOnly = new Date(date).toISOString().split("T")[0];
 
     const climbRecords = new ClimbRecords({

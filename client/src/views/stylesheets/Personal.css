@@ -1,65 +1,192 @@
-/* button[type="submit"] {
-    display: block;
-    width: 150px;
-    padding: 10px;
-    background-color: rgb(255, 98, 0);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button[type="submit"]:hover {
-    background-color: #0056b3;
-} */
-
 .personal-records-box {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .personal-records {
-    display: flex;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 
 .personal-records > p {
-    padding-right: 20px;
+  margin: 0;
+  padding-right: 20px;
 }
 
 .personal-records-memo {
-    display: flex;
+  margin-top: 10px;
+  font-style: italic;
+  color: #555;
+  display: flex;
+  align-items: center;
 }
 
 .userData {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 .userData-img {
-    /* max-width: 70px; */
-    max-height: 100px;
-    align-content: center;
-    margin-right: 10px;
+  max-height: 90px;
+  align-content: center;
+  margin-right: 15px;
 }
 
 .userData-img img {
-    width: 60px;
+  width: 60px;
+  border-radius: 50%;
 }
 
-/* .userData-details { */
-    /* display: flex;
-    flex-direction: column; */
-    /* border: 1px solid black; */
-    /* margin-top: -5px; */
-/* } */
-
-/* .userData-details p{ */
-    /* max-height: 5px; */
-    /* text-align: top; */
-/* } */
-
 .user-name {
-    font-size: 18px;
-    margin-top: 15px;
-    margin-bottom: -1px;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 15px;
+  margin-bottom: -15px;
+}
+
+.personal-records-summary {
+  padding: 15px;
+  background-color: rgb(255, 243, 236);
+  border: 1px solid rgb(255, 98, 0);
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.personal-records-summary p {
+  margin: 0 10px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+  flex: 1;
+}
+
+.personal-records-route-types {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.route-types img {
+  width: 30px;
+  height: 38px;
+  margin-right: 5px;
+}
+
+.personal-records-details {
+  margin-left: 20px;
+  padding: 10px;
+  border-left: 2px solid #ffc3a5;
+  border-radius: 5px;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+
+.personal-records-details .personal-records {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.personal-records-details .personal-records > p {
+  margin: 0;
+  padding-right: 20px;
+}
+
+.personal-records-details .personal-records > .route-types {
+  margin-top: 0;
+}
+
+.personal-records-details > div {
+  margin-bottom: 15px;
+}
+
+.personal-records-details > div:last-child {
+  margin-bottom: 0;
+}
+
+.personal-records-details p {
+  margin: 5px 0;
+}
+
+.personal-records-summary > p {
+  margin: 0 10px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+.personal-records-files {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.personal-records-files img, .personal-records-files video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin: 5px;
+}
+
+.file-container {
+  width: 320px;
+  height: 240px;
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.file-content {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Additional styling for better separation and readability */
+.personal-records-box:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+.personal-records-box:last-child {
+  margin-bottom: 0;
+}
+
+.personal-records-details > div {
+  margin-bottom: 15px;
+}
+
+.personal-records-details > div:last-child {
+  margin-bottom: 0;
+}
+
+.personal-records-details p {
+  margin: 5px 0;
+}
+
+.personal-records-summary > p {
+  margin: 0 10px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
 }

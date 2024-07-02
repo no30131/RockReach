@@ -51,16 +51,24 @@ const Explore = ({ userId }) => {
     const fileType = fileTypeMap[fileExtension];
     const filePath = file;
 
-    const fileStyle = {
-      maxWidth: "320px",
-      maxHeight: "240px",
-      objectFit: "contain",
-    };
+    // const fileStyle = {
+    //   maxWidth: "320px",
+    //   maxHeight: "240px",
+    //   objectFit: "contain",
+    // };
 
     if (fileType && fileType.startsWith("video")) {
-      return <video key={file} src={filePath} controls style={fileStyle} />;
+      return (
+        <div key={file} className="file-container">
+          <video src={filePath} controls className="file-content" />
+        </div>
+      );
     } else if (fileType && fileType.startsWith("image")) {
-      return <img key={file} src={filePath} alt="file" style={fileStyle} />;
+      return (
+        <div key={file} className="file-container">
+          <img src={filePath} alt="file" className="file-content" />
+        </div>
+      );
     } else {
       return <p key={file}>Unsupported file type</p>;
     }

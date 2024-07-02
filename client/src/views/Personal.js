@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import Plotly from "plotly.js-dist";
 import { jwtDecode } from "jwt-decode";
@@ -15,11 +15,16 @@ const routeTypes = [
 const Personal = () => {
   const [user, setUser] = useState(null);
   const [climbRecords, setClimbRecords] = useState([]);
+  const [expandedRecords, setExpandedRecords] = useState({});
+
+  const levelRef = useRef(null);
+  const typesCountRef = useRef(null);
+  const typesTimesRef = useRef(null);
+  const frequencyRef = useRef(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       const token = getCookie("token");
-      // console.log("token: ", token);
 
       if (!token) {
         console.error("No token found");
@@ -47,10 +52,20 @@ const Personal = () => {
     fetchUserData();
   }, []);
 
+  const toggleRecordDetails = (recordId) => {
+    setExpandedRecords((prevExpandedRecords) => ({
+      ...prevExpandedRecords,
+      [recordId]: !prevExpandedRecords[recordId],
+    }));
+  };
+
   const generateLevelChart = useCallback(() => {
+    if (!levelRef.current) return;
+
     const levels = climbRecords.flatMap((record) =>
       record.records.map((r) => r.level)
     );
+
     const levelCounts = levels.reduce((acc, level) => {
       acc[level] = (acc[level] || 0) + 1;
       return acc;
@@ -92,10 +107,12 @@ const Personal = () => {
       width: 600,
     };
 
-    Plotly.newPlot("level", data, layout);
+    Plotly.newPlot(levelRef.current, data, layout);
   }, [climbRecords]);
 
   const generateTypesChart = useCallback(() => {
+    if (!typesCountRef.current || !typesTimesRef.current) return;
+
     const types = ["Crimpy", "Dyno", "Slope", "Power", "Pump"];
     const typeCounts = types.reduce((acc, type) => {
       acc[type] = { count: 0, times: 0 };
@@ -155,13 +172,19 @@ const Personal = () => {
       width: 600,
     };
 
-    Plotly.newPlot("typesCount", dataCount, layoutCount);
-    Plotly.newPlot("typesTimes", dataTimes, layoutTimes);
+    Plotly.newPlot(typesCountRef.current, dataCount, layoutCount);
+    Plotly.newPlot(typesTimesRef.current, dataTimes, layoutTimes);
   }, [climbRecords]);
 
   const generateFrequencyChart = useCallback(() => {
+    if (!frequencyRef.current) return;
+
     const dateLevelCounts = climbRecords.reduce((acc, record) => {
-      const date = new Date(record.date).toISOString().split("T")[0];
+      const date = new Date(record.date).toLocaleDateString("zh-TW", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
       record.records.forEach((r) => {
         const level = r.level;
         if (!acc[date]) {
@@ -194,7 +217,7 @@ const Personal = () => {
       width: 600,
     };
 
-    Plotly.newPlot("frequency", data, layout);
+    Plotly.newPlot(frequencyRef.current, data, layout);
   }, [climbRecords]);
 
   useEffect(() => {
@@ -244,16 +267,25 @@ const Personal = () => {
     const fileType = fileTypeMap[fileExtension];
     const filePath = file;
 
-    const fileStyle = {
-      maxWidth: "320px",
-      maxHeight: "240px",
-      objectFit: "contain",
-    };
+    // const fileStyle = {
+    //   maxWidth: "320px",
+    //   maxHeight: "240px",
+    //   objectFit: "contain",
+    //   margin: "10px",
+    // };
 
     if (fileType && fileType.startsWith("video")) {
-      return <video key={file} src={filePath} controls style={fileStyle} />;
+      return (
+        <div key={file} className="file-container">
+          <video src={filePath} controls className="file-content" />
+        </div>
+      );
     } else if (fileType && fileType.startsWith("image")) {
-      return <img key={file} src={filePath} alt="file" style={fileStyle} />;
+      return (
+        <div key={file} className="file-container">
+          <img src={filePath} alt="file" className="file-content" />
+        </div>
+      );
     } else {
       return <p key={file}>Unsupported file type</p>;
     }
@@ -280,43 +312,73 @@ const Personal = () => {
             </div>
           </div>
 
-          <div className="level" style={{ width: 600, height: 400 }}></div>
-          <div className="typesCount" style={{ width: 600, height: 400 }}></div>
-          <div className="typesTimes" style={{ width: 600, height: 400 }}></div>
-          <div className="frequency" style={{ width: 600, height: 400 }}></div>
+          <div
+            id="level"
+            ref={levelRef}
+            style={{ width: 600, height: 400 }}
+          ></div>
+          <div
+            id="typesCount"
+            ref={typesCountRef}
+            style={{ width: 600, height: 400 }}
+          ></div>
+          <div
+            id="typesTimes"
+            ref={typesTimesRef}
+            style={{ width: 600, height: 400 }}
+          ></div>
+          <div
+            id="frequency"
+            ref={frequencyRef}
+            style={{ width: 600, height: 400 }}
+          ></div>
           <div>
             {climbRecords.map((record) => (
               <div key={record._id} className="personal-records-box">
-                <p>日期: {new Date(record.date).toLocaleDateString()}</p>
-                <p>岩館: {record.gymName}</p>
-                <div>
-                  {record.records.map((rec, index) => (
-                    <div key={index}>
-                      <div className="personal-records">
-                        <p>牆面: {rec.wall}</p>
-                        <p>等級: {rec.level}</p>
-                        <div className="route-types">
-                          Custom Types:
-                          {rec.types.map((type, index) => (
-                            <img
-                              key={index}
-                              src={getRouteTypeIcon(type)}
-                              alt={type}
-                              style={{ width: "40px", height: "48px" }}
-                            />
-                          ))}
-                        </div>
-                        <p>嘗試次數: {rec.times}</p>
-                      </div>
-                      <div className="personal-records-memo">
-                        Memo: {rec.memo}
-                      </div>
-                      <div className="personal-records-files">
-                        {rec.files.map((file, idx) => renderFile(file))}
-                      </div>
-                    </div>
-                  ))}
+                <div
+                  onClick={() => toggleRecordDetails(record._id)}
+                  className="personal-records-summary"
+                >
+                  <p>{new Date(record.date).toLocaleDateString()}</p>
+                  <p className="personal-records-gym">{record.gymName}</p>
+                  <p>路線數量: {record.records.length}</p>
                 </div>
+                {expandedRecords[record._id] && (
+                  <div className="personal-records-details">
+                    {record.records.map((rec, index) => (
+                      <div key={index}>
+                        <div className="personal-records">
+                          <p>等級: {rec.level}</p>
+                          {rec.wall && <p>牆面: {rec.wall}</p>}
+                          {rec.times && <p>嘗試次數: {rec.times}</p>}
+                          {rec.types.length > 0 && (
+                            <div className="personal-records-route-types">
+                              <p>類型: </p>
+                              {rec.types.map((type, index) => (
+                                <img
+                                  key={index}
+                                  src={getRouteTypeIcon(type)}
+                                  alt={type}
+                                  style={{ width: "30px", height: "38px" }}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        {rec.memo && (
+                          <div className="personal-records-memo">
+                            Memo: {rec.memo}
+                          </div>
+                        )}
+                        {rec.files.length > 0 && (
+                          <div className="personal-records-files">
+                            {rec.files.map((file, idx) => renderFile(file))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

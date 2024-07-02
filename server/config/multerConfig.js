@@ -16,6 +16,11 @@ const multer = require("multer");
  
 const storage = multer.memoryStorage();
 
+const limits = {
+  fileSize: 300 * 1024 * 1024,
+  files: 10,
+};
+
 const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     "image/jpeg",
@@ -44,7 +49,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: { files: 5 },
+  limits: limits,
 });
 
 module.exports = upload;

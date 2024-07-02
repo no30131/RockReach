@@ -187,7 +187,7 @@ const Upload = ({ showMessage }) => {
       );
 
       if (response.status === 201) {
-        console.log("Records uploaded successfully: ", response.data);
+        // console.log("Records uploaded successfully: ", response.data);
         showMessage("紀錄上傳成功！", "success");
         // navigate("/personal");
       } else {
