@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Explore from "./Explore";
-import ChatRoom from "./ChatRoom";
+// import ChatRoom from "./ChatRoom";
 import "./stylesheets/Friends.css";
 import { jwtDecode } from "jwt-decode";
 
@@ -22,7 +22,7 @@ const Friends = () => {
   const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [selectedFriendId, setSelectedFriendId] = useState(null);
-  const [isChatVisible, setIsChatVisible] = useState(false);
+  // const [isChatVisible, setIsChatVisible] = useState(false);
 
   useEffect(() => {
     const token = getCookie("token");
@@ -92,18 +92,14 @@ const Friends = () => {
     setSelectedFriendId(friendId);
   };
 
-  const handleChat = (friendId) => {
-    setSelectedFriendId(friendId);
-    setIsChatVisible(true);
-  };
+  // const handleChat = (friendId) => {
+  //   setSelectedFriendId(friendId);
+  //   setIsChatVisible(true);
+  // };
 
-  // if (!token) {
-  //   return <div>請先登入！</div>;
+  // if (selectedFriendId && isChatVisible) {
+  //   return <ChatRoom userId={userId} friendId={selectedFriendId} />;
   // }
-
-  if (selectedFriendId && isChatVisible) {
-    return <ChatRoom userId={userId} friendId={selectedFriendId} />;
-  }
 
   if (selectedFriendId) {
     return <Explore userId={selectedFriendId} />;
@@ -134,12 +130,12 @@ const Friends = () => {
                 >
                   查看
                 </button>
-                <button
+                {/* <button
                   className="btn-chat"
                   onClick={() => handleChat(friendInfo._id)}
                 >
                   聊天
-                </button>
+                </button> */}
               </div>
             );
           })}

@@ -24,8 +24,8 @@ dotenv.config();
 const server = http.createServer(app);
 
 const corsOptions = {
-  // origin: ["https://rockreach.me2vegan.com", "http://localhost:3000"],
-  origin: ["https://rockreach.me2vegan.com"],
+  origin: ["https://rockreach.me2vegan.com", "http://localhost:3000"],
+  // origin: ["https://rockreach.me2vegan.com"],
   methods: "GET, HEAD, PUT, PATCH, DELETE",
   credentials: true,
   optionsSuccessStatus: 200,
@@ -48,30 +48,30 @@ mongoose.connect(process.env.MONGODB_URI, {
   console.error("Error connecting to MongoDB", err);
 });
 
-const io = socketIo(server, { cors: corsOptions });
-io.on("connection", (socket) => {
-  // console.log("New connection");
+// const io = socketIo(server, { cors: corsOptions });
+// io.on("connection", (socket) => {
+//   // console.log("New connection");
 
-  socket.on("joinRoom", ({ friendId }) => {
-    socket.join(friendId);
-    // console.log(`User enter room ${friendId}`);
-  });
+//   socket.on("joinRoom", ({ friendId }) => {
+//     socket.join(friendId);
+//     // console.log(`User enter room ${friendId}`);
+//   });
 
-  socket.on("sendMessage", async ({ friendId, talker, message }) => {
-    // console.log("newChat: ", JSON.stringify({ talker, message, time: moment().tz("Asia/Taipei").format() }, null, 2));
+//   socket.on("sendMessage", async ({ friendId, talker, message }) => {
+//     // console.log("newChat: ", JSON.stringify({ talker, message, time: moment().tz("Asia/Taipei").format() }, null, 2));
 
-    try {
-      const newChat = await saveChatMessage(talker, friendId, message);
-      io.to(friendId).emit("receiveMessage", newChat);
-    } catch (error) {
-      console.error("Error: ", error);
-    }
-  });
+//     try {
+//       const newChat = await saveChatMessage(talker, friendId, message);
+//       io.to(friendId).emit("receiveMessage", newChat);
+//     } catch (error) {
+//       console.error("Error: ", error);
+//     }
+//   });
 
-  socket.on("disconnect", () => {
-    // console.log("Disconnected");
-  });
-});
+//   socket.on("disconnect", () => {
+//     // console.log("Disconnected");
+//   });
+// });
 
 app.use("/api/users", usersRoutes);
 app.use("/api/climbRecords", climbRecordsRoutes);
