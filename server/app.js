@@ -24,7 +24,8 @@ dotenv.config();
 const server = http.createServer(app);
 
 const corsOptions = {
-  origin: ["https://rockreach.me2vegan.com", "http://localhost:3000"],
+  // origin: ["https://rockreach.me2vegan.com", "http://localhost:3000"],
+  origin: ["https://rockreach.me2vegan.com"],
   methods: "GET, HEAD, PUT, PATCH, DELETE",
   credentials: true,
   optionsSuccessStatus: 200,
