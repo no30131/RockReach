@@ -100,27 +100,46 @@ const Custom = () => {
     }
   };
 
-  const handleProcessClick = () => {
-    if (!selectedWall) return;
-    setIsProcessing(true);
+  // const handleProcessClick = () => {
+  //   if (!selectedWall) return;
+  //   setIsProcessing(true);
 
-    axios
-      .post(`https://node.me2vegan.com/api/customs/process`, {
+  //   axios
+  //     .post(`https://node.me2vegan.com/api/customs/process`, {
+  //       image: selectedWall.originalImage,
+  //       markers: markers.map((marker) => ({
+  //         x: marker.x / scale,
+  //         y: marker.y / scale,
+  //       })),
+  //     })
+  //     .then((response) => {
+  //       setOutputImage(`https://node.me2vegan.com/${response.data.processedImage}`);
+  //       setOutputDBImage(response.data.processedImage);
+  //       setIsProcessing(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error processing image:", error);
+  //       setIsProcessing(false);
+  //     });
+  // };
+
+  const handleProcessClick = async () => {
+    try {
+      const response = await axios.post('https://node.me2vegan.com/api/customs/process', {
         image: selectedWall.originalImage,
         markers: markers.map((marker) => ({
           x: marker.x / scale,
           y: marker.y / scale,
         })),
-      })
-      .then((response) => {
-        setOutputImage(`https://node.me2vegan.com/${response.data.processedImage}`);
-        setOutputDBImage(response.data.processedImage);
-        setIsProcessing(false);
-      })
-      .catch((error) => {
-        console.error("Error processing image:", error);
-        setIsProcessing(false);
-      });
+      }, { withCredentials: true });
+      
+      setOutputImage(`https://node.me2vegan.com/${response.data.processedImage}`);
+      setOutputDBImage(response.data.processedImage);
+      setIsProcessing(false);
+    } catch (error) {
+      console.error("Error processing image:", error);
+      setIsProcessing(false);
+    }
   };
   
   const handleImageLoad = () => {

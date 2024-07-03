@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - sprint3
+      - sprint4
  
 jobs:
   build:
@@ -100,4 +100,4 @@ jobs:
             echo "Removing existing container if any"
             docker rm app || true &&
             echo "Running new Docker container"
-            docker run -d --name app -p 7000:7000 --env-file /home/ubuntu/.env no30131/rock_reach'
+            docker run -d --name app -p 7000:7000 --env-file /home/ubuntu/.env -v /home/ubuntu/uploads:/app/uploads no30131/rock_reach'

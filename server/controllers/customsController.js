@@ -60,84 +60,177 @@ exports.getCustomsWallRouteById = async (req, res) => {
   }
 };
 
+// exports.processImage = async (req, res) => {
+//   const { image, markers } = req.body;
+
+//   if (!image || typeof image !== "string") {
+//     return res
+//       .status(400)
+//       .json({ message: "Image path is required and must be a string" });
+//   }
+//   if (!markers) {
+//     return res.status(400).json({ message: "Markers are required" });
+//   }
+
+//   const localImagePath = path.join(
+//     __dirname,
+//     "..",
+//     "uploads",
+//     path.basename(image)
+//   );
+//   // const outputImagePath = path.join(__dirname, "..", "uploads", "output.png");
+
+//   try {
+//     const response = await axios({
+//       url: image,
+//       method: "GET",
+//       responseType: "stream",
+//     });
+
+//     const writer = fs.createWriteStream(localImagePath);
+//     response.data.pipe(writer);
+
+//     writer.on("finish", () => {
+//       const pythonScriptPath = path.join(
+//         __dirname,
+//         "..",
+//         "scripts",
+//         "image_processing.py"
+//       );
+//       const pythonProcess = spawn("python", [
+//         pythonScriptPath,
+//         localImagePath,
+//         JSON.stringify(markers),
+//       ]);
+
+//       let outputData = "";
+
+//       pythonProcess.stdout.on("data", (data) => {
+//         outputData += data.toString();
+//       });
+
+//       pythonProcess.stderr.on("data", (data) => {
+//         console.error(`stderr: ${data}`);
+//       });
+
+//       pythonProcess.on("close", (code) => {
+//         if (code !== 0) {
+//           res.status(500).send("Error processing image");
+//           return;
+//         }
+//         const outputPath = outputData.trim();
+//         const relativePath = path.join("uploads", path.basename(outputPath));
+
+//         res.status(200).json({ processedImage: relativePath });
+//       });
+//     });
+
+//     writer.on("error", (err) => {
+//       console.error("Error writing image to local file:", err);
+//       res.status(500).send("Error writing image to local file");
+//     });
+//   } catch (error) {
+//     console.error("Error fetching image from S3:", error);
+//     res.status(500).send("Error fetching image from S3");
+//   }
+// };
+
+// exports.createCustoms = async (req, res) => {
+//   const { wallName, processedImage, customName, customType, memo } = req.body;
+//   // console.log(wallName, processedImage, customName, customType, memo);
+
+//   if (!wallName || !processedImage || !customName || !customType) {
+//     return res.status(400).json({ message: "All fields are required" });
+//   }
+
+//   const localImagePath = path.resolve(__dirname, "..", processedImage);
+
+//   if (!fs.existsSync(localImagePath)) {
+//     return res.status(400).json({ message: "Processed image not found" });
+//   }
+
+//   const fileContent = fs.readFileSync(localImagePath);
+//   const fileName = `processed/${path.basename(localImagePath)}`;
+
+//   const params = {
+//     Bucket: process.env.AWS_S3_BUCKET,
+//     Key: fileName,
+//     Body: fileContent,
+//     ContentType: "image/png",
+//     // ACL: "public-read"
+//   };
+
+//   try {
+//     const data = await s3.upload(params).promise();
+//     const imageUrl = data.Location;
+
+//     const wall = await Customs.findOne({ wallName });
+//     if (wall) {
+//       wall.customs.push({
+//         processedImage: imageUrl,
+//         customName,
+//         customType,
+//         memo,
+//       });
+//       await wall.save();
+//       res.status(201).json(wall);
+//     } else {
+//       res.status(404).json({ message: "Wall not found" });
+//     }
+//   } catch (error) {
+//     console.error("Error uploading to S3 or saving to DB:", error);
+//     res.status(500).json({
+//       message: "Error creating custom route",
+//       error: error.message,
+//     });
+//   }
+// };
+
 exports.processImage = async (req, res) => {
-  const { image, markers } = req.body;
+  const { markers } = req.body;
+  const file = req.file;
 
-  if (!image || typeof image !== "string") {
-    return res
-      .status(400)
-      .json({ message: "Image path is required and must be a string" });
-  }
-  if (!markers) {
-    return res.status(400).json({ message: "Markers are required" });
+  if (!file || !markers) {
+    return res.status(400).json({ message: "Image and markers are required" });
   }
 
-  const localImagePath = path.join(
-    __dirname,
-    "..",
-    "uploads",
-    path.basename(image)
-  );
-  // const outputImagePath = path.join(__dirname, "..", "uploads", "output.png");
+  const localImagePath = path.join(__dirname, "..", "uploads", file.filename);
 
   try {
-    const response = await axios({
-      url: image,
-      method: "GET",
-      responseType: "stream",
+    const pythonScriptPath = path.join(__dirname, "..", "scripts", "image_processing.py");
+    const pythonProcess = spawn("python3", [
+      pythonScriptPath,
+      localImagePath,
+      JSON.stringify(markers),
+    ]);
+
+    let outputData = "";
+
+    pythonProcess.stdout.on("data", (data) => {
+      outputData += data.toString();
     });
 
-    const writer = fs.createWriteStream(localImagePath);
-    response.data.pipe(writer);
-
-    writer.on("finish", () => {
-      const pythonScriptPath = path.join(
-        __dirname,
-        "..",
-        "scripts",
-        "image_processing.py"
-      );
-      const pythonProcess = spawn("python", [
-        pythonScriptPath,
-        localImagePath,
-        JSON.stringify(markers),
-      ]);
-
-      let outputData = "";
-
-      pythonProcess.stdout.on("data", (data) => {
-        outputData += data.toString();
-      });
-
-      pythonProcess.stderr.on("data", (data) => {
-        console.error(`stderr: ${data}`);
-      });
-
-      pythonProcess.on("close", (code) => {
-        if (code !== 0) {
-          res.status(500).send("Error processing image");
-          return;
-        }
-        const outputPath = outputData.trim();
-        const relativePath = path.join("uploads", path.basename(outputPath));
-
-        res.status(200).json({ processedImage: relativePath });
-      });
+    pythonProcess.stderr.on("data", (data) => {
+      console.error(`stderr: ${data}`);
     });
 
-    writer.on("error", (err) => {
-      console.error("Error writing image to local file:", err);
-      res.status(500).send("Error writing image to local file");
+    pythonProcess.on("close", (code) => {
+      if (code !== 0) {
+        return res.status(500).send("Error processing image");
+      }
+      const outputPath = outputData.trim();
+      const relativePath = path.join("uploads", path.basename(outputPath));
+
+      res.status(200).json({ processedImage: relativePath });
     });
   } catch (error) {
-    console.error("Error fetching image from S3:", error);
-    res.status(500).send("Error fetching image from S3");
+    console.error("Error processing image:", error);
+    res.status(500).send("Error processing image");
   }
 };
 
 exports.createCustoms = async (req, res) => {
   const { wallName, processedImage, customName, customType, memo } = req.body;
-  // console.log(wallName, processedImage, customName, customType, memo);
 
   if (!wallName || !processedImage || !customName || !customType) {
     return res.status(400).json({ message: "All fields are required" });
@@ -157,7 +250,6 @@ exports.createCustoms = async (req, res) => {
     Key: fileName,
     Body: fileContent,
     ContentType: "image/png",
-    // ACL: "public-read"
   };
 
   try {
@@ -185,6 +277,7 @@ exports.createCustoms = async (req, res) => {
     });
   }
 };
+
 
 exports.getAchievementWalls = async (req, res) => {
   try {
