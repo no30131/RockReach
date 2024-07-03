@@ -33,7 +33,7 @@ const Custom = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://localhost:7000/api/customs/walls/share/${id}`)
+        .get(`https://node.me2vegan.com/api/customs/walls/share/${id}`)
         .then((response) => {
           setSelectedWall({
             wallName: response.data.wallName,
@@ -46,7 +46,7 @@ const Custom = () => {
         });
     } else {
       axios
-        .get(`http://localhost:7000/api/customs/walls`)
+        .get(`https://node.me2vegan.com/api/customs/walls`)
         .then((response) => {
           setWalls(response.data);
         })
@@ -66,7 +66,7 @@ const Custom = () => {
     setScale(1);
 
     axios
-      .get(`http://localhost:7000/api/customs/walls/${wall.wallName}`)
+      .get(`https://node.me2vegan.com/api/customs/walls/${wall.wallName}`)
       .then((response) => {
         setRoutes(response.data);
       })
@@ -105,7 +105,7 @@ const Custom = () => {
     setIsProcessing(true);
 
     axios
-      .post(`http://localhost:7000/api/customs/process`, {
+      .post(`https://node.me2vegan.com/api/customs/process`, {
         image: selectedWall.originalImage,
         markers: markers.map((marker) => ({
           x: marker.x / scale,
@@ -113,7 +113,7 @@ const Custom = () => {
         })),
       })
       .then((response) => {
-        setOutputImage(`http://localhost:7000/${response.data.processedImage}`);
+        setOutputImage(`https://node.me2vegan.com/${response.data.processedImage}`);
         setOutputDBImage(response.data.processedImage);
         setIsProcessing(false);
       })
@@ -125,7 +125,7 @@ const Custom = () => {
 
   // const handleProcessClick = async () => {
   //   try {
-  //     const response = await axios.post('http://localhost:7000/api/customs/process', {
+  //     const response = await axios.post('https://node.me2vegan.com/api/customs/process', {
   //       image: selectedWall.originalImage,
   //       markers: markers.map((marker) => ({
   //         x: marker.x / scale,
@@ -133,7 +133,7 @@ const Custom = () => {
   //       })),
   //     }, { withCredentials: true });
       
-  //     setOutputImage(`http://localhost:7000/${response.data.processedImage}`);
+  //     setOutputImage(`https://node.me2vegan.com/${response.data.processedImage}`);
   //     setOutputDBImage(response.data.processedImage);
   //     setIsProcessing(false);
   //   } catch (error) {
@@ -197,7 +197,7 @@ const Custom = () => {
 
   const handleConfirmClick = () => {
     axios
-      .post(`http://localhost:7000/api/customs/create`, {
+      .post(`https://node.me2vegan.com/api/customs/create`, {
         wallName: selectedWall.wallName,
         processedImage: outputDBImage,
         customName,
