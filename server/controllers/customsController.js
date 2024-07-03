@@ -186,15 +186,6 @@ exports.createCustoms = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
 exports.getAchievementWalls = async (req, res) => {
   try {
     const walls = await Customs.find({ type: "achievement" }, "wallName originalImage");

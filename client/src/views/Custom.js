@@ -8,7 +8,7 @@ const routeTypes = [
   { name: "Dyno", icon: "/images/icon_dyno.png" },
   { name: "Slope", icon: "/images/icon_slope.png" },
   { name: "Power", icon: "/images/icon_power.png" },
-  { name: "Pump", icon: "/images/icon_pump.png" }
+  { name: "Pump", icon: "/images/icon_pump.png" },
 ];
 
 const Custom = () => {
@@ -103,6 +103,7 @@ const Custom = () => {
   const handleProcessClick = () => {
     if (!selectedWall) return;
     setIsProcessing(true);
+
     axios
       .post(`https://node.me2vegan.com/api/customs/process`, {
         image: selectedWall.originalImage,
@@ -121,7 +122,7 @@ const Custom = () => {
         setIsProcessing(false);
       });
   };
-
+  
   const handleImageLoad = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -212,16 +213,16 @@ const Custom = () => {
               className="wall-item"
               onClick={() => handleWallSelect(wall)}
             >
-              <h3>{wall.wallName}</h3>
+              <h4>{wall.wallName}</h4>
               <img src={wall.originalImage} alt={wall.wallName} />
             </div>
           ))}
         </div>
       ) : (
-        <div>
-          {!id && (
-            <button onClick={() => setSelectedWall(null)}>Back to Walls</button>
-          )}
+        <div className="custom-header">
+          {/* {!id && (
+            <button onClick={() => setSelectedWall(null)} className="cancel-button">返回</button>
+          )} */}
           <h2>{selectedWall.wallName}</h2>
           <img
             ref={imgRef}
@@ -238,7 +239,12 @@ const Custom = () => {
             </div>
           )}
           {!isProcessing && !outputImage && !isCanvasActive && !id && (
-            <button onClick={() => setIsCanvasActive(true)}>新增路線</button>
+            <button
+              onClick={() => setIsCanvasActive(true)}
+              className="custom-add-button"
+            >
+              新增路線
+            </button>
           )}
           {isCanvasActive && !id && (
             <div>
@@ -281,7 +287,7 @@ const Custom = () => {
           )}
           {routes.length > 0 && (
             <div className="routes-list">
-              <h3>Routes:</h3>
+              <h4>Routes:</h4>
               {routes.map((route, index) => (
                 <div
                   key={index}
@@ -298,7 +304,7 @@ const Custom = () => {
               {/* <h3>Route Details:</h3> */}
               <p>Custom Name: {selectedRoute.customName}</p>
               <div className="route-types">
-                Custom Types: 
+                Custom Types:
                 {selectedRoute.customType.map((type, index) => (
                   <img key={index} src={getRouteTypeIcon(type)} alt={type} />
                 ))}

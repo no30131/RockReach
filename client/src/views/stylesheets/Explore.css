@@ -14,12 +14,13 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* .record-header {
+.record-header {
   display: flex;
   align-items: center;
   padding: 10px;
   background-color: #f9f9f9;
-} */
+  margin-left: 5px;
+}
 
 .user-image {
   width: 50px;
@@ -28,18 +29,20 @@
   margin-right: 10px;
 }
 
-/* .user-info {
+.user-info {
   display: flex;
   flex-direction: column;
-} */
+  align-items: flex-start;
+}
 
-.user-name {
+.explore-user-name {
   font-weight: bold;
+  font-size: px;
   margin: 0;
 }
 
 .gym-name {
-  color: #888;
+  /* color: #888; */
   margin: 0;
 }
 

@@ -39,7 +39,9 @@ const Upload = ({ showMessage }) => {
   useEffect(() => {
     const fetchGyms = async () => {
       try {
-        const response = await axios.get(`https://node.me2vegan.com/api/gyms/all`);
+        const response = await axios.get(
+          `https://node.me2vegan.com/api/gyms/all`
+        );
         const gymsWithPlaceholder = [
           { _id: "", name: "請選擇岩館" },
           ...response.data,
@@ -145,7 +147,7 @@ const Upload = ({ showMessage }) => {
       alert("請新增至少一個路線紀錄！");
       return;
     }
-    
+
     for (let record of records) {
       if (!record.level) {
         alert("請選擇每個路線的難度等級！");
@@ -357,22 +359,20 @@ const Upload = ({ showMessage }) => {
                       <p className="upload-steps">4</p>
                       <p className="upload-steps-title">路線類型</p>
                     </div>
-                    <div className="upload-form-hori-div-vert">
-                      <div className="route-types">
-                        {routeTypes.map((type) => (
-                          <div
-                            key={type.name}
-                            className={`route-type ${
-                              currentRecord.types.includes(type.name)
-                                ? "selected"
-                                : ""
-                            }`}
-                            onClick={() => toggleRouteType(type.name)}
-                          >
-                            <img src={type.icon} alt={type.name} />
-                          </div>
-                        ))}
-                      </div>
+                    <div className="upload-steps-route-types">
+                      {routeTypes.map((type) => (
+                        <div
+                          key={type.name}
+                          className={`route-type ${
+                            currentRecord.types.includes(type.name)
+                              ? "selected"
+                              : ""
+                          }`}
+                          onClick={() => toggleRouteType(type.name)}
+                        >
+                          <img src={type.icon} alt={type.name} />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -400,9 +400,7 @@ const Upload = ({ showMessage }) => {
                   <div className="upload-form-hori-div">
                     <div className="upload-form-details-one">
                       <p className="upload-steps">6</p>
-                      <p className="upload-steps-title">
-                        備註
-                      </p>
+                      <p className="upload-steps-title">備註</p>
                     </div>
                     <div className="upload-form-hori-div-vert">
                       <textarea

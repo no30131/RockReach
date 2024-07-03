@@ -149,7 +149,7 @@ const Friends = () => {
           {isAddFriendVisible && (
             <div className="add-friend-overlay">
               <div className="add-friend-container">
-                <h2>新增好友</h2>
+                <h3>新增好友</h3>
                 <input
                   type="text"
                   placeholder="輸入使用者名稱 ..."

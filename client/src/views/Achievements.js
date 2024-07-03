@@ -128,7 +128,7 @@ const Achievements = () => {
               className="wall-item"
               onClick={() => handleWallSelect(wall)}
             >
-              <h3>{wall.wallName}</h3>
+              <h4>{wall.wallName}</h4>
               <img src={wall.originalImage} alt={wall.wallName} />
             </div>
           ))}
@@ -142,7 +142,7 @@ const Achievements = () => {
           <button onClick={handleShare}>分享</button>
           {routes.length > 0 && (
             <div className="routes-list">
-              <h3>Routes:</h3>
+              <h4>Routes:</h4>
               {routes.map((route, index) => (
                 <div
                   key={index}
@@ -157,7 +157,7 @@ const Achievements = () => {
           )}
           {selectedRoute && (
             <div className="route-details">
-              <h3>Route Details:</h3>
+              <h4>Route Details:</h4>
               <p>Custom Name: {selectedRoute.customName}</p>
               <div className="route-types">
                 Custom Types: 

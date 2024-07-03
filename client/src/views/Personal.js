@@ -311,7 +311,7 @@ const Personal = () => {
               <p>{user.introduce}</p>
             </div>
           </div>
-
+          <h3>個人化分析</h3>
           <div
             id="level"
             ref={levelRef}
@@ -332,7 +332,8 @@ const Personal = () => {
             ref={frequencyRef}
             style={{ width: 600, height: 400 }}
           ></div>
-          <div>
+          <div className="personal-records-box-container">
+            <h3>攀岩紀錄</h3>
             {climbRecords.map((record) => (
               <div key={record._id} className="personal-records-box">
                 <div

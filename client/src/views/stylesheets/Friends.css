@@ -1,4 +1,4 @@
-/* body {
+body {
     font-family: Arial, sans-serif;
   }
   
@@ -12,7 +12,7 @@
   .friend-item {
     display: flex;
     align-items: center;
-    width: 300px;
+    width: 600px;
     background: #f9f9f9;
     padding: 10px;
     border-radius: 8px;
@@ -47,7 +47,7 @@
   }
   
   .btn-add-friend {
-    background-color: #28a745;
+    background-color: rgb(255, 152, 88);
     color: white;
     border: none;
     font-size: 24px;
@@ -56,12 +56,12 @@
     border-radius: 50%;
     cursor: pointer;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 80px;
+    right: 30px;
   }
   
   .btn-add-friend:hover {
-    background-color: #218838;
+    background-color: rgb(255, 111, 22);
   }
   
   .add-friend-overlay {
@@ -111,4 +111,4 @@
   .add-friend-container button:hover {
     background-color: #0056b3;
   }
-   */
+  

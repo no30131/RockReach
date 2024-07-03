@@ -149,8 +149,8 @@ const Explore = ({ userId }) => {
                   />
                 )}
                 <div className="user-info">
-                  <p className="user-name">User: {record.user?.name || "Unknown User"}</p>
-                  <p className="gym-name">岩館: {record.gymName}</p>
+                  <p className="explore-user-name">{record.user?.name || "Unknown User"}</p>
+                  <p className="gym-name">{record.gymName}</p>
                 </div>
               </div>
               <div className="record-content">

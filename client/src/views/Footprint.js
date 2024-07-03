@@ -300,15 +300,15 @@ const Footprint = () => {
             {footprint ? (
               <div>
                 <div className="map-detail">
-                  <h3>上次到訪日期:</h3>
+                  <h4>上次到訪日期:</h4>
                   <input type="date" value={visitDate} onChange={(e) => setVisitDate(e.target.value)} />
                 </div>
                 <div className="map-detail">
-                  <h3>到訪次數:</h3>
+                  <h4>到訪次數:</h4>
                   <input type="number" value={visitTimes} onChange={(e) => setVisitTimes(e.target.value)} />
                 </div>
                 <div className="map-detail">
-                  <h3>會員到期日:</h3>
+                  <h4>會員到期日:</h4>
                   <input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
                 </div>
                 <button onClick={saveVisit} className="save-button">儲存</button>

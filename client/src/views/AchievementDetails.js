@@ -69,7 +69,7 @@ const AchievementDetails = () => {
           </p>
           {routes.length > 0 && (
             <div className="routes-list">
-              <h3>Routes:</h3>
+              <h4>Routes:</h4>
               {routes.map((route, index) => (
                 <div
                   key={index}
@@ -86,7 +86,7 @@ const AchievementDetails = () => {
           )}
           {selectedRoute && (
             <div className="route-details">
-              <h3>Route Details:</h3>
+              <h4>Route Details:</h4>
               <p>Custom Name: {selectedRoute.customName}</p>
               <div className="route-types">
                 Custom Types:
