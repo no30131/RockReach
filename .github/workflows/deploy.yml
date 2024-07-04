@@ -101,4 +101,3 @@ jobs:
             docker rm app || true &&
             echo "Running new Docker container"
             docker run -d --name app -p 7000:7000 --env-file /home/ubuntu/.env -v /home/ubuntu/uploads:/app/uploads no30131/rock_reach'
-            
