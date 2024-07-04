@@ -205,9 +205,11 @@ const Explore = ({ userId }) => {
                       </>
                     )} 
                   </div>
-                  <button onClick={() => handleShare(record._id)} className="share-button">
-                    ➤
-                  </button>
+                  <div>
+                    <button onClick={() => handleShare(record._id)} className="share-button">
+                      ➤
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
