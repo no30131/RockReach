@@ -25,61 +25,63 @@ def adjust_brightness(image, factor):
     return image
 
 def process_image(image_path, markers):
-    image = cv2.imread(image_path)
-    if image is None:
-        raise ValueError('Image not found')
+    try:
+        image = cv2.imread(image_path)
+        if image is None:
+            raise ValueError('Image not found')
 
-    dark_image = adjust_brightness(image, -35)
-    output = dark_image.copy()
+        dark_image = adjust_brightness(image, -35)
+        output = dark_image.copy()
 
-    hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-    for marker in markers:
-        x, y = int(marker['x']), int(marker['y'])
-        color = get_color_at_point(hsv_image, (x, y))
-        mask = create_mask_from_color(hsv_image, color, tolerance=68)
+        for marker in markers:
+            x, y = int(marker['x']), int(marker['y'])
+            color = get_color_at_point(hsv_image, (x, y))
+            mask = create_mask_from_color(hsv_image, color, tolerance=68)
 
-        # print(f"Processing marker at ({x}, {y}) with color {color}", file=sys.stderr)
+            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if not contours:
+                print(f"No contours found for color {color} at ({x}, {y})", file=sys.stderr)
+                continue
 
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if not contours:
-            print(f"No contours found for color {color} at ({x}, {y})", file=sys.stderr)
-            continue
+            closest_contour = find_closest_contour(contours, (x, y))
 
-        closest_contour = find_closest_contour(contours, (x, y))
+            if closest_contour is not None:
+                selected_mask = np.zeros_like(image)
+                cv2.drawContours(selected_mask, [closest_contour], -1, (255, 255, 255), thickness=cv2.FILLED)
+                selected_mask_gray = cv2.cvtColor(selected_mask, cv2.COLOR_BGR2GRAY)
 
-        if closest_contour is not None:
-            selected_mask = np.zeros_like(image)
-            cv2.drawContours(selected_mask, [closest_contour], -1, (255, 255, 255), thickness=cv2.FILLED)
-            selected_mask_gray = cv2.cvtColor(selected_mask, cv2.COLOR_BGR2GRAY)
+                selected_region = cv2.bitwise_and(image, image, mask=selected_mask_gray)
 
-            selected_region = cv2.bitwise_and(image, image, mask=selected_mask_gray)
+                bright_region = adjust_brightness(selected_region, 0)
 
-            bright_region = adjust_brightness(selected_region, 0)
+                inverted_mask = cv2.bitwise_not(selected_mask_gray)
+                darkened_background = cv2.bitwise_and(output, output, mask=inverted_mask)
+                output = cv2.add(darkened_background, bright_region)
 
-            inverted_mask = cv2.bitwise_not(selected_mask_gray)
-            darkened_background = cv2.bitwise_and(output, output, mask=inverted_mask)
-            output = cv2.add(darkened_background, bright_region)
+                cv2.drawContours(output, [closest_contour], -1, (50, 255, 50), 2)
+            else:
+                print(f"No closest contour found for marker at ({x}, {y}) with color {color}", file=sys.stderr)
 
-            cv2.drawContours(output, [closest_contour], -1, (50, 255, 50), 2)
-            # print(f"Drew contour for marker at ({x}, {y})", file=sys.stderr)
-        else:
-            print(f"No closest contour found for marker at ({x}, {y}) with color {color}", file=sys.stderr)
+        timestamp = int(time.time())
+        random_string = ''.join(np.random.choice(list('abcdefghijklmnopqrstuvwxyz0123456789'), 3))
+        result_filename = f'output_{timestamp}_{random_string}.png'
+        result_path = os.path.join('uploads', result_filename)
+        cv2.imwrite(result_path, output)
+        return result_path
 
-    timestamp = int(time.time())
-    random_string = ''.join(np.random.choice(list('abcdefghijklmnopqrstuvwxyz0123456789'), 3))
-    result_filename = f'output_{timestamp}_{random_string}.png'
-    result_path = os.path.join('uploads', result_filename)
-    cv2.imwrite(result_path, output)
-    return result_path
+    except Exception as e:
+        print(f"Unexpected error: {e}", file=sys.stderr)
+        return None
 
 def get_color_at_point(image, point):
     h, s, v = image[point[1], point[0]]
     return h, s, v
 
 def create_mask_from_color(image, color, tolerance=65):
-    lower_bound = np.array([max(color[0] - tolerance, 0), max(color[1] - tolerance, 0), max(color[2] - tolerance, 0)])
-    upper_bound = np.array([min(color[0] + tolerance, 179), min(color[1] + tolerance, 255), min(color[2] + tolerance, 255)])
+    lower_bound = np.array([max(int(color[0]) - tolerance, 0), max(int(color[1]) - tolerance, 0), max(int(color[2]) - tolerance, 0)], dtype=np.uint8)
+    upper_bound = np.array([min(int(color[0]) + tolerance, 179), min(int(color[1]) + tolerance, 255), min(int(color[2]) + tolerance, 255)], dtype=np.uint8)
     mask = cv2.inRange(image, lower_bound, upper_bound)
     
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (6, 6))
