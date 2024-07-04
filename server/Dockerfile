@@ -1,23 +1,14 @@
-FROM python:3.11-slim
+FROM node:20
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    nodejs \
-    npm \
-    build-essential \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
-    libffi-dev \
-    libssl-dev \
-    python3-dev \
-    libatlas-base-dev \
-    gfortran
+RUN apt-get update && apt-get install -y python3 python3-pip && \
+    ln -s /usr/bin/python3 /usr/bin/python && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 COPY package*.json ./
 RUN npm install
