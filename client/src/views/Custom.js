@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { getUserFromToken } from "../utils/token"
 import "./stylesheets/Custom.css";
 
 const routeTypes = [
@@ -13,6 +14,7 @@ const routeTypes = [
 
 const Custom = () => {
   const { id } = useParams();
+  const [userId, setUserId] = useState(null);
   const [walls, setWalls] = useState([]);
   const [selectedWall, setSelectedWall] = useState(null);
   const [routes, setRoutes] = useState([]);
@@ -30,6 +32,14 @@ const Custom = () => {
   const imgRef = useRef(null);
   const [scale, setScale] = useState(1);
 
+  useEffect(() => {
+    const user = getUserFromToken();
+    if (user) {
+      setUserId(user.userId);
+    }
+  }, []);
+  console.log("userId: ", userId);
+  
   useEffect(() => {
     if (id) {
       axios

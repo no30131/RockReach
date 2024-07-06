@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
+import { getUserFromToken } from "../utils/token"
 import "./stylesheets/Achievements.css";
 
 const routeTypes = [
@@ -32,21 +33,29 @@ const Achievements = () => {
       }
     };
 
-    const getCookie = (name) => {
-      const cookieArr = document.cookie.split("; ");
-      for (let i = 0; i < cookieArr.length; i++) {
-        const cookiePair = cookieArr[i].split("=");
-        if (name === cookiePair[0]) {
-          return decodeURIComponent(cookiePair[1]);
-        }
-      }
-      return null;
-    };
+    // const getCookie = (name) => {
+    //   const cookieArr = document.cookie.split("; ");
+    //   for (let i = 0; i < cookieArr.length; i++) {
+    //     const cookiePair = cookieArr[i].split("=");
+    //     if (name === cookiePair[0]) {
+    //       return decodeURIComponent(cookiePair[1]);
+    //     }
+    //   }
+    //   return null;
+    // };
 
-    const token = getCookie("token");
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUserId(decoded.userId);
+    // const token = getCookie("token");
+    // if (token) {
+    //   const decoded = jwtDecode(token);
+    //   setUserId(decoded.userId);
+    // }
+
+    const user = getUserFromToken();
+    if (user) {
+      setUserId(user.userId);
+      // console.log("userId: ", user.userId);
+    } else {
+      console.error("No user found");
     }
 
     fetchWalls();

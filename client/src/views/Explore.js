@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Explore.css";
 
 const Explore = ({ userId }) => {
@@ -9,6 +10,37 @@ const Explore = ({ userId }) => {
   const [currentSlides, setCurrentSlides] = useState({});
   const [newComment, setNewComment] = useState({});
   const [showComments, setShowComments] = useState({});
+  // const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
+
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     const user = getUserFromToken();
+  //     if (user) {
+  //       setUserId(user.userId);
+  //     }
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = getUserFromToken();
+      if (!user) return;
+      const userId = user.userId;
+
+      try {
+        const userResponse = await axios.get(
+          `https://node.me2vegan.com/api/users/${userId}`
+        );
+        setUserName(userResponse.data.name);
+        console.log("userName: ", userResponse.data.name);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -24,7 +56,7 @@ const Explore = ({ userId }) => {
         console.error("Error fetching records: ", error);
       }
     };
-
+    // console.log("userId: ", userId);
     fetchRecords();
   }, [id, userId]);
 
@@ -77,24 +109,43 @@ const Explore = ({ userId }) => {
   const handleDotClick = (recordId, index) => {
     setCurrentSlides((prev) => ({
       ...prev,
-      [recordId]: index
+      [recordId]: index,
     }));
   };
 
-  const getEndpoint = () => {
-    return userId
-      ? `https://node.me2vegan.com/api/climbrecords/exploreWall/${userId}`
-      : `https://node.me2vegan.com/api/climbrecords/exploreWall`;
-  };
+  // const getEndpoint = () => {
+  //   return userId
+  //     ? `https://node.me2vegan.com/api/climbrecords/exploreWall/${userId}`
+  //     : `https://node.me2vegan.com/api/climbrecords/exploreWall`;
+  // };
 
   const handleAddLike = async (recordId, subRecordId) => {
     try {
-      await axios.post(`https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`);
-      const endpoint = id
-        ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
-        : getEndpoint();
-      const response = await axios.get(endpoint);
-      setRecords(id ? [response.data] : response.data);
+      await axios.post(
+        `https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`
+      );
+      // const endpoint = id
+      //   ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
+      //   : // : getEndpoint();
+      //     `https://node.me2vegan.com/api/climbrecords/exploreWall/share`;
+      // const response = await axios.get(endpoint);
+      // setRecords(id ? [response.data] : response.data);
+      setRecords((prevRecords) =>
+        prevRecords.map((record) => {
+          if (record._id === recordId) {
+            return {
+              ...record,
+              records: record.records.map((rec) => {
+                if (rec._id === subRecordId) {
+                  return { ...rec, likes: rec.likes + 1 };
+                }
+                return rec;
+              }),
+            };
+          }
+          return record;
+        })
+      );
     } catch (error) {
       console.error("Error adding like: ", error);
     }
@@ -102,17 +153,42 @@ const Explore = ({ userId }) => {
 
   const handleAddComment = async (recordId, subRecordId) => {
     const comment = newComment[subRecordId];
-    if (!comment) return;
+    if (!comment || !userName) return console.log("Please login!");
 
     try {
-      await axios.post(`https://node.me2vegan.com/api/climbrecords/addComment/${subRecordId}`, {
-        comment
-      });
-      const endpoint = id
-      ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
-      : getEndpoint();
-      const response = await axios.get(endpoint);
-      setRecords(id ? [response.data] : response.data);
+      const fullComment = `${userName}: ${comment}`;
+      await axios.post(
+        `https://node.me2vegan.com/api/climbrecords/addComment/${subRecordId}`,
+        {
+          comment: fullComment,
+        }
+      );
+      // const endpoint = id
+      //   ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
+      //   : // : getEndpoint();
+      //     `https://node.me2vegan.com/api/climbrecords/exploreWall/share`;
+      // const response = await axios.get(endpoint);
+      // setRecords(id ? [response.data] : response.data);
+
+      setRecords((prevRecords) =>
+        prevRecords.map((record) => {
+          if (record._id === recordId) {
+            return {
+              ...record,
+              records: record.records.map((rec) => {
+                if (rec._id === subRecordId) {
+                  return {
+                    ...rec,
+                    comments: [...rec.comments, fullComment],
+                  };
+                }
+                return rec;
+              }),
+            };
+          }
+          return record;
+        })
+      );
       setNewComment((prev) => ({ ...prev, [subRecordId]: "" }));
       setShowComments((prev) => ({ ...prev, [subRecordId]: true }));
     } catch (error) {
@@ -149,7 +225,9 @@ const Explore = ({ userId }) => {
                   />
                 )}
                 <div className="user-info">
-                  <p className="explore-user-name">{record.user?.name || "Unknown User"}</p>
+                  <p className="explore-user-name">
+                    {record.user?.name || "Unknown User"}
+                  </p>
                   <p className="gym-name">{record.gymName}</p>
                 </div>
               </div>
@@ -158,7 +236,9 @@ const Explore = ({ userId }) => {
                   {record.records.map((rec, recIndex) =>
                     rec.files.map((file, fileIndex) => (
                       <div
-                        className={`slide ${currentSlideIndex === fileIndex ? "active" : ""}`}
+                        className={`slide ${
+                          currentSlideIndex === fileIndex ? "active" : ""
+                        }`}
                         key={`${recIndex}-${fileIndex}`}
                       >
                         {renderFile(file)}
@@ -169,7 +249,9 @@ const Explore = ({ userId }) => {
                     {record.records.map((rec, recIndex) =>
                       rec.files.map((_, fileIndex) => (
                         <span
-                          className={`dot ${currentSlideIndex === fileIndex ? "active" : ""}`}
+                          className={`dot ${
+                            currentSlideIndex === fileIndex ? "active" : ""
+                          }`}
                           key={`${recIndex}-${fileIndex}`}
                           onClick={() => handleDotClick(record._id, fileIndex)}
                         ></span>
@@ -177,38 +259,64 @@ const Explore = ({ userId }) => {
                     )}
                   </div>
                 </div>
-                <p className="record-level">等級: {record.records.map(r => r.level).join(', ')}</p>
-                <p className="record-memo">Memo: {record.records.map(r => r.memo).join(', ')}</p>
+                <p className="record-level">
+                  等級: {record.records.map((r) => r.level).join(", ")}
+                </p>
+                <p className="record-memo">
+                  Memo: {record.records.map((r) => r.memo).join(", ")}
+                </p>
               </div>
               {record.records.map((rec) => (
                 <div key={rec._id} className="record-footer">
-                  <div className="likes">
-                    <button onClick={() => handleAddLike(record._id, rec._id)}>👍</button> {rec.likes}
+                  <div className="record-footer1">
+                    <div className="likes">
+                      <button
+                        onClick={() => handleAddLike(record._id, rec._id)}
+                      >
+                        👍 {rec.likes}
+                      </button>
+                    </div>
+                    <div className="comments">
+                      <button onClick={() => toggleComments(rec._id)}>
+                        💬 {rec.comments.length}
+                      </button>
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => handleShare(record._id)}
+                        className="share-button"
+                      >
+                        ➤
+                      </button>
+                    </div>
                   </div>
-                  <div className="comments">
-                    <button onClick={() => toggleComments(rec._id)}>
-                      💬 {rec.comments.length}
-                    </button>
+                  <div className="record-footer2">
                     {showComments[rec._id] && (
                       <>
-                      {rec.comments.map((comment, index) => (
-                        <p key={index}>{comment}</p>
-                      ))}
-                      <div className="comment-input">
-                        <input
-                          type="text"
-                          value={newComment[rec._id] || ""}
-                          onChange={(e) => handleCommentChange(rec._id, e.target.value)}
-                        />
-                        <button onClick={() => handleAddComment(record._id, rec._id)}>送出</button>
-                      </div>
+                        <div className="comment-list">
+                          {rec.comments.map((comment, index) => (
+                            <p key={index}>{comment}</p>
+                          ))}
+                        </div>
+                        <div className="comment-input">
+                          <input
+                            type="text"
+                            value={newComment[rec._id] || ""}
+                            onChange={(e) =>
+                              handleCommentChange(rec._id, e.target.value)
+                            }
+                            placeholder="write something..."
+                          />
+                          <button
+                            onClick={() =>
+                              handleAddComment(record._id, rec._id)
+                            }
+                          >
+                            送出
+                          </button>
+                        </div>
                       </>
-                    )} 
-                  </div>
-                  <div>
-                    <button onClick={() => handleShare(record._id)} className="share-button">
-                      ➤
-                    </button>
+                    )}
                   </div>
                 </div>
               ))}

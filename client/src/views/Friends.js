@@ -1,36 +1,44 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Explore from "./Explore";
-// import ChatRoom from "./ChatRoom";
+import ChatRoom from "./ChatRoom";
 import "./stylesheets/Friends.css";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
+import { getUserFromToken } from "../utils/token"
 
-const getCookie = (name) => {
-  const cookieArr = document.cookie.split("; ");
-  for (let i = 0; i < cookieArr.length; i++) {
-    const cookiePair = cookieArr[i].split("=");
-    if (name === cookiePair[0]) {
-      return decodeURIComponent(cookiePair[1]);
-    }
-  }
-  return null;
-};
+// const getCookie = (name) => {
+//   const cookieArr = document.cookie.split("; ");
+//   for (let i = 0; i < cookieArr.length; i++) {
+//     const cookiePair = cookieArr[i].split("=");
+//     if (name === cookiePair[0]) {
+//       return decodeURIComponent(cookiePair[1]);
+//     }
+//   }
+//   return null;
+// };
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
   const [isAddFriendVisible, setIsAddFriendVisible] = useState(false);
-  const [token, setToken] = useState(null);
+  // const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [selectedFriendId, setSelectedFriendId] = useState(null);
-  // const [isChatVisible, setIsChatVisible] = useState(false);
+  const [isChatVisible, setIsChatVisible] = useState(false);
 
   useEffect(() => {
-    const token = getCookie("token");
+    // const token = getCookie("token");
 
-    if (token) {
-      setToken(token);
-      const decoded = jwtDecode(token);
-      setUserId(decoded.userId);
+    // if (token) {
+    //   setToken(token);
+    //   const decoded = jwtDecode(token);
+    //   setUserId(decoded.userId);
+    // }
+    const user = getUserFromToken();
+    if (user) {
+      setUserId(user.userId);
+      // console.log("userId: ", user.userId);
+    } else {
+      console.error("No user found");
     }
   }, []);
 
@@ -92,14 +100,14 @@ const Friends = () => {
     setSelectedFriendId(friendId);
   };
 
-  // const handleChat = (friendId) => {
-  //   setSelectedFriendId(friendId);
-  //   setIsChatVisible(true);
-  // };
+  const handleChat = (friendId) => {
+    setSelectedFriendId(friendId);
+    setIsChatVisible(true);
+  };
 
-  // if (selectedFriendId && isChatVisible) {
-  //   return <ChatRoom userId={userId} friendId={selectedFriendId} />;
-  // }
+  if (selectedFriendId && isChatVisible) {
+    return <ChatRoom userId={userId} friendId={selectedFriendId} />;
+  }
 
   if (selectedFriendId) {
     return <Explore userId={selectedFriendId} />;
@@ -107,7 +115,7 @@ const Friends = () => {
 
   return (
     <div>
-      {!token ? (
+      {!userId ? (
         <p>請先登入！</p>
       ) : (
         <div className="friend-list-container">
@@ -130,12 +138,12 @@ const Friends = () => {
                 >
                   查看
                 </button>
-                {/* <button
+                <button
                   className="btn-chat"
                   onClick={() => handleChat(friendInfo._id)}
                 >
                   聊天
-                </button> */}
+                </button>
               </div>
             );
           })}

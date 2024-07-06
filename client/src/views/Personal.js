@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import Plotly from "plotly.js-dist";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
+import { getUserFromToken } from "../utils/token"
 import "./stylesheets/Personal.css";
 
 const routeTypes = [
@@ -24,15 +25,21 @@ const Personal = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = getCookie("token");
+      const user = getUserFromToken();
+      if (!user) return;
 
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
+      const userId = user.userId;
+      // console.log("userId: ", userId);
 
-      const decoded = jwtDecode(token);
-      const userId = decoded.userId;
+      // const token = getCookie("token");
+
+      // if (!token) {
+      //   console.error("No token found");
+      //   return;
+      // }
+
+      // const decoded = jwtDecode(token);
+      // const userId = decoded.userId;
 
       try {
         const userResponse = await axios.get(
@@ -233,16 +240,16 @@ const Personal = () => {
     generateFrequencyChart,
   ]);
 
-  const getCookie = (name) => {
-    const cookieArr = document.cookie.split("; ");
-    for (let i = 0; i < cookieArr.length; i++) {
-      const cookiePair = cookieArr[i].split("=");
-      if (name === cookiePair[0]) {
-        return decodeURIComponent(cookiePair[1]);
-      }
-    }
-    return null;
-  };
+  // const getCookie = (name) => {
+  //   const cookieArr = document.cookie.split("; ");
+  //   for (let i = 0; i < cookieArr.length; i++) {
+  //     const cookiePair = cookieArr[i].split("=");
+  //     if (name === cookiePair[0]) {
+  //       return decodeURIComponent(cookiePair[1]);
+  //     }
+  //   }
+  //   return null;
+  // };
 
   const renderFile = (file) => {
     const fileTypeMap = {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
+import { getUserFromToken } from "../utils/token"
 import { useParams } from "react-router-dom";
 import "./stylesheets/Footprint.css";
 import { Layout } from "antd";
@@ -19,16 +20,16 @@ const Footprint = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
 
-  const getCookie = (name) => {
-    const cookieArr = document.cookie.split("; ");
-    for (let i = 0; i < cookieArr.length; i++) {
-      const cookiePair = cookieArr[i].split("=");
-      if (name === cookiePair[0]) {
-        return decodeURIComponent(cookiePair[1]);
-      }
-    }
-    return null;
-  };
+  // const getCookie = (name) => {
+  //   const cookieArr = document.cookie.split("; ");
+  //   for (let i = 0; i < cookieArr.length; i++) {
+  //     const cookiePair = cookieArr[i].split("=");
+  //     if (name === cookiePair[0]) {
+  //       return decodeURIComponent(cookiePair[1]);
+  //     }
+  //   }
+  //   return null;
+  // };
 
   const fetchUserFootprints = useCallback(async (userId) => {
     try {
@@ -40,18 +41,26 @@ const Footprint = () => {
   }, []);
 
   useEffect(() => {
-    const token = getCookie("token");
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUserId(decoded.userId);
-      if (!id) {
-        fetchUserFootprints(decoded.userId);
-      }
+    // const token = getCookie("token");
+    // if (token) {
+    //   const decoded = jwtDecode(token);
+    //   setUserId(decoded.userId);
+    //   if (!id) {
+    //     fetchUserFootprints(decoded.userId);
+    //   }
+    // }
+
+    const user = getUserFromToken();
+    if (user) {
+      setUserId(user.userId);
+      // console.log("userId: ", user.userId);
+    } else {
+      console.error("No user found");
     }
 
     if (id) {
       fetchUserFootprints(id);
-    } else if (!token) {
+    } else if (!user) {
       setIsMapLoaded(true);
     }
 
