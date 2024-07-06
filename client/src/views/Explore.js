@@ -33,7 +33,7 @@ const Explore = ({ userId }) => {
           `https://node.me2vegan.com/api/users/${userId}`
         );
         setUserName(userResponse.data.name);
-        console.log("userName: ", userResponse.data.name);
+        // console.log("userName: ", userResponse.data.name);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }

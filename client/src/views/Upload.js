@@ -413,6 +413,7 @@ const Upload = ({ showMessage }) => {
                     </div>
                     <div className="upload-form-hori-div-vert">
                       <textarea
+                        className="upload-form-memo"
                         name="memo"
                         rows="3"
                         value={currentRecord.memo || ""}

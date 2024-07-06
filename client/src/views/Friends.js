@@ -3,40 +3,20 @@ import axios from "axios";
 import Explore from "./Explore";
 import ChatRoom from "./ChatRoom";
 import "./stylesheets/Friends.css";
-// import { jwtDecode } from "jwt-decode";
-import { getUserFromToken } from "../utils/token"
-
-// const getCookie = (name) => {
-//   const cookieArr = document.cookie.split("; ");
-//   for (let i = 0; i < cookieArr.length; i++) {
-//     const cookiePair = cookieArr[i].split("=");
-//     if (name === cookiePair[0]) {
-//       return decodeURIComponent(cookiePair[1]);
-//     }
-//   }
-//   return null;
-// };
+import { getUserFromToken } from "../utils/token";
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
   const [isAddFriendVisible, setIsAddFriendVisible] = useState(false);
-  // const [token, setToken] = useState(null);
   const [userId, setUserId] = useState(null);
   const [selectedFriendId, setSelectedFriendId] = useState(null);
   const [isChatVisible, setIsChatVisible] = useState(false);
+  const [newFriendName, setNewFriendName] = useState("");
 
   useEffect(() => {
-    // const token = getCookie("token");
-
-    // if (token) {
-    //   setToken(token);
-    //   const decoded = jwtDecode(token);
-    //   setUserId(decoded.userId);
-    // }
     const user = getUserFromToken();
     if (user) {
       setUserId(user.userId);
-      // console.log("userId: ", user.userId);
     } else {
       console.error("No user found");
     }
@@ -59,15 +39,24 @@ const Friends = () => {
     }
   }, [userId]);
 
-  const addFriend = async (name) => {
+  const addFriend = async () => {
     try {
+      // console.log("Searching for user:", newFriendName);
+
       const userResponse = await axios.get(
-        `https://node.me2vegan.com/api/users/name/${name}`
+        `https://node.me2vegan.com/api/users/name/${newFriendName}`
       );
+
       if (!userResponse.data) {
+        console.error("User not found with name:", newFriendName);
         throw new Error("User not found");
       }
+
       const userData = userResponse.data;
+      // console.log("userData: ", userData);
+      // console.log("image: ", userData.image);
+      // console.log("name: ", userData.name);
+      
       const receiverId = userData._id;
 
       const newFriend = {
@@ -75,20 +64,28 @@ const Friends = () => {
         receiverId: receiverId,
         friendDate: new Date().toISOString().split("T")[0],
       };
-      console.log("newFriend: ", newFriend);
+
+      // console.log("Adding new friend:", newFriend);
+
       const response = await axios.post(
         `https://node.me2vegan.com/api/friends/create`,
         newFriend
       );
 
-      if (response.status === 200) {
-        const addedFriend = response.data;
-        setFriends([...friends, addedFriend]);
+      // console.log("Server response:", response);
+
+      if (response.status === 200 || response.status === 201) {
+        // 重新获取好友列表
+        const updatedFriends = await axios.get(
+          `https://node.me2vegan.com/api/friends/${userId}`
+        );
+
+        setFriends(updatedFriends.data);
       } else {
         console.error("Error adding friend:", response.statusText);
       }
     } catch (error) {
-      console.error("Error adding friends:", error);
+      console.error("Error adding friend:", error);
     }
   };
 
@@ -103,6 +100,12 @@ const Friends = () => {
   const handleChat = (friendId) => {
     setSelectedFriendId(friendId);
     setIsChatVisible(true);
+  };
+
+  const handleConfirmAddFriend = () => {
+    addFriend();
+    handleToggleAddFriend();
+    setNewFriendName("");
   };
 
   if (selectedFriendId && isChatVisible) {
@@ -157,15 +160,22 @@ const Friends = () => {
                 <input
                   type="text"
                   placeholder="輸入使用者名稱 ..."
+                  value={newFriendName}
+                  onChange={(e) => setNewFriendName(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      addFriend(e.target.value);
-                      handleToggleAddFriend();
-                      e.target.value = "";
+                      handleConfirmAddFriend();
                     }
                   }}
                 />
-                <button onClick={handleToggleAddFriend}>取消</button>
+                <div className="add-friend-buttons">
+                  <button onClick={handleConfirmAddFriend} className="add-friend-button">
+                    確認
+                  </button>
+                  <button onClick={handleToggleAddFriend} className="cancel-add-friend-button">
+                    取消
+                  </button>
+                </div>
               </div>
             </div>
           )}

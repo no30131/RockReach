@@ -10,10 +10,18 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   animation: fadeinout 5s ease-in-out;
   z-index: 1000;
+  display: flex;
+  align-items: center;
 }
 
 .message-error-box {
   background-color: #af4c4c;
+}
+
+.message-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
 }
 
 @keyframes fadeinout {

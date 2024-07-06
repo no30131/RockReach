@@ -8,6 +8,7 @@ const socket = io("https://node.me2vegan.com");
 const ChatRoom = ({ userId, friendId }) => {
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState("");
+    const [friend, setFriend] = useState(null);
 
     useEffect(() => {
         const fetchMessages = async () => {
@@ -20,6 +21,19 @@ const ChatRoom = ({ userId, friendId }) => {
         };
 
         fetchMessages();
+
+        const fetchUserData = async () => {
+            try {
+                const userResponse = await axios.get(
+                    `https://node.me2vegan.com/api/users/${friendId}`
+                );
+                setFriend(userResponse.data);
+                // console.log("friend: ", userResponse.data);
+            } catch (error) {
+                console.error("Error fetching freind details: ", error);
+            }
+        };
+        fetchUserData();
     }, [userId, friendId]);
 
     useEffect(() => {
@@ -44,11 +58,21 @@ const ChatRoom = ({ userId, friendId }) => {
 
     return (
         <div className="chat-room">
+            {friend ? (
+                <div className="friend-details">
+                    <img src={friend.image} alt={friend.name} />
+                    <p>{friend.name}</p>
+                </div>
+            ) : (
+                <div className="friend-details">
+                    <p>Loading friend data...</p>
+                </div>
+            )}
             <div className="chat-messages">
                 {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.talker === userId ? "own-message" : ""}`}>
-                        <p>{msg.message}</p>
                         <span>{new Date(msg.time).toLocaleString()}</span>
+                        <p className="single-message-box">{msg.message}</p>
                     </div>
                 ))}
             </div>
@@ -60,6 +84,7 @@ const ChatRoom = ({ userId, friendId }) => {
                     onKeyDown={(e) => {
                         if (e.key === "Enter") handleSendMessage();
                     }}
+                    placeholder="write something..."
                 />
                 <button onClick={handleSendMessage}>發送</button>
             </div>
