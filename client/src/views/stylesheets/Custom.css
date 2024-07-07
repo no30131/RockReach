@@ -160,6 +160,7 @@
 .route-types {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .route-types-custom {
@@ -260,4 +261,8 @@
   display: flex;
   gap: 30px;
   margin-bottom: 20px;
+}
+
+.route-details-data {
+  margin-bottom: 10px;
 }

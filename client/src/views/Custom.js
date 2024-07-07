@@ -76,6 +76,8 @@ const Custom = () => {
     setIsCanvasActive(false);
     setIsProcessing(false);
     setScale(1);
+    setShowSaveArea(false);
+    setShowOutput(false);
 
     axios
       .get(`https://node.me2vegan.com/api/customs/walls/${wall.wallName}`)
@@ -193,22 +195,31 @@ const Custom = () => {
     }
   }, [markers, isEraserActive, drawMarkers, selectedWall]);
 
-  const handleConfirmClick = () => {
-    axios
-      .post(`https://node.me2vegan.com/api/customs/create`, {
-        wallName: selectedWall.wallName,
-        processedImage: outputDBImage,
-        userId: userId,
-        customName,
-        customType,
-        memo,
-      })
-      .then((response) => {
-        setSelectedWall(null);
-      })
-      .catch((error) => {
-        console.error("Error saving custom route:", error);
-      });
+  const handleConfirmClick = async () => {
+    try {
+      const userResponse = await axios.get(
+        `https://node.me2vegan.com/api/users/${userId}`
+      );
+      const userName = userResponse.data.name;
+
+      axios
+        .post(`https://node.me2vegan.com/api/customs/create`, {
+          wallName: selectedWall.wallName,
+          processedImage: outputDBImage,
+          userId: userName,
+          customName,
+          customType,
+          memo,
+        })
+        .then((response) => {
+          setSelectedWall(null);
+        })
+        .catch((error) => {
+          console.error("Error saving custom route:", error);
+        });
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
   };
 
   const handleShare = (routeId) => {
@@ -362,7 +373,7 @@ const Custom = () => {
                     <img key={index} src={getRouteTypeIcon(type)} alt={type} />
                   ))}
                 </div>
-                {selectedRoute.setter && <p>Setter: {selectedRoute.setter}</p>}
+                {selectedRoute.setter && <p>設計者: {selectedRoute.setter}</p>}
                 {selectedRoute.memo && <p>Memo: {selectedRoute.memo}</p>}
               </div>
               <img src={selectedRoute.processedImage} alt="Processed" />
