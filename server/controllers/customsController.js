@@ -136,8 +136,8 @@ exports.processImage = async (req, res) => {
 };
 
 exports.createCustoms = async (req, res) => {
-  const { wallName, processedImage, customName, customType, memo } = req.body;
-  // console.log(wallName, processedImage, customName, customType, memo);
+  const { wallName, processedImage, userId, customName, customType, memo } = req.body;
+  // console.log(wallName, processedImage, userId, customName, customType, memo);
 
   if (!wallName || !processedImage || !customName || !customType) {
     return res.status(400).json({ message: "All fields are required" });
@@ -168,6 +168,7 @@ exports.createCustoms = async (req, res) => {
     if (wall) {
       wall.customs.push({
         processedImage: imageUrl,
+        setter: userId,
         customName,
         customType,
         memo,

@@ -107,6 +107,11 @@
 .record-footer button {
   padding: 0 5px;
   width: 60px;
+  background-color: rgb(255, 251, 248);
+  border: 1px solid rgb(126, 126, 126);
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(203, 193, 185, 0.5);
+  cursor: pointer;
 }
 
 .record-footer1 {

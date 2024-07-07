@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { getUserFromToken } from "../utils/token"
+import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Custom.css";
 
 const routeTypes = [
@@ -31,6 +31,8 @@ const Custom = () => {
   const canvasRef = useRef(null);
   const imgRef = useRef(null);
   const [scale, setScale] = useState(1);
+  const [showOutput, setShowOutput] = useState(false);
+  const [showSaveArea, setShowSaveArea] = useState(false);
 
   useEffect(() => {
     const user = getUserFromToken();
@@ -38,8 +40,8 @@ const Custom = () => {
       setUserId(user.userId);
     }
   }, []);
-  console.log("userId: ", userId);
-  
+  // console.log("userId: ", userId);
+
   useEffect(() => {
     if (id) {
       axios
@@ -113,19 +115,25 @@ const Custom = () => {
   const handleProcessClick = async () => {
     if (!selectedWall) return;
     setIsProcessing(true);
-  
+
     try {
-      const response = await axios.post('https://node.me2vegan.com/api/customs/process', {
-        image: selectedWall.originalImage,
-        markers: markers.map(marker => ({
-          x: marker.x / scale,
-          y: marker.y / scale,
-        })),
-      });
-  
-      setOutputImage(`https://node.me2vegan.com/${response.data.processedImage}`);
+      const response = await axios.post(
+        "https://node.me2vegan.com/api/customs/process",
+        {
+          image: selectedWall.originalImage,
+          markers: markers.map((marker) => ({
+            x: marker.x / scale,
+            y: marker.y / scale,
+          })),
+        }
+      );
+
+      setOutputImage(
+        `https://node.me2vegan.com/${response.data.processedImage}`
+      );
       setOutputDBImage(response.data.processedImage);
       setIsProcessing(false);
+      setShowOutput(true);
     } catch (error) {
       console.error("Error processing image:", error);
       setIsProcessing(false);
@@ -190,6 +198,7 @@ const Custom = () => {
       .post(`https://node.me2vegan.com/api/customs/create`, {
         wallName: selectedWall.wallName,
         processedImage: outputDBImage,
+        userId: userId,
         customName,
         customType,
         memo,
@@ -207,13 +216,38 @@ const Custom = () => {
     prompt("Share this link:", shareLink);
   };
 
+  const handleReturn = () => {
+    if (!selectedRoute) {
+      setSelectedWall(null);
+    } else {
+      setSelectedRoute(null);
+    }
+  };
+
+  const handleAddRoute = () => {
+    setIsCanvasActive(true);
+
+    if (selectedRoute) {
+      setSelectedRoute(null);
+    }
+  };
+
+  const handleSave = () => {
+    setShowSaveArea(true);
+  };
+
+  const handleEdit = () => {
+    setShowSaveArea(false);
+    setShowOutput(false);
+  };
+
   const getRouteTypeIcon = (typeName) => {
     const type = routeTypes.find((routeType) => routeType.name === typeName);
     return type ? type.icon : "";
   };
 
   return (
-    <div>
+    <div className="custom-page">
       {!selectedWall ? (
         <div className="walls-list">
           {walls.map((wall, index) => (
@@ -229,102 +263,156 @@ const Custom = () => {
         </div>
       ) : (
         <div className="custom-header">
-          {/* {!id && (
-            <button onClick={() => setSelectedWall(null)} className="cancel-button">返回</button>
-          )} */}
-          <h2>{selectedWall.wallName}</h2>
-          <img
-            ref={imgRef}
-            src={selectedWall.originalImage}
-            alt={selectedWall.wallName}
-            style={{ display: "none" }}
-            onLoad={handleImageLoad}
-          />
-          {!id && <canvas ref={canvasRef} onClick={handleImageClick} />}
-          {outputImage && (
-            <div className="route-output">
-              <h3>Output Image:</h3>
-              <img src={outputImage} alt="Output" />
-            </div>
-          )}
-          {!isProcessing && !outputImage && !isCanvasActive && !id && (
-            <button
-              onClick={() => setIsCanvasActive(true)}
-              className="custom-add-button"
-            >
-              新增路線
+          {!id && (
+            <button onClick={handleReturn} className="return-button">
+              <img src="/images/return.png" alt="return" />
             </button>
           )}
-          {isCanvasActive && !id && (
-            <div>
-              <button onClick={handleProcessClick}>Process</button>
-              <button onClick={() => setIsEraserActive(!isEraserActive)}>
-                {isEraserActive ? "Switch to Marker" : "Switch to Eraser"}
-              </button>
-            </div>
-          )}
-          {outputImage && !id && (
-            <div>
-              <input
-                type="text"
-                placeholder="Custom Name"
-                value={customName}
-                onChange={(e) => setCustomName(e.target.value)}
-                required
-              />
-              <div className="route-types">
-                {routeTypes.map((type) => (
-                  <div
-                    key={type.name}
-                    className={`route-type ${
-                      customType.includes(type.name) ? "selected" : ""
-                    }`}
-                    onClick={() => toggleRouteType(type.name)}
-                  >
-                    <img src={type.icon} alt={type.name} />
-                    <p>{type.name}</p>
-                  </div>
-                ))}
+          <div
+            className={`custom-item-details ${!selectedRoute ? "" : "hidden"}`}
+          >
+            <h3>{selectedWall.wallName}</h3>
+            <img
+              ref={imgRef}
+              src={selectedWall.originalImage}
+              alt={selectedWall.wallName}
+              style={{ display: "none" }}
+              onLoad={handleImageLoad}
+            />
+            {!id && <canvas ref={canvasRef} onClick={handleImageClick} />}
+            {outputImage && (
+              <div className="route-output">
+                <h3> </h3>
+                <img src={outputImage} alt="Output" />
               </div>
-              <textarea
-                placeholder="Memo"
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-              />
-              <button onClick={handleConfirmClick}>Save</button>
-            </div>
-          )}
-          {routes.length > 0 && (
-            <div className="routes-list">
-              <h4>Routes:</h4>
-              {routes.map((route, index) => (
-                <div
-                  key={index}
-                  className="route-item"
-                  onClick={() => handleRouteSelect(route)}
-                >
-                  <h4>{route.customName}</h4>
+            )}
+            {!showOutput && isCanvasActive && !id && (
+              <div className="adding-custom-area">
+                <p>點擊標記路線中的所有岩點，再點執行查看結果</p>
+                <div className="adding-custom-buttons">
+                  <button
+                    onClick={handleProcessClick}
+                    className="process-button"
+                  >
+                    執行
+                  </button>
+                  <button
+                    onClick={() => setIsEraserActive(!isEraserActive)}
+                    className="eraser-button"
+                  >
+                    {isEraserActive ? "使用標記" : "使用橡皮擦"}
+                  </button>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            )}
+            {showOutput && (
+              <div className="edit-or-save">
+                <button onClick={handleSave} className="process-save-button">
+                  保存
+                </button>
+                <button onClick={handleEdit} className="process-edit-button">
+                  修改
+                </button>
+              </div>
+            )}
+            {outputImage && showSaveArea && !id && (
+              <div className="custom-details">
+                <input
+                  type="text"
+                  placeholder="輸入路線名稱"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  className="custom-input-name"
+                  required
+                />
+                <div className="route-types-custom">
+                  {routeTypes.map((type) => (
+                    <div
+                      key={type.name}
+                      className={`route-type-custom ${
+                        customType.includes(type.name) ? "selected" : ""
+                      }`}
+                      onClick={() => toggleRouteType(type.name)}
+                    >
+                      <img src={type.icon} alt={type.name} />
+                      {/* <p>{type.name}</p> */}
+                    </div>
+                  ))}
+                </div>
+                <textarea
+                  placeholder="輸入說明或備註"
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
+                  className="custom-textarea"
+                />
+                <button onClick={handleConfirmClick} className="confirm-button">
+                  上傳
+                </button>
+              </div>
+            )}
+          </div>
+
           {selectedRoute && (
             <div className="route-details">
-              {/* <h3>Route Details:</h3> */}
-              <p>Custom Name: {selectedRoute.customName}</p>
-              <div className="route-types">
-                Custom Types:
-                {selectedRoute.customType.map((type, index) => (
-                  <img key={index} src={getRouteTypeIcon(type)} alt={type} />
-                ))}
+              <div className="route-details-data">
+                <p>路線名稱: {selectedRoute.customName}</p>
+                <div className="route-types">
+                  路線類型:
+                  {selectedRoute.customType.map((type, index) => (
+                    <img key={index} src={getRouteTypeIcon(type)} alt={type} />
+                  ))}
+                </div>
+                {selectedRoute.setter && <p>Setter: {selectedRoute.setter}</p>}
+                {selectedRoute.memo && <p>Memo: {selectedRoute.memo}</p>}
               </div>
-              <p>Memo: {selectedRoute.memo}</p>
               <img src={selectedRoute.processedImage} alt="Processed" />
               {!id && (
-                <button onClick={() => handleShare(selectedRoute._id)}>
+                <button
+                  onClick={() => handleShare(selectedRoute._id)}
+                  className="share-custom-button"
+                >
                   分享
                 </button>
               )}
+            </div>
+          )}
+          {routes.length > 0 && (
+            <div
+              className={`route-list-box ${
+                !isProcessing && !outputImage && !isCanvasActive && !id
+                  ? ""
+                  : "hidden"
+              }`}
+            >
+              <div className="routes-list">
+                <h4>路線列表:</h4>
+                {routes.map((route, index) => (
+                  <div
+                    key={index}
+                    className={`route-item ${
+                      selectedRoute &&
+                      selectedRoute.customName === route.customName
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() => handleRouteSelect(route)}
+                  >
+                    <h4>{route.customName}</h4>
+                  </div>
+                ))}
+              </div>
+              {!isProcessing &&
+                !outputImage &&
+                !isCanvasActive &&
+                !id &&
+                userId && (
+                  <button
+                    onClick={handleAddRoute}
+                    className="custom-add-button"
+                  >
+                    新增路線
+                  </button>
+                )}
             </div>
           )}
         </div>
