@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// import { jwtDecode } from "jwt-decode";
-import { getUserFromToken } from "../utils/token"
+import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Achievements.css";
 
 const routeTypes = [
@@ -9,7 +8,7 @@ const routeTypes = [
   { name: "Dyno", icon: "/images/icon_dyno.png" },
   { name: "Slope", icon: "/images/icon_slope.png" },
   { name: "Power", icon: "/images/icon_power.png" },
-  { name: "Pump", icon: "/images/icon_pump.png" }
+  { name: "Pump", icon: "/images/icon_pump.png" },
 ];
 
 const Achievements = () => {
@@ -17,7 +16,6 @@ const Achievements = () => {
   const [selectedWall, setSelectedWall] = useState(null);
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
-  // const [status, setStatus] = useState("incomplete");
   const [userId, setUserId] = useState(null);
   const [achievements, setAchievements] = useState({});
 
@@ -33,27 +31,9 @@ const Achievements = () => {
       }
     };
 
-    // const getCookie = (name) => {
-    //   const cookieArr = document.cookie.split("; ");
-    //   for (let i = 0; i < cookieArr.length; i++) {
-    //     const cookiePair = cookieArr[i].split("=");
-    //     if (name === cookiePair[0]) {
-    //       return decodeURIComponent(cookiePair[1]);
-    //     }
-    //   }
-    //   return null;
-    // };
-
-    // const token = getCookie("token");
-    // if (token) {
-    //   const decoded = jwtDecode(token);
-    //   setUserId(decoded.userId);
-    // }
-
     const user = getUserFromToken();
     if (user) {
       setUserId(user.userId);
-      // console.log("userId: ", user.userId);
     } else {
       console.error("No user found");
     }
@@ -63,7 +43,6 @@ const Achievements = () => {
 
   const handleWallSelect = async (wall) => {
     setSelectedWall(wall);
-    // setStatus("incomplete");
 
     try {
       const routesResponse = await axios.get(
@@ -74,10 +53,13 @@ const Achievements = () => {
       const achievementsResponse = await axios.get(
         `https://node.me2vegan.com/api/achievements/${userId}`
       );
-      const userAchievements = achievementsResponse.data.reduce((acc, achievement) => {
-        acc[achievement.customName] = achievement.status;
-        return acc;
-      }, {});
+      const userAchievements = achievementsResponse.data.reduce(
+        (acc, achievement) => {
+          acc[achievement.customName] = achievement.status;
+          return acc;
+        },
+        {}
+      );
       setAchievements(userAchievements);
     } catch (error) {
       console.error("Error fetching wall details or achievements:", error);
@@ -86,7 +68,6 @@ const Achievements = () => {
 
   const handleRouteSelect = (route) => {
     setSelectedRoute(route);
-    // setStatus(achievements[route.customName] || "incomplete");
   };
 
   const handleSaveAchievement = async () => {
@@ -102,7 +83,6 @@ const Achievements = () => {
       );
 
       if (response.status === 200 || response.status === 201) {
-        // console.log("Achievement saved successfully: ", response.data);
         setAchievements({
           ...achievements,
           [selectedRoute.customName]: "completed",
@@ -120,7 +100,17 @@ const Achievements = () => {
     prompt("Share this link:", shareLink);
   };
 
-  const completedCount = routes.filter(route => achievements[route.customName] === "completed").length;
+  const handleReturn = () => {
+    if (!selectedRoute) {
+      setSelectedWall(null);
+    } else {
+      setSelectedRoute(null);
+    }
+  };
+
+  const completedCount = routes.filter(
+    (route) => achievements[route.customName] === "completed"
+  ).length;
 
   const getRouteTypeIcon = (typeName) => {
     const type = routeTypes.find((routeType) => routeType.name === typeName);
@@ -128,7 +118,7 @@ const Achievements = () => {
   };
 
   return (
-    <div>
+    <div className="achievements-container">
       {!selectedWall ? (
         <div className="walls-list">
           {walls.map((wall, index) => (
@@ -144,41 +134,69 @@ const Achievements = () => {
         </div>
       ) : (
         <div className="wall-data">
-          <button onClick={() => setSelectedWall(null)}>Back to Walls</button>
-          <h2>{selectedWall.wallName}</h2>
-          <img src={selectedWall.originalImage} alt={selectedWall.wallName} />
-          <p>已完成數量: {completedCount}/{routes.length}</p>
-          <button onClick={handleShare}>分享</button>
-          {routes.length > 0 && (
-            <div className="routes-list">
-              <h4>Routes:</h4>
-              {routes.map((route, index) => (
-                <div
-                  key={index}
-                  className="route-item"
-                  onClick={() => handleRouteSelect(route)}
-                >
-                  <h4>{route.customName}</h4>
-                  {achievements[route.customName] === "completed" && <span>已完成</span>}
-                </div>
-              ))}
+          <button onClick={handleReturn} className="return-button">
+            <img src="/images/undo.png" alt="return" />
+          </button>
+          <div
+            className={`custom-item-details ${!selectedRoute ? "" : "hidden"}`}
+          >
+            <div className="custom-item-details-h3-div">
+              <h3>{selectedWall.wallName}</h3>
             </div>
-          )}
+            <img src={selectedWall.originalImage} alt={selectedWall.wallName} />
+            <p>
+              已完成數量: {completedCount}/{routes.length}
+            </p>
+            <button onClick={handleShare} className="share-custom-button">
+              分享
+            </button>
+          </div>
+
           {selectedRoute && (
             <div className="route-details">
-              <h4>Route Details:</h4>
-              <p>Custom Name: {selectedRoute.customName}</p>
-              <div className="route-types">
-                Custom Types: 
-                {selectedRoute.customType.map((type, index) => (
-                  <img key={index} src={getRouteTypeIcon(type)} alt={type} />
-                ))}
+              <div className="route-details-data">
+                <p>路線名稱: {selectedRoute.customName}</p>
+                <div className="route-types">
+                  路線類型:
+                  {selectedRoute.customType.map((type, index) => (
+                    <img key={index} src={getRouteTypeIcon(type)} alt={type} />
+                  ))}
+                </div>
+                {selectedRoute.memo && <p>Memo: {selectedRoute.memo}</p>}
               </div>
-              <p>Memo: {selectedRoute.memo}</p>
               <img src={selectedRoute.processedImage} alt="Processed" />
               {achievements[selectedRoute.customName] !== "completed" && (
-                <button onClick={handleSaveAchievement}>完成</button>
+                <button
+                  onClick={handleSaveAchievement}
+                  className="share-custom-button"
+                >
+                  完成
+                </button>
               )}
+            </div>
+          )}
+          {routes.length > 0 && (
+            <div className="route-list-box">
+              <div className="routes-list">
+                <h4>路線列表:</h4>
+                {routes.map((route, index) => (
+                  <div
+                    key={index}
+                    className={`route-item ${
+                      selectedRoute &&
+                      selectedRoute.customName === route.customName
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() => handleRouteSelect(route)}
+                  >
+                    <h4>{route.customName}</h4>
+                    {achievements[route.customName] === "completed" && (
+                      <pre className="completed-text">  已完成！</pre>
+                    )}
+                  </div>
+                ))}
+              </div>{" "}
             </div>
           )}
         </div>

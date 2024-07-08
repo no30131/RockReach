@@ -276,13 +276,15 @@ const Custom = () => {
         <div className="custom-header">
           {!id && (
             <button onClick={handleReturn} className="return-button">
-              <img src="/images/return.png" alt="return" />
+              <img src="/images/undo.png" alt="return" />
             </button>
           )}
           <div
             className={`custom-item-details ${!selectedRoute ? "" : "hidden"}`}
           >
-            <h3>{selectedWall.wallName}</h3>
+            <div className="custom-item-details-h3-div">
+              <h3>{selectedWall.wallName}</h3>
+            </div>
             <img
               ref={imgRef}
               src={selectedWall.originalImage}

@@ -8,7 +8,7 @@ const routeTypes = [
   { name: "Dyno", icon: "/images/icon_dyno.png" },
   { name: "Slope", icon: "/images/icon_slope.png" },
   { name: "Power", icon: "/images/icon_power.png" },
-  { name: "Pump", icon: "/images/icon_pump.png" }
+  { name: "Pump", icon: "/images/icon_pump.png" },
 ];
 
 const AchievementDetails = () => {
@@ -49,6 +49,12 @@ const AchievementDetails = () => {
     setSelectedRoute(route);
   };
 
+  const handleReturn = () => {
+    if (selectedRoute) {
+      setSelectedRoute(null);
+    }
+  };
+
   const completedCount = routes.filter(
     (route) => achievements[route.customName] === "completed"
   ).length;
@@ -62,40 +68,60 @@ const AchievementDetails = () => {
     <div>
       {routes.length > 0 && (
         <div className="wall-data">
-          <h2>{wallName}</h2>
-          <img src={wall.originalImage} alt={wallName} />
-          <p>
-            已完成數量: {completedCount}/{routes.length}
-          </p>
-          {routes.length > 0 && (
-            <div className="routes-list">
-              <h4>Routes:</h4>
-              {routes.map((route, index) => (
-                <div
-                  key={index}
-                  className="route-item"
-                  onClick={() => handleRouteSelect(route)}
-                >
-                  <h4>{route.customName}</h4>
-                  {achievements[route.customName] === "completed" && (
-                    <span>已完成</span>
-                  )}
-                </div>
-              ))}
-            </div>
+          {selectedRoute && (
+            <button onClick={handleReturn} className="return-button">
+              <img src="/images/undo.png" alt="return" />
+            </button>
           )}
+          <div
+            className={`custom-item-details ${!selectedRoute ? "" : "hidden"}`}
+          >
+            <div className="custom-item-details-h3-div">
+              <h3>{wallName}</h3>
+            </div>
+            <img src={wall.originalImage} alt={wallName} />
+            <p>
+              已完成數量: {completedCount}/{routes.length}
+            </p>
+          </div>
+
           {selectedRoute && (
             <div className="route-details">
-              <h4>Route Details:</h4>
-              <p>Custom Name: {selectedRoute.customName}</p>
-              <div className="route-types">
-                Custom Types:
-                {selectedRoute.customType.map((type, index) => (
-                  <img key={index} src={getRouteTypeIcon(type)} alt={type} />
+              <div className="route-details-data">
+                <p>路線名稱: {selectedRoute.customName}</p>
+                <div className="route-types">
+                  路線類型:
+                  {selectedRoute.customType.map((type, index) => (
+                    <img key={index} src={getRouteTypeIcon(type)} alt={type} />
+                  ))}
+                </div>
+                {selectedRoute.memo && <p>Memo: {selectedRoute.memo}</p>}
+              </div>
+              <img src={selectedRoute.processedImage} alt="Processed" />
+            </div>
+          )}
+          {routes.length > 0 && (
+            <div className="route-list-box">
+              <div className="routes-list">
+                <h4>路線列表:</h4>
+                {routes.map((route, index) => (
+                  <div
+                    key={index}
+                    className={`route-item ${
+                      selectedRoute &&
+                      selectedRoute.customName === route.customName
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() => handleRouteSelect(route)}
+                  >
+                    <h4>{route.customName}</h4>
+                    {achievements[route.customName] === "completed" && (
+                      <pre className="completed-text">  已完成！</pre>
+                    )}
+                  </div>
                 ))}
               </div>
-              <p>Memo: {selectedRoute.memo}</p>
-              <img src={selectedRoute.processedImage} alt="Processed" />
             </div>
           )}
         </div>

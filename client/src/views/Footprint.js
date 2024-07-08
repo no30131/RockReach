@@ -302,8 +302,8 @@ const Footprint = () => {
   };
 
   return (
-      <Layout>
-        <Sider className="map-details" style={{ display: showDetails ? "block" : "none", background: "rgb(245, 245, 245)" }}>
+      <Layout className="map-details">
+        <Sider style={{ display: showDetails ? "block" : "none", background: "rgb(245, 245, 245)" }}>
           <div>
             <button className="close-btn" onClick={closeDetails}>X</button>
             {footprint ? (
