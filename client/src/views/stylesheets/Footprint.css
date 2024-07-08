@@ -8,14 +8,120 @@
   flex-direction: column;
 }
 
-.register-button {
+/* .register-button {
   padding: 5px 25px;
   border: 1px solid rgb(255, 98, 0);
   border-radius: 5px;
   background-color: rgb(255, 98, 0);
   color: white;
-}
+} */
+
 
 .map-details {
   margin-top: 30px;
+  height: 80vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.ant-layout-sider {
+  padding: 20px;
+}
+
+.map-detail {
+  margin-bottom: 20px;
+}
+
+.map-detail h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.map-detail input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.save-button {
+  width: 100%;
+  padding: 10px;
+  background-color: rgb(40, 130, 255);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.save-button:hover {
+  background-color: #0961c0;
+}
+
+.close-btn {
+  background-color: rgba(192, 192, 192, 0.887);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.close-btn:hover {
+  background-color: rgb(183, 183, 183);
+}
+
+.map-detail input {
+  width: 100%;
+  max-width: 600px;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  /* background-color: rgba(243, 243, 243, 0.946); */
+  outline: none;
+}
+
+.map-detail input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.map-share-area {
+  width: 100%;
+  background-color: white;
+  border: 1px solid white;
+  display: flex;
+  justify-content: center;
+}
+
+.map-share-button {
+  margin-top: 10px;
+  display: block;
+  width: 150px;
+  height: 40px;
+  padding: 10px;
+  background-color: rgb(255, 98, 0);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.map-share-button:hover {
+  background-color: rgb(255, 142, 72);
+}
+
+.map-detail > h2 {
+  text-align: center;
+  padding: 0 0 25px 0;
+  color: rgb(40, 130, 255);
+  font-size: 18px;
 }

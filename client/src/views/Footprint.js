@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-// import { jwtDecode } from "jwt-decode";
-import { getUserFromToken } from "../utils/token"
+import { getUserFromToken } from "../utils/token";
 import { useParams } from "react-router-dom";
 import "./stylesheets/Footprint.css";
 import { Layout } from "antd";
@@ -12,99 +11,180 @@ const Footprint = () => {
   const { id } = useParams();
   const [userId, setUserId] = useState(null);
   const [footprints, setFootprints] = useState([]);
+  const [climbRecords, setClimbRecords] = useState([]);
   const [currentGym, setCurrentGym] = useState(null);
-  const [footprint, setFootprint] = useState(null);
-  const [visitDate, setVisitDate] = useState(new Date().toISOString().split("T")[0]);
-  const [visitTimes, setVisitTimes] = useState(1);
-  const [expiryDate, setExpiryDate] = useState(new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0]);
+  const [expiryDate, setExpiryDate] = useState(
+    new Date(new Date().setMonth(new Date().getMonth() + 1))
+      .toISOString()
+      .split("T")[0]
+  );
   const [showDetails, setShowDetails] = useState(false);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [markers, setMarkers] = useState([]);
+  const [footprintData, setFootprintData] = useState({
+    visitDate: "",
+    visitTimes: 0,
+    expiryDate: "",
+    gymName: "",
+  });
 
-  // const getCookie = (name) => {
-  //   const cookieArr = document.cookie.split("; ");
-  //   for (let i = 0; i < cookieArr.length; i++) {
-  //     const cookiePair = cookieArr[i].split("=");
-  //     if (name === cookiePair[0]) {
-  //       return decodeURIComponent(cookiePair[1]);
-  //     }
-  //   }
-  //   return null;
-  // };
-
-  const fetchUserFootprints = useCallback(async (userId) => {
+  const fetchUserFootprints = useCallback(async (fetchId) => {
     try {
-      const response = await axios.get(`https://node.me2vegan.com/api/footprints/${userId}`);
+      const response = await axios.get(
+        `https://node.me2vegan.com/api/footprints/${fetchId}`
+      );
       setFootprints(response.data);
     } catch (error) {
       console.error("Error fetching footprints:", error);
     }
   }, []);
 
-  useEffect(() => {
-    // const token = getCookie("token");
-    // if (token) {
-    //   const decoded = jwtDecode(token);
-    //   setUserId(decoded.userId);
-    //   if (!id) {
-    //     fetchUserFootprints(decoded.userId);
-    //   }
-    // }
+  const fetchUserClimbRecords = useCallback(async (userId) => {
+    try {
+      const response = await axios.get(
+        `https://node.me2vegan.com/api/climbRecords/${userId}`
+      );
+      setClimbRecords(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching climb records:", error);
+      return [];
+    }
+  }, []);
 
+  useEffect(() => {
     const user = getUserFromToken();
     if (user) {
       setUserId(user.userId);
-      // console.log("userId: ", user.userId);
+      if (!id) {
+        fetchUserFootprints(user.userId);
+        fetchUserClimbRecords(user.userId);
+      }
     } else {
       console.error("No user found");
     }
 
     if (id) {
       fetchUserFootprints(id);
+      fetchUserClimbRecords(id);
     } else if (!user) {
       setIsMapLoaded(true);
     }
 
     if (!window.google) {
-      axios.get(`https://node.me2vegan.com/api/footprints/google-maps-api-url`).then((response) => {
-        const { url } = response.data;
-        const script = document.createElement("script");
-        script.src = url;
-        script.async = true;
-        script.onload = () => {
-          setIsMapLoaded(true);
-        };
-        document.body.appendChild(script);
-      });
+      axios
+        .get(`https://node.me2vegan.com/api/footprints/google-maps-api-url`)
+        .then((response) => {
+          const { url } = response.data;
+          const existingScript = document.querySelector(`script[src="${url}"]`);
+          if (!existingScript) {
+            const script = document.createElement("script");
+            script.src = url;
+            script.async = true;
+            script.onload = () => {
+              setIsMapLoaded(true);
+            };
+            document.body.appendChild(script);
+          } else {
+            setIsMapLoaded(true);
+          }
+        });
     } else {
       setIsMapLoaded(true);
     }
-  }, [id, fetchUserFootprints]);
+  }, [id, fetchUserFootprints, fetchUserClimbRecords, userId]);
 
-  const fetchFootprint = async (gymId) => {
-    try {
-      const fetchId = id || userId;
-      if (!fetchId) {
-        console.log("please log in");
-        return;
+  const fetchFootprint = useCallback(
+    async (gymId) => {
+      try {
+        const fetchId = id || userId;
+        if (!fetchId) {
+          console.log("please log in");
+          return;
+        }
+
+        const footprintsResponse = await axios.get(
+          `https://node.me2vegan.com/api/footprints/${fetchId}`
+        );
+        const userFootprints = footprintsResponse.data;
+        const gymFootprint = userFootprints.find(
+          (footprint) => String(footprint.gymId._id) === String(gymId)
+        );
+        if (gymFootprint) {
+          setExpiryDate(gymFootprint.expiryDate);
+        }
+      } catch (error) {
+        console.error("Error fetching footprints:", error);
       }
+    },
+    [id, userId]
+  );
 
-      const response = await axios.get(`https://node.me2vegan.com/api/footprints/${fetchId}`);
-      const userFootprints = response.data;
-      const gymFootprint = userFootprints.find(
-        (footprint) => String(footprint.gymId._id) === String(gymId)
+  const updateInfoWindowContent = useCallback(
+    async (marker, gym) => {
+      const gymClimbRecords = climbRecords.filter(
+        (record) => record.gymName === gym.name
       );
-      if (gymFootprint) {
-        setFootprint(gymFootprint);
-        setVisitDate(gymFootprint.lastVisit);
-        setVisitTimes(gymFootprint.visitTimes);
-        setExpiryDate(gymFootprint.expiryDate);
-      } else {
-        setFootprint(null);
+      let visitDate = "無紀錄";
+      let visitTimes = 0;
+      if (gymClimbRecords.length > 0) {
+        const latestRecord = gymClimbRecords.reduce((latest, record) => {
+          return new Date(latest.date) > new Date(record.date)
+            ? latest
+            : record;
+        });
+        visitDate = latestRecord.date;
+        visitTimes = gymClimbRecords.length;
       }
-    } catch (error) {
-      console.error("Error fetching footprints:", error);
-    }
-  };
+      const userFootprint = footprints.find(
+        (footprint) => String(footprint.gymId._id) === String(gym._id)
+      );
+
+      const visitTimesText = "到訪次數：";
+      const visitDateText = "上次到訪：";
+      const expiryDateText = "會員到期日：";
+
+      const infoWindowContent = `
+      <div>
+        ${visitTimesText}${visitTimes}<br/>
+        ${visitDateText}${visitDate}<br/>
+        ${
+          userFootprint
+            ? `${expiryDateText}${userFootprint.expiryDate}<br/>`
+            : ""
+        }
+        <br/><strong>${gym.name}</strong><br/>
+        ${gym.address}<br/>
+        ${gym.phone}<br/><br/>
+        ${
+          !id && userId
+            ? `<button onclick="manageGym('${gym._id}')">管理</button>`
+            : ""
+        }
+      </div>
+    `;
+
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: infoWindowContent,
+      });
+      infoWindow.open(window.map, marker);
+
+      if (visitTimes > 0) {
+        marker.setIcon({
+          url: "/images/boulder-orange.png",
+          scaledSize: new window.google.maps.Size(28, 28),
+        });
+      }
+
+      setFootprintData({
+        visitDate: visitDate,
+        visitTimes: visitTimes,
+        expiryDate: userFootprint?.expiryDate || "",
+        gymName: gym.name,
+      });
+    },
+    [climbRecords, footprints, id, userId]
+  );
 
   const initMap = useCallback(async () => {
     if (!window.google) {
@@ -120,13 +200,15 @@ const Footprint = () => {
       zoom: 12,
     });
 
-    let currentInfoWindow = null;
-
     try {
-      const response = await axios.get(`https://node.me2vegan.com/api/gyms/all`);
+      const response = await axios.get(
+        `https://node.me2vegan.com/api/gyms/all`
+      );
       const gyms = response.data;
 
       const service = new window.google.maps.places.PlacesService(window.map);
+
+      const newMarkers = [];
 
       gyms.forEach(async (gym) => {
         try {
@@ -137,7 +219,12 @@ const Footprint = () => {
             }
           );
 
-          const { lat, lng } = geocodeResponse.data.results[0].geometry.location;
+          if (geocodeResponse.data.results.length === 0) {
+            return;
+          }
+
+          const { lat, lng } =
+            geocodeResponse.data.results[0].geometry.location;
 
           const request = {
             location: { lat, lng },
@@ -148,137 +235,79 @@ const Footprint = () => {
           service.textSearch(request, (results, status) => {
             if (status === window.google.maps.places.PlacesServiceStatus.OK) {
               const existingPlace = results[0];
-              const userFootprint = footprints.find(
-                (footprint) => String(footprint.gymId._id) === String(gym._id)
+              const gymClimbRecords = climbRecords.filter(
+                (record) => record.gymName === gym.name
               );
               const marker = new window.google.maps.Marker({
                 position: existingPlace.geometry.location,
                 map: window.map,
                 title: gym.name,
                 icon: {
-                  url: userFootprint
-                    ? "/images/boulder-orange.png"
-                    : "/images/boulder-grey.png",
+                  url:
+                    gymClimbRecords.length > 0
+                      ? "/images/boulder-orange.png"
+                      : "/images/boulder-grey.png",
                   scaledSize: new window.google.maps.Size(28, 28),
                 },
               });
 
-              const visitTimesText = "到訪次數：";
-              const visitDateText = "上次到訪：";
-
-              const infoWindowContent = `
-                <div>
-                  ${
-                    userFootprint
-                      ? `${visitTimesText}${userFootprint.visitTimes}<br/>`
-                      : ""
-                  }
-                  ${
-                    userFootprint
-                      ? `${visitDateText}${userFootprint.lastVisit}<br/><br/>`
-                      : ""
-                  }
-                  <strong>${existingPlace.name}</strong><br/>
-                  ${existingPlace.formatted_address || gym.address}<br/>
-                  ${existingPlace.formatted_phone_number || gym.phone}<br/><br/>
-                  <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">在 Google 地圖上查看</a>
-                  <br></br>
-                  ${
-                    (!id && userId)
-                      ? `<button onclick="manageGym('${gym._id}')">足跡管理</button>`
-                      : ""
-                  }
-                </div>
-              `;
-
-              const infoWindow = new window.google.maps.InfoWindow({
-                content: infoWindowContent,
-              });
-
               marker.addListener("click", () => {
-                if (currentInfoWindow) {
-                  currentInfoWindow.close();
-                }
-                infoWindow.open(window.map, marker);
-                currentInfoWindow = infoWindow;
-                setShowDetails(false);
-              });
-            } else {
-              const marker = new window.google.maps.Marker({
-                position: { lat, lng },
-                map: window.map,
-                title: gym.name,
+                updateInfoWindowContent(marker, gym);
+                fetchFootprint(gym._id);
               });
 
-              const infoWindowContent = `
-                <div>
-                  <strong>${gym.name}</strong><br/>
-                  ${gym.address}<br/>
-                  ${gym.phone}<br/>
-                  <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank">在 Google 地圖上查看</a>
-                  <br></br>
-                  ${
-                    (!id && userId)
-                      ? `<button onclick="manageGym('${gym._id}')">足跡管理</button>`
-                      : ""
-                  }
-                </div>
-              `;
-
-              const infoWindow = new window.google.maps.InfoWindow({
-                content: infoWindowContent,
-              });
-
-              marker.addListener("click", () => {
-                if (currentInfoWindow) {
-                  currentInfoWindow.close();
-                }
-                infoWindow.open(window.map, marker);
-                currentInfoWindow = infoWindow;
-                setShowDetails(false);
-              });
+              newMarkers.push(marker);
             }
           });
         } catch (error) {
           console.error("Error fetching geocode:", error);
         }
       });
+
+      setMarkers(newMarkers);
     } catch (error) {
       console.error("Error fetching gyms:", error);
     }
-  }, [id, userId, footprints]);
+  }, [climbRecords, fetchFootprint, updateInfoWindowContent]);
 
   useEffect(() => {
     if (isMapLoaded) {
       initMap();
     }
-  }, [isMapLoaded, footprints, initMap]);
+  }, [isMapLoaded, initMap]);
 
-  const registerVisit = async () => {
-    setFootprint({
-      gymId: currentGym,
-      userId: userId,
-      lastVisit: visitDate,
-      visitTimes: visitTimes,
-      expiryDate: expiryDate,
-    });
-    setShowDetails(true);
-  };
+  useEffect(() => {
+    if (footprints.length && climbRecords.length && isMapLoaded) {
+      initMap();
+    }
+  }, [footprints, climbRecords, isMapLoaded, initMap]);
 
   const saveVisit = async () => {
     try {
       const updatedFootprint = {
         gymId: currentGym,
         userId: userId,
-        lastVisit: visitDate,
-        visitTimes: visitTimes,
         expiryDate: expiryDate,
       };
-      const response = await axios.post(`https://node.me2vegan.com/api/footprints/create`, updatedFootprint);
-      setFootprint(response.data);
+      const response = await axios.post(
+        `https://node.me2vegan.com/api/footprints/create`,
+        updatedFootprint
+      );
+
+      if (!response) {
+        console.log("update footprint faild.");
+      }
       closeDetails();
-      const footprintsResponse = await axios.get(`https://node.me2vegan.com/api/footprints/${userId}`);
+      const footprintsResponse = await axios.get(
+        `https://node.me2vegan.com/api/footprints/${userId}`
+      );
       setFootprints(footprintsResponse.data);
+      const climbRecordsResponse = await fetchUserClimbRecords(userId);
+      setClimbRecords(climbRecordsResponse);
+
+      markers.forEach((marker) => {
+        updateInfoWindowContent(marker, currentGym);
+      });
     } catch (error) {
       console.error("Error creating footprint:", error);
     }
@@ -293,7 +322,6 @@ const Footprint = () => {
   const closeDetails = () => {
     setShowDetails(false);
     setCurrentGym(null);
-    setFootprint(null);
   };
 
   const handleShare = () => {
@@ -301,39 +329,61 @@ const Footprint = () => {
     prompt("Share this link:", shareLink);
   };
 
+  // const closeAllInfoWindows = () => {
+  //   infoWindows.forEach(infoWindow => infoWindow.close());
+  //   setInfoWindows([]);
+  // };
+
   return (
-      <Layout className="map-details">
-        <Sider style={{ display: showDetails ? "block" : "none", background: "rgb(245, 245, 245)" }}>
+    <Layout className="map-details">
+      <Sider
+        style={{
+          display: showDetails ? "block" : "none",
+          background: "rgb(245, 245, 245)",
+          height: "80vh",
+        }}
+      >
+        <div>
+          <button className="close-btn" onClick={closeDetails}>
+            X
+          </button>
           <div>
-            <button className="close-btn" onClick={closeDetails}>X</button>
-            {footprint ? (
-              <div>
-                <div className="map-detail">
-                  <h4>上次到訪日期:</h4>
-                  <input type="date" value={visitDate} onChange={(e) => setVisitDate(e.target.value)} />
-                </div>
-                <div className="map-detail">
-                  <h4>到訪次數:</h4>
-                  <input type="number" value={visitTimes} onChange={(e) => setVisitTimes(e.target.value)} />
-                </div>
-                <div className="map-detail">
-                  <h4>會員到期日:</h4>
-                  <input type="date" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} />
-                </div>
-                <button onClick={saveVisit} className="save-button">儲存</button>
-              </div>
-            ) : (
-              <div>
-                <button onClick={registerVisit} className="register-button">登記到訪</button>
-              </div>
-            )}
+            <div className="map-detail">
+              <h2>{footprintData.gymName}</h2>
+            </div>
+            <div className="map-detail">
+              <h4>上次到訪日期:</h4>
+              <input type="text" value={footprintData.visitDate || ""} readOnly />
+            </div>
+            <div className="map-detail">
+              <h4>到訪次數:</h4>
+              <input type="number" value={footprintData.visitTimes || 0} readOnly />
+            </div>
+            <div className="map-detail">
+              <h4>會員到期日:</h4>
+              <input
+                type="date"
+                value={footprintData.expiryDate || ""}
+                onChange={(e) => setFootprintData({ ...footprintData, expiryDate: e.target.value })}
+              />
+            </div>
+            <button onClick={saveVisit} className="save-button">
+              儲存
+            </button>
           </div>
-        </Sider>
-        <Content>
-          <div id="map" style={{ height: "74.7vh", width: "100%" }}></div>
-          {(!id && userId) && <button onClick={() => handleShare()}>分享</button>}
-        </Content>
-      </Layout>
+        </div>
+      </Sider>
+      <Content>
+        <div id="map" style={{ height: "80vh", width: "100%" }}></div>
+        <div className="map-share-area">
+          {!id && userId && (
+            <button onClick={() => handleShare()} className="map-share-button">
+              分享
+            </button>
+          )}
+        </div>
+      </Content>
+    </Layout>
   );
 };
 

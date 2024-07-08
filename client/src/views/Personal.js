@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import Plotly from "plotly.js-dist";
 // import { jwtDecode } from "jwt-decode";
-import { getUserFromToken } from "../utils/token"
+import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Personal.css";
 
 const routeTypes = [
@@ -341,54 +341,56 @@ const Personal = () => {
           ></div>
           <div className="personal-records-box-container">
             <h3>攀岩紀錄</h3>
-            {climbRecords.map((record) => (
-              <div key={record._id} className="personal-records-box">
-                <div
-                  onClick={() => toggleRecordDetails(record._id)}
-                  className="personal-records-summary"
-                >
-                  <p>{new Date(record.date).toLocaleDateString()}</p>
-                  <p className="personal-records-gym">{record.gymName}</p>
-                  <p>路線數量: {record.records.length}</p>
-                </div>
-                {expandedRecords[record._id] && (
-                  <div className="personal-records-details">
-                    {record.records.map((rec, index) => (
-                      <div key={index}>
-                        <div className="personal-records">
-                          <p>等級: {rec.level}</p>
-                          {rec.wall && <p>牆面: {rec.wall}</p>}
-                          {rec.times && <p>嘗試次數: {rec.times}</p>}
-                          {rec.types.length > 0 && (
-                            <div className="personal-records-route-types">
-                              <p>類型: </p>
-                              {rec.types.map((type, index) => (
-                                <img
-                                  key={index}
-                                  src={getRouteTypeIcon(type)}
-                                  alt={type}
-                                  style={{ width: "30px", height: "38px" }}
-                                />
-                              ))}
+            <div className="personal-records-box-area">
+              {climbRecords.map((record) => (
+                <div key={record._id} className="personal-records-box">
+                  <div
+                    onClick={() => toggleRecordDetails(record._id)}
+                    className="personal-records-summary"
+                  >
+                    <p>{new Date(record.date).toLocaleDateString()}</p>
+                    <p className="personal-records-gym">{record.gymName}</p>
+                    <p>路線數量: {record.records.length}</p>
+                  </div>
+                  {expandedRecords[record._id] && (
+                    <div className="personal-records-details">
+                      {record.records.map((rec, index) => (
+                        <div key={index}>
+                          <div className="personal-records">
+                            <p>等級: {rec.level}</p>
+                            {rec.wall && <p>牆面: {rec.wall}</p>}
+                            {rec.times && <p>嘗試次數: {rec.times}</p>}
+                            {rec.types.length > 0 && (
+                              <div className="personal-records-route-types">
+                                <p>類型: </p>
+                                {rec.types.map((type, index) => (
+                                  <img
+                                    key={index}
+                                    src={getRouteTypeIcon(type)}
+                                    alt={type}
+                                    style={{ width: "30px", height: "38px" }}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          {rec.memo && (
+                            <div className="personal-records-memo">
+                              Memo: {rec.memo}
+                            </div>
+                          )}
+                          {rec.files.length > 0 && (
+                            <div className="personal-records-files">
+                              {rec.files.map((file, idx) => renderFile(file))}
                             </div>
                           )}
                         </div>
-                        {rec.memo && (
-                          <div className="personal-records-memo">
-                            Memo: {rec.memo}
-                          </div>
-                        )}
-                        {rec.files.length > 0 && (
-                          <div className="personal-records-files">
-                            {rec.files.map((file, idx) => renderFile(file))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

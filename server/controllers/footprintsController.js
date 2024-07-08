@@ -2,12 +2,12 @@ const Footprints = require("../models/footprints");
 const axios = require("axios");
 
 exports.createOrUpdateFootprint = async (req, res) => {
-    const { gymId, userId, lastVisit, visitTimes, expiryDate } = req.body;
+    const { gymId, userId, expiryDate } = req.body;
     
     try {
       const footprint = await Footprints.findOneAndUpdate(
         { userId, gymId },
-        { lastVisit, visitTimes, expiryDate },
+        { expiryDate },
         { new: true, upsert: true}
       );
 
@@ -45,7 +45,7 @@ exports.getGeocode = async (req, res) => {
     });
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching geocode:', error);
+    console.error('Error fetching geocode:', error.message);
     res.status(500).json({ error: 'Error fetching geocode' });
   }
 };
@@ -64,7 +64,7 @@ exports.getPlaces = async (req, res) => {
     });
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching places:', error);
+    console.error('Error fetching places:', error.message);
     res.status(500).json({ error: 'Error fetching places' });
   }
 };

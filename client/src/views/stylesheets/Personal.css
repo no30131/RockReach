@@ -2,6 +2,11 @@
   margin-top: 50px;
 }
 
+.personal-records-box-area {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
 .personal-records-box {
   display: flex;
   flex-direction: column;
