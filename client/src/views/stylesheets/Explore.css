@@ -11,7 +11,10 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .record-header {
@@ -47,6 +50,7 @@
 
 .record-content {
   padding: 10px;
+  height: 100%;
 }
 
 .image-slider {
@@ -217,4 +221,25 @@
 
 .btn-explore-add-record:hover {
   background-color: rgb(255, 111, 22);
+}
+
+.record-memo {
+    margin-top: 10px;
+    font-style: italic;
+    color: #555;
+}
+
+.record-header-wall {
+  /* display: flex; */
+  font-style: italic;
+  color: #555;
+}
+
+.record-header-wall > p {
+  margin-top: 4px;
+  margin-bottom: -20px;
+}
+
+.space {
+  width: 38%;
 }

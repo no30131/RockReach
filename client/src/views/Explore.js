@@ -225,6 +225,18 @@ const Explore = ({ userId }) => {
                     </p>
                     <p className="gym-name">{record.gymName}</p>
                   </div>
+                  <div className="space"></div>
+                  {record.records.some((r) => r.wall) && (
+                    <div className="record-header-wall">
+                      <p>
+                        牆面:{" "}
+                        {record.records
+                          .filter((r) => r.wall)
+                          .map((r) => r.wall)
+                          .join(", ")}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div className="record-content">
                   <div className="image-slider">
@@ -259,9 +271,11 @@ const Explore = ({ userId }) => {
                   <p className="record-level">
                     等級: {record.records.map((r) => r.level).join(", ")}
                   </p>
-                  <p className="record-memo">
-                    Memo: {record.records.map((r) => r.memo).join(", ")}
-                  </p>
+                  {record.records.some((r) => r.memo) && (
+                    <p className="record-memo">
+                      Memo: {record.records.map((r) => r.memo).join(", ")}
+                    </p>
+                  )}
                 </div>
                 {record.records.map((rec) => (
                   <div key={rec._id} className="record-footer">

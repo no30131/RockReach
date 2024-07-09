@@ -305,3 +305,14 @@
   justify-content: center;
   margin-top: 20px;
 }
+
+.custom-memo {
+  margin-top: 10px;
+  font-style: italic;
+  color: #555;
+}
+
+.route-details-data-name {
+  font-weight: bold;
+  font-size: 17px;
+}

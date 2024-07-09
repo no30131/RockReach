@@ -368,15 +368,14 @@ const Custom = () => {
           {selectedRoute && (
             <div className="route-details">
               <div className="route-details-data">
-                <p>路線名稱: {selectedRoute.customName}</p>
+                <p className="route-details-data-name">{selectedRoute.customName}</p>
                 <div className="route-types">
-                  路線類型:
                   {selectedRoute.customType.map((type, index) => (
                     <img key={index} src={getRouteTypeIcon(type)} alt={type} />
                   ))}
                 </div>
                 {selectedRoute.setter && <p>設計者: {selectedRoute.setter}</p>}
-                {selectedRoute.memo && <p>Memo: {selectedRoute.memo}</p>}
+                {selectedRoute.memo && <p className="custom-memo">Memo: {selectedRoute.memo}</p>}
               </div>
               <img src={selectedRoute.processedImage} alt="Processed" />
               {!id && (

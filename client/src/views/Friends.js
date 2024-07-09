@@ -155,41 +155,41 @@ const Friends = () => {
                     </div>
                   );
                 })}
-                {isAddFriendVisible && (
-                  <div className="add-friend-overlay">
-                    <div className="add-friend-container">
-                      <h3>新增好友</h3>
-                      <input
-                        type="text"
-                        placeholder="輸入使用者名稱 ..."
-                        value={newFriendName}
-                        onChange={(e) => setNewFriendName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handleConfirmAddFriend();
-                          }
-                        }}
-                      />
-                      <div className="add-friend-buttons">
-                        <button
-                          onClick={handleConfirmAddFriend}
-                          className="add-friend-button"
-                        >
-                          確認
-                        </button>
-                        <button
-                          onClick={handleToggleAddFriend}
-                          className="cancel-add-friend-button"
-                        >
-                          取消
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </div>
+          {isAddFriendVisible && (
+            <div className="add-friend-overlay">
+              <div className="add-friend-container">
+                <h3>新增好友</h3>
+                <input
+                  type="text"
+                  placeholder="輸入使用者名稱 ..."
+                  value={newFriendName}
+                  onChange={(e) => setNewFriendName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleConfirmAddFriend();
+                    }
+                  }}
+                />
+                <div className="add-friend-buttons">
+                  <button
+                    onClick={handleConfirmAddFriend}
+                    className="add-friend-button"
+                  >
+                    確認
+                  </button>
+                  <button
+                    onClick={handleToggleAddFriend}
+                    className="cancel-add-friend-button"
+                  >
+                    取消
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="friend-add-friend">
             <button className="btn-add-friend" onClick={handleToggleAddFriend}>
               +

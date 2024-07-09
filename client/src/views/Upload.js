@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-// import { jwtDecode } from "jwt-decode";
 import { getUserFromToken } from "../utils/token"
 import "./stylesheets/Upload.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -36,6 +36,7 @@ const Upload = ({ showMessage }) => {
   const [showForm, setShowForm] = useState(false);
   const [currentRecord, setCurrentRecord] = useState({});
   const [showSecondPart, setShowSecondPart] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchGyms = async () => {
@@ -56,31 +57,9 @@ const Upload = ({ showMessage }) => {
 
     fetchGyms();
 
-    // const getCookie = (name) => {
-    //   const cookieArr = document.cookie.split("; ");
-    //   for (let i = 0; i < cookieArr.length; i++) {
-    //     const cookiePair = cookieArr[i].split("=");
-    //     if (name === cookiePair[0]) {
-    //       return decodeURIComponent(cookiePair[1]);
-    //     }
-    //   }
-    //   return null;
-    // };
-
-    // const token = getCookie("token");
-
-    // if (!token) {
-    //   console.error("No token found");
-    //   return;
-    // }
-
-    // const decoded = jwtDecode(token);
-    // setUserId(decoded.userId);
-
     const user = getUserFromToken();
     if (user) {
       setUserId(user.userId);
-      // console.log("userId: ", user.userId);
     } else {
       console.error("No user found");
     }
@@ -198,9 +177,8 @@ const Upload = ({ showMessage }) => {
       );
 
       if (response.status === 201) {
-        // console.log("Records uploaded successfully: ", response.data);
         showMessage("紀錄上傳成功！", "success");
-        // navigate("/personal");
+        navigate("/personal");
       } else {
         console.error("Error uploading records: ", response.data);
         showMessage("紀錄上傳失敗！", "error");
@@ -267,7 +245,7 @@ const Upload = ({ showMessage }) => {
                     <span className="upload-form-route-div-level">
                       {record.level}
                     </span>
-                    <span>類型：{record.types.join(", ")}</span>
+                    {record.types.length > 0 && <span>類型：{record.types.join(", ")}</span>}
                     <span>嘗試次數：{record.times}</span>
                   </div>
                 </div>
