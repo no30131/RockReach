@@ -3,7 +3,7 @@ import axios from "axios";
 import Plotly from "plotly.js-dist";
 import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Personal.css";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
