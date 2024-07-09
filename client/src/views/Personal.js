@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import Plotly from "plotly.js-dist";
-// import { jwtDecode } from "jwt-decode";
 import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Personal.css";
+import { Link, useLocation } from "react-router-dom";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -29,17 +29,6 @@ const Personal = () => {
       if (!user) return;
 
       const userId = user.userId;
-      // console.log("userId: ", userId);
-
-      // const token = getCookie("token");
-
-      // if (!token) {
-      //   console.error("No token found");
-      //   return;
-      // }
-
-      // const decoded = jwtDecode(token);
-      // const userId = decoded.userId;
 
       try {
         const userResponse = await axios.get(
@@ -303,6 +292,7 @@ const Personal = () => {
     return type ? type.icon : "";
   };
 
+  // console.log("climbRecords: ", climbRecords);
   return (
     <div>
       {!user ? (
@@ -319,28 +309,35 @@ const Personal = () => {
             </div>
           </div>
           <h3>個人化分析</h3>
-          <div
-            id="level"
-            ref={levelRef}
-            style={{ width: 600, height: 400 }}
-          ></div>
-          <div
-            id="typesCount"
-            ref={typesCountRef}
-            style={{ width: 600, height: 400 }}
-          ></div>
-          <div
-            id="typesTimes"
-            ref={typesTimesRef}
-            style={{ width: 600, height: 400 }}
-          ></div>
-          <div
-            id="frequency"
-            ref={frequencyRef}
-            style={{ width: 600, height: 400 }}
-          ></div>
+          {climbRecords.length === 0 ? (
+            <p>--- 尚無紀錄 ---</p>
+          ) : (
+            <div className="personal-charts">
+              <div
+                id="level"
+                ref={levelRef}
+                style={{ width: 600, height: 400 }}
+              ></div>
+              <div
+                id="typesCount"
+                ref={typesCountRef}
+                style={{ width: 600, height: 400 }}
+              ></div>
+              <div
+                id="typesTimes"
+                ref={typesTimesRef}
+                style={{ width: 600, height: 400 }}
+              ></div>
+              <div
+                id="frequency"
+                ref={frequencyRef}
+                style={{ width: 600, height: 400 }}
+              ></div>
+            </div>
+          )}
           <div className="personal-records-box-container">
             <h3>攀岩紀錄</h3>
+            {climbRecords.length === 0 && <p>--- 尚無紀錄 ---</p>}
             <div className="personal-records-box-area">
               {climbRecords.map((record) => (
                 <div key={record._id} className="personal-records-box">
@@ -394,6 +391,9 @@ const Personal = () => {
           </div>
         </div>
       )}
+      <div className="personal-add-record">
+        <Link to="/upload" className="btn-personal-add-record">+</Link> 
+      </div>
     </div>
   );
 };

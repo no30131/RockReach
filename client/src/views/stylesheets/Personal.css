@@ -217,3 +217,27 @@ h3 {
   display: flex;
   justify-content: center;
 } */
+
+.btn-personal-add-record {
+  background-color: rgb(255, 98, 0);
+  color: white;
+  border: none;
+  border-radius: 15%;
+  width: 40px;
+  height: 40px;
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-personal-add-record:hover {
+  background-color: rgb(255, 111, 22);
+}
+
+.personal-add-record {
+  display: flex;
+  justify-content: flex-end;
+  text-decoration: none;
+}

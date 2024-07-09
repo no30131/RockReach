@@ -335,55 +335,77 @@ const Footprint = () => {
   // };
 
   return (
-    <Layout className="map-details">
-      <Sider
-        style={{
-          display: showDetails ? "block" : "none",
-          background: "rgb(245, 245, 245)",
-          height: "80vh",
-        }}
-      >
-        <div>
-          <button className="close-btn" onClick={closeDetails}>
-            X
-          </button>
-          <div>
-            <div className="map-detail">
-              <h2>{footprintData.gymName}</h2>
+    <div>
+      {!id && !userId ? (
+        <p>請先登入！</p>
+      ) : (
+        <Layout className="map-details">
+          <Sider
+            style={{
+              display: showDetails ? "block" : "none",
+              background: "rgb(245, 245, 245)",
+              height: "80vh",
+            }}
+          >
+            <div>
+              <button className="close-btn" onClick={closeDetails}>
+                X
+              </button>
+              <div>
+                <div className="map-detail">
+                  <h2>{footprintData.gymName}</h2>
+                </div>
+                <div className="map-detail">
+                  <h4>上次到訪日期:</h4>
+                  <input
+                    type="text"
+                    value={footprintData.visitDate || ""}
+                    readOnly
+                  />
+                </div>
+                <div className="map-detail">
+                  <h4>到訪次數:</h4>
+                  <input
+                    type="number"
+                    value={footprintData.visitTimes || 0}
+                    readOnly
+                  />
+                </div>
+                <div className="map-detail">
+                  <h4>會員到期日:</h4>
+                  <input
+                    type="date"
+                    value={footprintData.expiryDate || ""}
+                    onChange={(e) =>
+                      setFootprintData({
+                        ...footprintData,
+                        expiryDate: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <button onClick={saveVisit} className="save-button">
+                  儲存
+                </button>
+              </div>
             </div>
-            <div className="map-detail">
-              <h4>上次到訪日期:</h4>
-              <input type="text" value={footprintData.visitDate || ""} readOnly />
+          </Sider>
+          <Content>
+            <div id="map" style={{ height: "80vh", width: "100%" }}></div>
+            <div className="map-share-area">
+              {!id && userId && (
+                <button
+                  onClick={() => handleShare()}
+                  className="map-share-button"
+                >
+                  分享
+                </button>
+              )}
             </div>
-            <div className="map-detail">
-              <h4>到訪次數:</h4>
-              <input type="number" value={footprintData.visitTimes || 0} readOnly />
-            </div>
-            <div className="map-detail">
-              <h4>會員到期日:</h4>
-              <input
-                type="date"
-                value={footprintData.expiryDate || ""}
-                onChange={(e) => setFootprintData({ ...footprintData, expiryDate: e.target.value })}
-              />
-            </div>
-            <button onClick={saveVisit} className="save-button">
-              儲存
-            </button>
-          </div>
-        </div>
-      </Sider>
-      <Content>
-        <div id="map" style={{ height: "80vh", width: "100%" }}></div>
-        <div className="map-share-area">
-          {!id && userId && (
-            <button onClick={() => handleShare()} className="map-share-button">
-              分享
-            </button>
-          )}
-        </div>
-      </Content>
-    </Layout>
+          </Content>
+        </Layout>
+      )}
+    </div>
   );
 };
 
