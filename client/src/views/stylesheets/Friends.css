@@ -59,9 +59,9 @@ body {
   height: 50px;
   border-radius: 50%;
   cursor: pointer;
-  position: fixed;
+  /* position: fixed;
   bottom: 80px;
-  right: 30px;
+  right: 30px; */
 }
 
 .add-record-button {
@@ -172,4 +172,11 @@ body {
 
 .add-friend-button:hover {
   background-color: rgb(255, 115, 64);
+}
+
+.friend-add-friend {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 100px;
 }

@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Home.css";
 
 const Home = () => {
+    const [isLogged, setIsLogged] = useState(false);
+
+    useEffect(() => {
+        const user = getUserFromToken();
+        if (user) {
+            setIsLogged(true);
+        } else {
+            setIsLogged(false);
+        }
+    }, []);
+
     return (
         <div>
             <div className="home-main">
@@ -13,7 +25,7 @@ const Home = () => {
                 </div>
                 <img src="/images/home-main.png" alt="keep the memory" className="home-main-image"/>
             </div>
-            <Link to="/signup" className="home-signup-link">
+            <Link to={isLogged ? "/personal" : "/signup"} className="home-signup-link">
                 <button className="home-signup-button">立即體驗</button>
             </Link>
         </div>

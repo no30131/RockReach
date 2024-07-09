@@ -18,6 +18,7 @@ import Service from "./views/Service.js";
 import Policy from "./views/Policy.js";
 import MessageBox from "./components/MessageBox.js";
 import "./App.css";
+import ScrollToTop from "./components/ScrollToTop.js"
 // import 'antd/dist/antd.css';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       <div>
         <Header />
         <main className="container">

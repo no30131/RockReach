@@ -52,22 +52,22 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 500px;
+  max-width: 350px;
   margin: 0 auto;
   align-items: center;
 }
 
 .custom-item-details > img, canvas {
-  width: 500px;
+  width: 350px;
 }
 
 .custom-item-details-h3-div {
   background-color: rgb(240, 247, 255, 0.1);
-  margin-bottom: -5px;
-  padding: 5px 15px;
+  margin-bottom: -12px;
+  padding: 0 15px;
   border: 2px solid rgb(138, 156, 255, 0.7);
   border-radius: 7px;
-  width: 465px;
+  width: 316px;
   margin-top: 30px;
   display: flex;
   justify-content: center;
@@ -93,7 +93,19 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin: 20px 0;
+  /* margin: 20px 0; */
+}
+
+.complete-custom-button {
+  display: block;
+  width: 150px;
+  padding: 10px;
+  background-color: rgb(255, 98, 0);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 20px 0 5px 0;
 }
 
 .custom-add-button:hover,
@@ -204,7 +216,7 @@
 }
 
 .routes-list {
-  width: 500px;
+  width: 350px;
   text-align: left;
   margin-top: 10px;
 }
@@ -231,7 +243,7 @@
 .route-details {
   text-align: left;
   /* width: 100%; */
-  max-width: 500px;
+  max-width: 350px;
   margin: 20px auto;
   background-color: #f9f9f9;
   padding: 20px;
@@ -279,4 +291,17 @@
 
 .route-details-data {
   margin-bottom: 10px;
+}
+
+.complete-count-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-can-add-button {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }

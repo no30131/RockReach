@@ -7,7 +7,7 @@ exports.createUser = async (req, res) => {
     const provider = "native";
     const public = "public"; 
     const introduce = "Let's climb!"; 
-    const image = "https://rockreach-0618.s3.ap-southeast-2.amazonaws.com/account.png";
+    const image = "https://rockreach-0618.s3.ap-southeast-2.amazonaws.com/account2.png";
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);

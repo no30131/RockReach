@@ -56,7 +56,7 @@ const Friends = () => {
       // console.log("userData: ", userData);
       // console.log("image: ", userData.image);
       // console.log("name: ", userData.name);
-      
+
       const receiverId = userData._id;
 
       const newFriend = {
@@ -122,63 +122,79 @@ const Friends = () => {
         <p>請先登入！</p>
       ) : (
         <div className="friend-list-container">
-          {friends.map((friend) => {
-            const friendInfo =
-              friend.inviterId._id === userId
-                ? friend.receiverId
-                : friend.inviterId;
-            return (
-              <div className="friend-item" key={friend._id}>
-                <img
-                  src={friendInfo.image}
-                  alt={friendInfo.name}
-                  className="friend-image"
-                />
-                <span className="friend-name">{friendInfo.name}</span>
-                <button
-                  className="btn-view"
-                  onClick={() => handleViewExplore(friendInfo._id)}
-                >
-                  查看
-                </button>
-                <button
-                  className="btn-chat"
-                  onClick={() => handleChat(friendInfo._id)}
-                >
-                  聊天
-                </button>
+          <div>
+            {friends.length === 0 ? (
+              <p>--- 尚無好友 ---</p>
+            ) : (
+              <div>
+                {friends.map((friend) => {
+                  const friendInfo =
+                    friend.inviterId._id === userId
+                      ? friend.receiverId
+                      : friend.inviterId;
+                  return (
+                    <div className="friend-item" key={friend._id}>
+                      <img
+                        src={friendInfo.image}
+                        alt={friendInfo.name}
+                        className="friend-image"
+                      />
+                      <span className="friend-name">{friendInfo.name}</span>
+                      <button
+                        className="btn-view"
+                        onClick={() => handleViewExplore(friendInfo._id)}
+                      >
+                        查看
+                      </button>
+                      <button
+                        className="btn-chat"
+                        onClick={() => handleChat(friendInfo._id)}
+                      >
+                        聊天
+                      </button>
+                    </div>
+                  );
+                })}
+                {isAddFriendVisible && (
+                  <div className="add-friend-overlay">
+                    <div className="add-friend-container">
+                      <h3>新增好友</h3>
+                      <input
+                        type="text"
+                        placeholder="輸入使用者名稱 ..."
+                        value={newFriendName}
+                        onChange={(e) => setNewFriendName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            handleConfirmAddFriend();
+                          }
+                        }}
+                      />
+                      <div className="add-friend-buttons">
+                        <button
+                          onClick={handleConfirmAddFriend}
+                          className="add-friend-button"
+                        >
+                          確認
+                        </button>
+                        <button
+                          onClick={handleToggleAddFriend}
+                          className="cancel-add-friend-button"
+                        >
+                          取消
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            );
-          })}
-          <button className="btn-add-friend" onClick={handleToggleAddFriend}>
-            +
-          </button>
-          {isAddFriendVisible && (
-            <div className="add-friend-overlay">
-              <div className="add-friend-container">
-                <h3>新增好友</h3>
-                <input
-                  type="text"
-                  placeholder="輸入使用者名稱 ..."
-                  value={newFriendName}
-                  onChange={(e) => setNewFriendName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleConfirmAddFriend();
-                    }
-                  }}
-                />
-                <div className="add-friend-buttons">
-                  <button onClick={handleConfirmAddFriend} className="add-friend-button">
-                    確認
-                  </button>
-                  <button onClick={handleToggleAddFriend} className="cancel-add-friend-button">
-                    取消
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
+          <div className="friend-add-friend">
+            <button className="btn-add-friend" onClick={handleToggleAddFriend}>
+              +
+            </button>
+          </div>
         </div>
       )}
     </div>

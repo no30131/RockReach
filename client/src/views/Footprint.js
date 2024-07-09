@@ -145,7 +145,7 @@ const Footprint = () => {
       const expiryDateText = "會員到期日：";
 
       const infoWindowContent = `
-      <div>
+      <div style="font-size: 15px;">
         ${visitTimesText}${visitTimes}<br/>
         ${visitDateText}${visitDate}<br/>
         ${
@@ -335,7 +335,7 @@ const Footprint = () => {
   // };
 
   return (
-    <div>
+    <div className="footprints-container">
       {!id && !userId ? (
         <p>請先登入！</p>
       ) : (

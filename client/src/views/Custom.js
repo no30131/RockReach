@@ -414,20 +414,19 @@ const Custom = () => {
                   </div>
                 ))}
               </div>
-              {!isProcessing &&
-                !outputImage &&
-                !isCanvasActive &&
-                !id &&
-                userId && (
-                  <button
-                    onClick={handleAddRoute}
-                    className="custom-add-button"
-                  >
-                    新增路線
-                  </button>
-                )}
             </div>
           )}
+          <div className="custom-can-add-button">
+            {!isProcessing &&
+              !outputImage &&
+              !isCanvasActive &&
+              !id &&
+              userId && (
+                <button onClick={handleAddRoute} className="custom-add-button">
+                  新增路線
+                </button>
+              )}
+          </div>
         </div>
       )}
     </div>

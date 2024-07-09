@@ -3,7 +3,7 @@ footer {
     background-color: #f0f0f0;
     display: flex;
     justify-content: space-between;
-    margin-top: 50px;
+    /* margin-top: 50px; */
 }
 
 .footer-links {

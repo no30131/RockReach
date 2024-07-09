@@ -144,12 +144,6 @@ const Achievements = () => {
               <h3>{selectedWall.wallName}</h3>
             </div>
             <img src={selectedWall.originalImage} alt={selectedWall.wallName} />
-            <p>
-              已完成數量: {completedCount}/{routes.length}
-            </p>
-            <button onClick={handleShare} className="share-custom-button">
-              分享
-            </button>
           </div>
 
           {selectedRoute && (
@@ -165,14 +159,15 @@ const Achievements = () => {
                 {selectedRoute.memo && <p>Memo: {selectedRoute.memo}</p>}
               </div>
               <img src={selectedRoute.processedImage} alt="Processed" />
-              {achievements[selectedRoute.customName] !== "completed" && (
-                <button
-                  onClick={handleSaveAchievement}
-                  className="share-custom-button"
-                >
-                  完成
-                </button>
-              )}
+              {achievements[selectedRoute.customName] !== "completed" &&
+                userId && (
+                  <button
+                    onClick={handleSaveAchievement}
+                    className="complete-custom-button"
+                  >
+                    完成
+                  </button>
+                )}
             </div>
           )}
           {routes.length > 0 && (
@@ -192,13 +187,23 @@ const Achievements = () => {
                   >
                     <h4>{route.customName}</h4>
                     {achievements[route.customName] === "completed" && (
-                      <pre className="completed-text">  已完成！</pre>
+                      <pre className="completed-text"> 已完成！</pre>
                     )}
                   </div>
                 ))}
               </div>{" "}
             </div>
           )}
+          <div className="complete-count-area">
+            <p>
+              已完成數量: {completedCount}/{routes.length}
+            </p>
+            {userId && (
+              <button onClick={handleShare} className="share-custom-button">
+                分享
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>

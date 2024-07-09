@@ -229,17 +229,6 @@ const Personal = () => {
     generateFrequencyChart,
   ]);
 
-  // const getCookie = (name) => {
-  //   const cookieArr = document.cookie.split("; ");
-  //   for (let i = 0; i < cookieArr.length; i++) {
-  //     const cookiePair = cookieArr[i].split("=");
-  //     if (name === cookiePair[0]) {
-  //       return decodeURIComponent(cookiePair[1]);
-  //     }
-  //   }
-  //   return null;
-  // };
-
   const renderFile = (file) => {
     const fileTypeMap = {
       mp4: "video/mp4",
@@ -263,13 +252,6 @@ const Personal = () => {
     const fileType = fileTypeMap[fileExtension];
     const filePath = file;
 
-    // const fileStyle = {
-    //   maxWidth: "320px",
-    //   maxHeight: "240px",
-    //   objectFit: "contain",
-    //   margin: "10px",
-    // };
-
     if (fileType && fileType.startsWith("video")) {
       return (
         <div key={file} className="file-container">
@@ -292,7 +274,6 @@ const Personal = () => {
     return type ? type.icon : "";
   };
 
-  // console.log("climbRecords: ", climbRecords);
   return (
     <div>
       {!user ? (
@@ -392,7 +373,11 @@ const Personal = () => {
         </div>
       )}
       <div className="personal-add-record">
-        <Link to="/upload" className="btn-personal-add-record">+</Link> 
+        {user && (
+          <Link to="/upload" className="btn-personal-add-record">
+            +
+          </Link>
+        )}
       </div>
     </div>
   );

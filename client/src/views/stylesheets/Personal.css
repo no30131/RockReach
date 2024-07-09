@@ -27,6 +27,7 @@ h3 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 30px;
 }
 
 .personal-records {
@@ -53,6 +54,7 @@ h3 {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+  margin-right: 18px;
 }
 
 .userData-img {
@@ -222,14 +224,16 @@ h3 {
   background-color: rgb(255, 98, 0);
   color: white;
   border: none;
-  border-radius: 15%;
-  width: 40px;
-  height: 40px;
-  font-size: 28px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
+  text-decoration: none;
+  margin-top: 200px;
 }
 
 .btn-personal-add-record:hover {
@@ -239,5 +243,4 @@ h3 {
 .personal-add-record {
   display: flex;
   justify-content: flex-end;
-  text-decoration: none;
 }
