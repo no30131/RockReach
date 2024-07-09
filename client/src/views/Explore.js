@@ -212,20 +212,22 @@ const Explore = ({ userId }) => {
             return (
               <div className="record-card" key={record._id}>
                 <div className="record-header">
-                  {record.user && (
-                    <img
-                      src={record.user.image || ""}
-                      alt={record.user.name || "User"}
-                      className="user-image"
-                    />
-                  )}
-                  <div className="user-info">
-                    <p className="explore-user-name">
-                      {record.user?.name || "Unknown User"}
-                    </p>
-                    <p className="gym-name">{record.gymName}</p>
+                  <div className="record-header-basic">
+                    {record.user && (
+                      <img
+                        src={record.user.image || ""}
+                        alt={record.user.name || "User"}
+                        className="user-image"
+                      />
+                    )}
+                    <div className="user-info">
+                      <p className="explore-user-name">
+                        {record.user?.name || "Unknown User"}
+                      </p>
+                      <p className="gym-name">{record.gymName}</p>
+                    </div>
+                    <div className="space"></div>
                   </div>
-                  <div className="space"></div>
                   {record.records.some((r) => r.wall) && (
                     <div className="record-header-wall">
                       <p>
@@ -269,11 +271,11 @@ const Explore = ({ userId }) => {
                     </div>
                   </div>
                   <p className="record-level">
-                    等級: {record.records.map((r) => r.level).join(", ")}
+                    {record.records.map((r) => r.level).join(", ")}
                   </p>
                   {record.records.some((r) => r.memo) && (
                     <p className="record-memo">
-                      Memo: {record.records.map((r) => r.memo).join(", ")}
+                      {record.records.map((r) => r.memo).join(", ")}
                     </p>
                   )}
                 </div>
