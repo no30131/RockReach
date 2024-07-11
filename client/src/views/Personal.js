@@ -99,8 +99,8 @@ const Personal = () => {
         categoryorder: "array",
         categoryarray: allLevels,
       },
-      height: 400,
-      width: 600,
+      height: 380,
+      width: 450,
     };
 
     Plotly.newPlot(levelRef.current, data, layout);
@@ -158,14 +158,14 @@ const Personal = () => {
 
     const layoutCount = {
       title: "路線類型分析",
-      height: 400,
-      width: 600,
+      height: 380,
+      width: 450,
     };
 
     const layoutTimes = {
       title: "平均挑戰次數",
-      height: 400,
-      width: 600,
+      height: 380,
+      width: 450,
     };
 
     Plotly.newPlot(typesCountRef.current, dataCount, layoutCount);
@@ -209,8 +209,8 @@ const Personal = () => {
       xaxis: { title: "日期" },
       yaxis: { title: "路線" },
       barmode: "stack",
-      height: 400,
-      width: 600,
+      height: 380,
+      width: 450,
     };
 
     Plotly.newPlot(frequencyRef.current, data, layout);
@@ -295,24 +295,20 @@ const Personal = () => {
           ) : (
             <div className="personal-charts">
               <div
-                id="level"
-                ref={levelRef}
-                style={{ width: 600, height: 400 }}
-              ></div>
-              <div
                 id="typesCount"
                 ref={typesCountRef}
-                style={{ width: 600, height: 400 }}
               ></div>
               <div
                 id="typesTimes"
                 ref={typesTimesRef}
-                style={{ width: 600, height: 400 }}
+              ></div>
+              <div
+                id="level"
+                ref={levelRef}
               ></div>
               <div
                 id="frequency"
                 ref={frequencyRef}
-                style={{ width: 600, height: 400 }}
               ></div>
             </div>
           )}

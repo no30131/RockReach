@@ -13,7 +13,7 @@
   }
 }
 
-.App-header {
+/* .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -22,7 +22,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-}
+} */
 
 .App-link {
   color: #61dafb;
@@ -38,13 +38,17 @@
 }
 
 .container {
-  width: 100%;
+  /* width: 100%; */
   max-width: 80%;
-  min-height: 750px;
+  /* min-height: 750px; */
+  min-height: 100vh;
   margin: 80px auto 0 auto;
   padding: 20px;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .header {
@@ -63,4 +67,8 @@ h1, h2, h3, h4, h5, h6 {
 p, a, li, span, pre {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
+}
+
+.box {
+  min-height: 460px;
 }

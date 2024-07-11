@@ -7,18 +7,22 @@ const Signin = ({ showMessage }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userData = { email, password };
 
     try {
-      const response = await axios.post(`https://node.me2vegan.com/api/users/login`, userData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json"
+      const response = await axios.post(
+        `https://node.me2vegan.com/api/users/login`,
+        userData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
 
       if (response.status === 200) {
         // console.log("User logged in successfully:", response.data);
@@ -31,7 +35,7 @@ const Signin = ({ showMessage }) => {
         showMessage("密碼不正確，請重新輸入！", "error");
       }
     } catch (error) {
-      // console.error("Error logging in:", error);        
+      // console.error("Error logging in:", error);
       if (error.response) {
         if (error.response.status === 401) {
           showMessage("密碼不正確，請重新輸入！", "error");
@@ -45,31 +49,50 @@ const Signin = ({ showMessage }) => {
       }
     }
   };
-  
+
   return (
     <div className="box">
       <h1>會員登入</h1>
       <p>請輸入您的資訊以登入</p>
       <form onSubmit={handleSubmit} className="signup-form">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="input-email"
-          placeholder="Email"
-          required
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="input-password"
-          placeholder="Password"
-          required
-        />
-        <p>或點此 <button type="button" onClick={() => navigate("/signup")} style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline', background: 'none', border: 'none', padding: 0, font: 'inherit' }}>註冊</button></p>
+        <div className="signup-form-area">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input-email"
+            placeholder="Email"
+            required
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-password"
+            placeholder="Password"
+            required
+          />
+        </div>
+        <p>
+          或點此 {" "}
+          <button
+            type="button"
+            onClick={() => navigate("/signup")}
+            style={{
+              cursor: "pointer",
+              color: "blue",
+              textDecoration: "underline",
+              background: "none",
+              border: "none",
+              padding: 0,
+              font: "inherit",
+            }}
+          >
+            註冊
+          </button>
+        </p>
         <div className="signin-link">
-            <button className="signin-submit">送出</button>
+          <button className="signin-submit">送出</button>
         </div>
       </form>
     </div>

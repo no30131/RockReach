@@ -1,8 +1,30 @@
 .signin-form {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin: 10px 50px;
 }
+
+.signin-form-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 300px;
+  max-width: 500px;
+}
+
+.signin-form-area > input {
+  width: 100%;
+}
+
+
+/* .signin-form {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 50px;
+} */
 
 .input-email,
 .input-password {

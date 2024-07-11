@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { getUserFromToken } from "../utils/token";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import "./stylesheets/Explore.css";
 
 const Explore = ({ userId }) => {
@@ -204,7 +204,7 @@ const Explore = ({ userId }) => {
   return (
     <div>
       {records.length === 0 ? (
-        <p>--- 尚無紀錄 ---</p>
+        <p>Loading ...</p>
       ) : (
         <div className="explore-container">
           {records.map((record) => {
@@ -338,9 +338,12 @@ const Explore = ({ userId }) => {
           })}
         </div>
       )}
-      <Link to="/upload" className="btn-explore-add-record">
-        +
-      </Link>
+
+      {/* <div className="friend-add-friend">
+        <Link to="/upload" className="btn-explore-add-record">
+          +
+        </Link>
+      </div> */}
     </div>
   );
 };

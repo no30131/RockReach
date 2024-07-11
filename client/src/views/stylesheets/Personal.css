@@ -229,11 +229,14 @@ h3 {
   height: 50px;
   font-size: 24px;
   cursor: pointer;
+  /* position: fixed;
+  bottom: 320px;
+  right: 120px; */
   display: flex;
   justify-content: center;
   align-items: center;
   text-decoration: none;
-  margin-top: 200px;
+  /* margin-top: 200px; */
 }
 
 .btn-personal-add-record:hover {
@@ -243,4 +246,22 @@ h3 {
 .personal-add-record {
   display: flex;
   justify-content: flex-end;
+}
+
+.personal-charts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1000px;
+}
+
+.personal-charts > div {
+  flex: 0 0 48%;
+  /* box-sizing: border-box; */
+  margin: 0;
+  /* margin-bottom: 20px; */
+  /* border: 1px solid black; */
+  margin-left: -15px;
+  padding-right: 15px;
+  padding-left: -50px;
 }

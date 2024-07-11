@@ -88,3 +88,9 @@ exports.checkEmail = async (req, res) => {
     const user = await User.findOne({ email });
     res.status(200).json({ exists: !!user });
 };
+
+exports.checkName = async (req, res) => {
+    const { name } = req.params;
+    const user = await User.findOne({ name });
+    res.status(200).json({ exists: !!user });
+};

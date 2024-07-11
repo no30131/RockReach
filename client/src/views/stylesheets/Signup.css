@@ -1,7 +1,22 @@
 .signup-form {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin: 10px 50px;
+}
+
+.signup-form-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 300px;
+  max-width: 500px;
+}
+
+.signup-form-area > input {
+  width: 100%;
 }
 
 .input-email,
