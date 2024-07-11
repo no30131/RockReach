@@ -63,6 +63,8 @@ const Signin = ({ showMessage }) => {
             className="input-email"
             placeholder="Email"
             required
+            name="email"
+            autoComplete="email"
           />
           <input
             type="password"
@@ -71,6 +73,8 @@ const Signin = ({ showMessage }) => {
             className="input-password"
             placeholder="Password"
             required
+            name="password"
+            autoComplete="current-password"
           />
         </div>
         <p>

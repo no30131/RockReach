@@ -78,6 +78,11 @@
   width: 100px;
 }
 
+.custom-item-details > p {
+  margin-bottom: 0;
+  margin-top: 20px;
+}
+
 .custom-add-button,
 .process-button,
 .process-save-button,
@@ -262,6 +267,7 @@
   display: flex;
   justify-content: center;
   gap: 30px;
+  margin-top: 10px;
 }
 
 .adding-custom-area > p {
@@ -286,7 +292,7 @@
 .edit-or-save {
   display: flex;
   gap: 30px;
-  margin-bottom: 20px;
+  margin-top: 15px;
 }
 
 .route-details-data {
@@ -315,4 +321,8 @@
 .route-details-data-name {
   font-weight: bold;
   font-size: 17px;
+}
+
+.route-details > button {
+  margin-top: 15px;
 }

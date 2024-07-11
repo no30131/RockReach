@@ -9,6 +9,10 @@ exports.createUser = async (req, res) => {
     const introduce = "Let's climb!"; 
     const image = "https://rockreach-0618.s3.ap-southeast-2.amazonaws.com/account2.png";
 
+    if (name.length > 15) {
+        return res.status(400).send({ error: "名字不能超過15個字元！" });
+    }
+
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({ name, email, password: hashedPassword, provider, public, introduce, image });
@@ -62,7 +66,7 @@ exports.getUserById = async (req, res) => {
     try {
         const user = await User.findById(userId).select("name introduce image");
         if (!user) {
-            return res.status(404).send({ error: "User not found" });
+            return res.status(404).send({ error: "查無此使用者！" });
         }
         res.status(200).send(user);
     } catch (error) {
@@ -75,7 +79,7 @@ exports.getUserByName = async (req, res) => {
     try {
         const user = await User.findOne({ name });
         if (!user) {
-            return res.status(404).send({ error: "User not found" });
+            return res.status(404).send({ error: "查無此使用者！" });
         }
         res.status(200).send(user);
     } catch (error) {
@@ -86,11 +90,11 @@ exports.getUserByName = async (req, res) => {
 exports.checkEmail = async (req, res) => {
     const { email } = req.params;
     const user = await User.findOne({ email });
-    res.status(200).json({ exists: !!user });
+    res.status(400).json({ exists: !!user });
 };
 
 exports.checkName = async (req, res) => {
     const { name } = req.params;
     const user = await User.findOne({ name });
-    res.status(200).json({ exists: !!user });
+    res.status(400).json({ exists: !!user });
 };

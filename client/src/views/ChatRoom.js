@@ -65,7 +65,7 @@ const ChatRoom = ({ userId, friendId }) => {
                 </div>
             ) : (
                 <div className="friend-details">
-                    <p>Loading friend data...</p>
+                    <p>&nbsp;&nbsp;Loading ...</p>
                 </div>
             )}
             <div className="chat-messages">

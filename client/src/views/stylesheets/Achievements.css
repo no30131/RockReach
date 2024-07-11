@@ -1,5 +1,10 @@
 .achievements-container {
-  margin-top: 30px;
+  /* margin-top: 30px; */
+  min-height: 880px;
+}
+
+.wall-data {
+  min-height: 880px;
 }
 
 .wall-data > img {

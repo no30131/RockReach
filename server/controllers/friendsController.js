@@ -3,7 +3,23 @@ const moment = require("moment-timezone");
 
 exports.createFriends = async (req, res) => {
   const { inviterId, receiverId, friendDate } = req.body;
+
+  if (inviterId === receiverId) {
+    return res.status(400).send({ error: "無法加自己為好友！" });
+  }
+
   try {
+    const existingFriend = await Friends.findOne({
+      $or: [
+        { inviterId: inviterId, receiverId: receiverId },
+        { inviterId: receiverId, receiverId: inviterId }
+      ]
+    });
+
+    if (existingFriend) {
+      return res.status(400).send({ error: "好友關係已存在！" });
+    }
+
     const dateOnly = new Date(friendDate).toISOString().split("T")[0];
     const friends = new Friends({
       inviterId,
@@ -29,7 +45,7 @@ exports.getFriendsByUserId = async (req, res) => {
       .populate("receiverId", "name image");
 
     if (!friends) {
-      return res.status(404).json({ error: "Friends not found" });
+      return res.status(404).json({ error: "好友關係不存在！" });
     }
     res.status(200).send(friends);
   } catch (error) {
@@ -47,7 +63,7 @@ const saveChatMessage = async (userId, friendId, message) => {
     });
 
     if (!friend) {
-      throw new Error("Friend not found");
+      throw new Error("好友不存在！");
     }
 
     const newChat = {
@@ -84,7 +100,7 @@ exports.getChatByFriendId = async (req, res) => {
       ]
     });
     if (!friend) {
-      return res.status(404).json({ error: "Friend not found" });
+      return res.status(404).json({ error: "好友不存在！" });
     }
     res.status(200).send(friend.chat);
   } catch (error) {

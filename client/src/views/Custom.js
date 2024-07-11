@@ -12,7 +12,7 @@ const routeTypes = [
   { name: "Pump", icon: "/images/icon_pump.png" },
 ];
 
-const Custom = () => {
+const Custom = ({ showMessage }) => {
   const { id } = useParams();
   const [userId, setUserId] = useState(null);
   const [walls, setWalls] = useState([]);
@@ -40,7 +40,6 @@ const Custom = () => {
       setUserId(user.userId);
     }
   }, []);
-  // console.log("userId: ", userId);
 
   useEffect(() => {
     if (id) {
@@ -130,9 +129,7 @@ const Custom = () => {
         }
       );
 
-      setOutputImage(
-        `https://node.me2vegan.com/${response.data.processedImage}`
-      );
+      setOutputImage(`https://node.me2vegan.com/${response.data.processedImage}`);
       setOutputDBImage(response.data.processedImage);
       setIsProcessing(false);
       setShowOutput(true);
@@ -195,7 +192,24 @@ const Custom = () => {
     }
   }, [markers, isEraserActive, drawMarkers, selectedWall]);
 
-  const handleConfirmClick = async () => {
+  const handleConfirmClick = async (e) => {
+    e.preventDefault();
+
+    if (!customName) {
+      showMessage("請輸入路線名稱！", "error");
+      return;
+    }
+
+    if (customName.length > 20) {
+      showMessage("路線名稱不能超過20個字元！", "error");
+      return;
+    }
+
+    if (memo.length > 100) {
+      showMessage("說明或備註不能超過100個字元！", "error");
+      return;
+    }
+
     try {
       const userResponse = await axios.get(
         `https://node.me2vegan.com/api/users/${userId}`
@@ -212,19 +226,27 @@ const Custom = () => {
           memo,
         })
         .then((response) => {
+          showMessage("新增路線成功！", "success")
           setSelectedWall(null);
         })
         .catch((error) => {
           console.error("Error saving custom route:", error);
+          showMessage("新增路線失敗，請稍後再試", "error");
         });
     } catch (error) {
       console.error("Error fetching data: ", error);
+      showMessage("伺服器異常，請稍後再試", "error");
     }
   };
 
-  const handleShare = (routeId) => {
+  const handleShare = async (routeId) => {
     const shareLink = `https://rockreach.me2vegan.com/custom/${routeId}`;
-    prompt("Share this link:", shareLink);
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      showMessage("已複製網址到剪貼簿！", "success");
+    } catch (error) {
+      showMessage("複製網址失敗", "error");
+    }
   };
 
   const handleReturn = () => {
@@ -330,37 +352,45 @@ const Custom = () => {
             )}
             {outputImage && showSaveArea && !id && (
               <div className="custom-details">
-                <input
-                  type="text"
-                  placeholder="輸入路線名稱"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  className="custom-input-name"
-                  required
-                />
-                <div className="route-types-custom">
-                  {routeTypes.map((type) => (
-                    <div
-                      key={type.name}
-                      className={`route-type-custom ${
-                        customType.includes(type.name) ? "selected" : ""
-                      }`}
-                      onClick={() => toggleRouteType(type.name)}
-                    >
-                      <img src={type.icon} alt={type.name} />
-                      {/* <p>{type.name}</p> */}
-                    </div>
-                  ))}
-                </div>
-                <textarea
-                  placeholder="輸入說明或備註"
-                  value={memo}
-                  onChange={(e) => setMemo(e.target.value)}
-                  className="custom-textarea"
-                />
-                <button onClick={handleConfirmClick} className="confirm-button">
-                  上傳
-                </button>
+                <form>
+                  <input
+                    type="text"
+                    placeholder="輸入路線名稱*"
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    className="custom-input-name"
+                    required
+                    maxLength={20}
+                  />
+                  <div className="route-types-custom">
+                    {routeTypes.map((type) => (
+                      <div
+                        key={type.name}
+                        className={`route-type-custom ${
+                          customType.includes(type.name) ? "selected" : ""
+                        }`}
+                        onClick={() => toggleRouteType(type.name)}
+                      >
+                        <img src={type.icon} alt={type.name} />
+                        {/* <p>{type.name}</p> */}
+                      </div>
+                    ))}
+                  </div>
+                  <textarea
+                    placeholder="輸入說明或備註"
+                    value={memo}
+                    onChange={(e) => setMemo(e.target.value)}
+                    className="custom-textarea"
+                    maxLength={100}
+                  />
+                  <button
+                    type="submit"
+                    onClick={handleConfirmClick}
+                    className="confirm-button"
+                  >
+                    上傳
+                  </button>
+                </form>
               </div>
             )}
           </div>
@@ -368,14 +398,18 @@ const Custom = () => {
           {selectedRoute && (
             <div className="route-details">
               <div className="route-details-data">
-                <p className="route-details-data-name">{selectedRoute.customName}</p>
+                <p className="route-details-data-name">
+                  {selectedRoute.customName}
+                </p>
                 <div className="route-types">
                   {selectedRoute.customType.map((type, index) => (
                     <img key={index} src={getRouteTypeIcon(type)} alt={type} />
                   ))}
                 </div>
                 {selectedRoute.setter && <p>設計者: {selectedRoute.setter}</p>}
-                {selectedRoute.memo && <p className="custom-memo">Memo: {selectedRoute.memo}</p>}
+                {selectedRoute.memo && (
+                  <p className="custom-memo">Memo: {selectedRoute.memo}</p>
+                )}
               </div>
               <img src={selectedRoute.processedImage} alt="Processed" />
               {!id && (

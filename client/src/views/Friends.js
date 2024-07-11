@@ -5,7 +5,7 @@ import ChatRoom from "./ChatRoom";
 import "./stylesheets/Friends.css";
 import { getUserFromToken } from "../utils/token";
 
-const Friends = () => {
+const Friends = ({ showMessage }) => {
   const [friends, setFriends] = useState([]);
   const [isAddFriendVisible, setIsAddFriendVisible] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -41,23 +41,25 @@ const Friends = () => {
 
   const addFriend = async () => {
     try {
-      // console.log("Searching for user:", newFriendName);
 
       const userResponse = await axios.get(
         `https://node.me2vegan.com/api/users/name/${newFriendName}`
       );
 
       if (!userResponse.data) {
-        console.error("User not found with name:", newFriendName);
-        throw new Error("User not found");
+        // console.error("User not found with name:", newFriendName);
+        showMessage("查無此名稱的使用者！", "error");
+        return;
       }
 
       const userData = userResponse.data;
-      // console.log("userData: ", userData);
-      // console.log("image: ", userData.image);
-      // console.log("name: ", userData.name);
 
       const receiverId = userData._id;
+
+      if (receiverId === userId) {
+        showMessage("無法加自己為好友！", "error");
+        return;
+      }
 
       const newFriend = {
         inviterId: userId,
@@ -65,27 +67,29 @@ const Friends = () => {
         friendDate: new Date().toISOString().split("T")[0],
       };
 
-      // console.log("Adding new friend:", newFriend);
-
       const response = await axios.post(
         `https://node.me2vegan.com/api/friends/create`,
         newFriend
       );
 
-      // console.log("Server response:", response);
-
       if (response.status === 200 || response.status === 201) {
-        // 重新获取好友列表
         const updatedFriends = await axios.get(
           `https://node.me2vegan.com/api/friends/${userId}`
         );
 
         setFriends(updatedFriends.data);
+        showMessage("成功添加好友！", "success");
       } else {
         console.error("Error adding friend:", response.statusText);
+        showMessage("添加好友失敗，請稍後再試！", "error");
       }
     } catch (error) {
       console.error("Error adding friend:", error);
+      if (error.response && error.response.data && error.response.data.error) {
+        showMessage(error.response.data.error, "error");
+      } else {
+        showMessage("伺服器異常，請稍後再試！", "error");
+      }
     }
   };
 
@@ -124,7 +128,7 @@ const Friends = () => {
         <div className="friend-list-container">
           <div>
             {friends.length === 0 ? (
-              <p>--- 尚無好友 ---</p>
+              <p>Loading ...</p>
             ) : (
               <div>
                 {friends.map((friend) => {

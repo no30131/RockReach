@@ -35,6 +35,12 @@ const Signup = ({ showMessage }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (name.length > 15) {
+      showMessage("名字不能超過15個字元！", "error");
+      return;
+    }
+
     const userData = { name, email, password };
 
     try {
@@ -90,6 +96,8 @@ const Signup = ({ showMessage }) => {
             className="input-email"
             placeholder="Email"
             required
+            name="email"
+            autoComplete="email"
           />
           <input
             type="text"
@@ -97,6 +105,7 @@ const Signup = ({ showMessage }) => {
             onChange={(e) => setName(e.target.value)}
             className="input-name"
             placeholder="Name"
+            maxLength={15}
             required
           />
           <input
@@ -106,6 +115,8 @@ const Signup = ({ showMessage }) => {
             className="input-password"
             placeholder="Password"
             required
+            name="password"
+            autoComplete="new-password"
           />
         </div>
         <p>

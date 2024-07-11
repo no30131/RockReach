@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { getUserFromToken } from "../utils/token";
-// import { Link } from "react-router-dom";
 import "./stylesheets/Explore.css";
 
-const Explore = ({ userId }) => {
+const Explore = ({ userId, showMessage }) => {
   const { id } = useParams();
   const [records, setRecords] = useState([]);
   const [currentSlides, setCurrentSlides] = useState({});
@@ -196,9 +195,14 @@ const Explore = ({ userId }) => {
     setShowComments((prev) => ({ ...prev, [subRecordId]: !prev[subRecordId] }));
   };
 
-  const handleShare = (recordId) => {
+  const handleShare = async (recordId) => {
     const shareLink = `https://rockreach.me2vegan.com/explore/${recordId}`;
-    prompt("Share this link:", shareLink);
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      showMessage("已複製網址到剪貼簿！", "success");
+    } catch (error) {
+      showMessage("複製網址失敗", "error");
+    }
   };
 
   return (

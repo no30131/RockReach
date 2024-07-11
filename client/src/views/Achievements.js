@@ -11,7 +11,7 @@ const routeTypes = [
   { name: "Pump", icon: "/images/icon_pump.png" },
 ];
 
-const Achievements = () => {
+const Achievements = ({ showMessage }) => {
   const [walls, setWalls] = useState([]);
   const [selectedWall, setSelectedWall] = useState(null);
   const [routes, setRoutes] = useState([]);
@@ -87,17 +87,25 @@ const Achievements = () => {
           ...achievements,
           [selectedRoute.customName]: "completed",
         });
+        showMessage("完成狀態已更新", "success")
       } else {
         console.error("Error saving achievement: ", response.data);
+        showMessage("完成狀態更新失敗，請稍後再試", "error");
       }
     } catch (error) {
       console.error("Error saving achievement: ", error);
+      showMessage("伺服器異常，請稍後再試", "error");
     }
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const shareLink = `https://rockreach.me2vegan.com/achievement/${userId}/${selectedWall.wallName}`;
-    prompt("Share this link:", shareLink);
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      showMessage("已複製網址到剪貼簿！", "success");
+    } catch (error) {
+      showMessage("複製網址失敗", "error");
+    }
   };
 
   const handleReturn = () => {

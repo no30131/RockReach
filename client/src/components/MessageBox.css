@@ -1,6 +1,6 @@
 .message-box {
   position: fixed;
-  top: 60px;
+  top: 80px;
   left: 50%;
   transform: translateX(-50%);
   background-color: #4caf50;

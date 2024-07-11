@@ -113,7 +113,17 @@ const Upload = ({ showMessage }) => {
 
   const handleSaveRecord = () => {
     if (!currentRecord.level) {
-      alert("請選擇難度等級");
+      showMessage("請選擇難度等級", "error");
+      return;
+    }
+
+    if (currentRecord.wall && currentRecord.wall.length > 6) {
+      showMessage("牆面編號不能超過5個字元！", "error");
+      return;
+    }
+
+    if (currentRecord.memo && currentRecord.memo.length > 100) {
+      showMessage("備註不能超過100個字元！", "error");
       return;
     }
 
@@ -127,18 +137,18 @@ const Upload = ({ showMessage }) => {
     e.preventDefault();
 
     if (!selectedGym) {
-      alert("請選擇岩館！");
+      showMessage("請選擇岩館！", "error");
       return;
     }
 
     if (!records[0]) {
-      alert("請新增至少一個路線紀錄！");
+      showMessage("請新增至少一個路線紀錄！", "error");
       return;
     }
 
     for (let record of records) {
       if (!record.level) {
-        alert("請選擇每個路線的難度等級！");
+        showMessage("請選擇每個路線的難度等級！", "error");
         return;
       }
     }
@@ -286,6 +296,7 @@ const Upload = ({ showMessage }) => {
                         placeholder="牆面編號 ( 非必填 )"
                         className="wall-input"
                         required
+                        maxLength={5}
                       />
                     </div>
                   </div>
@@ -397,6 +408,7 @@ const Upload = ({ showMessage }) => {
                         value={currentRecord.memo || ""}
                         onChange={handleRecordChange}
                         placeholder="例：心得 / 取名 / 困難點 / 跟誰一起 / 定線員 ... ( 非必填 )"
+                        maxLength={100}
                       ></textarea>
                     </div>
                   </div>

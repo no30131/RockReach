@@ -72,3 +72,7 @@ p, a, li, span, pre {
 .box {
   min-height: 460px;
 }
+
+.button:hover {
+  color: #bb1c00;
+}

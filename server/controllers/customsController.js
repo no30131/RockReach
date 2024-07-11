@@ -13,11 +13,14 @@ const s3 = new AWS.S3({
 
 exports.getCustomsWalls = async (req, res) => {
   try {
-    const walls = await Customs.find({ type: "custom" }, "wallName originalImage");
+    const walls = await Customs.find(
+      { type: "custom" },
+      "wallName originalImage"
+    );
     res.status(200).json(walls);
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching walls data",
+      message: "牆面資料同步失敗",
       error: error.message,
     });
   }
@@ -31,11 +34,11 @@ exports.getCustomsWallRoutes = async (req, res) => {
     if (wall) {
       res.status(200).json(wall.customs);
     } else {
-      res.status(404).json({ message: "Wall not found" });
+      res.status(404).json({ message: "查無此牆面" });
     }
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching wall routes data",
+      message: "路線資料同步失敗",
       error: error.message,
     });
   }
@@ -45,12 +48,15 @@ exports.getCustomsWallRouteById = async (req, res) => {
   const id = req.params.id;
 
   try {
-    const wall = await Customs.findOne({ "customs._id": id }, { wallName: 1, "customs.$": 1 });
-    // console.log("wall: ", wall);
+    const wall = await Customs.findOne(
+      { "customs._id": id },
+      { wallName: 1, "customs.$": 1 }
+    );
+
     if (wall) {
       res.status(200).json(wall);
     } else {
-      res.status(404).json({ message: "Route not found" });
+      res.status(404).json({ message: "查無此路線" });
     }
   } catch (error) {
     res.status(500).json({
@@ -66,10 +72,10 @@ exports.processImage = async (req, res) => {
   if (!image || typeof image !== "string") {
     return res
       .status(400)
-      .json({ message: "Image path is required and must be a string" });
+      .json({ message: "圖片路徑不可缺少，而且必須是字串格式" });
   }
   if (!markers) {
-    return res.status(400).json({ message: "Markers are required" });
+    return res.status(400).json({ message: "需要使用至少一個標記" });
   }
 
   const localImagePath = path.join(
@@ -78,7 +84,6 @@ exports.processImage = async (req, res) => {
     "uploads",
     path.basename(image)
   );
-  // const outputImagePath = path.join(__dirname, "..", "uploads", "output.png");
 
   try {
     const response = await axios({
@@ -136,17 +141,25 @@ exports.processImage = async (req, res) => {
 };
 
 exports.createCustoms = async (req, res) => {
-  const { wallName, processedImage, userId, customName, customType, memo } = req.body;
-  // console.log(wallName, processedImage, userId, customName, customType, memo);
+  const { wallName, processedImage, userId, customName, customType, memo } =
+    req.body;
 
-  if (!wallName || !processedImage || !customName || !customType) {
-    return res.status(400).json({ message: "All fields are required" });
+  if (!wallName || !processedImage || !customName) {
+    return res.status(400).json({ message: "請填入所有必填欄位的資料！" });
+  }
+
+  if (customName.length > 20) {
+    return res.status(400).json({ message: "路線名稱不能超過20個字元！" });
+  }
+
+  if (memo.length > 100) {
+    return res.status(400).json({ message: "說明或備註不能超過100個字元！" });
   }
 
   const localImagePath = path.resolve(__dirname, "..", processedImage);
 
   if (!fs.existsSync(localImagePath)) {
-    return res.status(400).json({ message: "Processed image not found" });
+    return res.status(400).json({ message: "找不到執行後的結果圖片" });
   }
 
   const fileContent = fs.readFileSync(localImagePath);
@@ -157,7 +170,6 @@ exports.createCustoms = async (req, res) => {
     Key: fileName,
     Body: fileContent,
     ContentType: "image/png",
-    // ACL: "public-read"
   };
 
   try {
@@ -176,117 +188,27 @@ exports.createCustoms = async (req, res) => {
       await wall.save();
       res.status(201).json(wall);
     } else {
-      res.status(404).json({ message: "Wall not found" });
+      res.status(404).json({ message: "查無此牆面" });
     }
   } catch (error) {
     console.error("Error uploading to S3 or saving to DB:", error);
     res.status(500).json({
-      message: "Error creating custom route",
+      message: "新增路線時出現錯誤",
       error: error.message,
     });
   }
 };
 
-// exports.processImage = async (req, res) => {
-//   const { markers } = req.body;
-//   const file = req.file;
-
-//   if (!file || !markers) {
-//     return res.status(400).json({ message: "Image and markers are required" });
-//   }
-
-//   const localImagePath = path.join(__dirname, "..", "uploads", file.filename);
-
-//   try {
-//     const pythonScriptPath = path.join(__dirname, "..", "scripts", "image_processing.py");
-//     const pythonProcess = spawn("python3", [
-//       pythonScriptPath,
-//       localImagePath,
-//       JSON.stringify(markers),
-//     ]);
-
-//     let outputData = "";
-
-//     pythonProcess.stdout.on("data", (data) => {
-//       outputData += data.toString();
-//     });
-
-//     pythonProcess.stderr.on("data", (data) => {
-//       console.error(`stderr: ${data}`);
-//     });
-
-//     pythonProcess.on("close", (code) => {
-//       if (code !== 0) {
-//         return res.status(500).send("Error processing image");
-//       }
-//       const outputPath = outputData.trim();
-//       const relativePath = path.join("uploads", path.basename(outputPath));
-
-//       res.status(200).json({ processedImage: relativePath });
-//     });
-//   } catch (error) {
-//     console.error("Error processing image:", error);
-//     res.status(500).send("Error processing image");
-//   }
-// };
-
-// exports.createCustoms = async (req, res) => {
-//   const { wallName, processedImage, customName, customType, memo } = req.body;
-
-//   if (!wallName || !processedImage || !customName || !customType) {
-//     return res.status(400).json({ message: "All fields are required" });
-//   }
-
-//   const localImagePath = path.resolve(__dirname, "..", processedImage);
-
-//   if (!fs.existsSync(localImagePath)) {
-//     return res.status(400).json({ message: "Processed image not found" });
-//   }
-
-//   const fileContent = fs.readFileSync(localImagePath);
-//   const fileName = `processed/${path.basename(localImagePath)}`;
-
-//   const params = {
-//     Bucket: process.env.AWS_S3_BUCKET,
-//     Key: fileName,
-//     Body: fileContent,
-//     ContentType: "image/png",
-//   };
-
-//   try {
-//     const data = await s3.upload(params).promise();
-//     const imageUrl = data.Location;
-
-//     const wall = await Customs.findOne({ wallName });
-//     if (wall) {
-//       wall.customs.push({
-//         processedImage: imageUrl,
-//         customName,
-//         customType,
-//         memo,
-//       });
-//       await wall.save();
-//       res.status(201).json(wall);
-//     } else {
-//       res.status(404).json({ message: "Wall not found" });
-//     }
-//   } catch (error) {
-//     console.error("Error uploading to S3 or saving to DB:", error);
-//     res.status(500).json({
-//       message: "Error creating custom route",
-//       error: error.message,
-//     });
-//   }
-// };
-
-
 exports.getAchievementWalls = async (req, res) => {
   try {
-    const walls = await Customs.find({ type: "achievement" }, "wallName originalImage");
+    const walls = await Customs.find(
+      { type: "achievement" },
+      "wallName originalImage"
+    );
     res.status(200).json(walls);
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching walls data",
+      message: "牆面資料同步失敗",
       error: error.message,
     });
   }
@@ -300,82 +222,12 @@ exports.getAchievementRoutes = async (req, res) => {
     if (wall) {
       res.status(200).json(wall);
     } else {
-      res.status(404).json({ message: "Wall not found" });
+      res.status(404).json({ message: "查無此牆面" });
     }
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching wall routes data",
+      message: "路線資料同步失敗",
       error: error.message,
     });
   }
 };
-
-// exports.processAchievementImage = async (req, res) => {
-//   const { image } = req.body;
-
-//   if (!image || typeof image !== "string") {
-//     return res
-//       .status(400)
-//       .json({ message: "Image path is required and must be a string" });
-//   }
-
-//   const localImagePath = path.join(
-//     __dirname,
-//     "..",
-//     "uploads",
-//     path.basename(image)
-//   );
-
-//   try {
-//     const response = await axios({
-//       url: image,
-//       method: "GET",
-//       responseType: "stream",
-//     });
-
-//     const writer = fs.createWriteStream(localImagePath);
-//     response.data.pipe(writer);
-
-//     writer.on("finish", () => {
-//       const pythonScriptPath = path.join(
-//         __dirname,
-//         "..",
-//         "scripts",
-//         "process_image_by_color.py"
-//       );
-//       const pythonProcess = spawn("python", [
-//         pythonScriptPath,
-//         localImagePath
-//       ]);
-
-//       let outputData = "";
-
-//       pythonProcess.stdout.on("data", (data) => {
-//         outputData += data.toString();
-//       });
-
-//       pythonProcess.stderr.on("data", (data) => {
-//         console.error(`stderr: ${data}`);
-//       });
-
-//       pythonProcess.on("close", (code) => {
-//         if (code !== 0) {
-//           res.status(500).send("Error processing image");
-//           return;
-//         }
-        
-//         const resultFiles = JSON.parse(outputData.trim());
-//         const resultPaths = resultFiles.map(file => path.join("uploads", file));
-//         res.status(200).json({ processedImages: resultPaths });
-//       });
-//     });
-
-//     writer.on("error", (err) => {
-//       console.error("Error writing image to local file:", err);
-//       res.status(500).send("Error writing image to local file");
-//     });
-//   } catch (error) {
-//     console.error("Error fetching image from S3:", error);
-//     res.status(500).send("Error fetching image from S3");
-//   }
-// };

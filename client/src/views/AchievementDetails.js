@@ -13,6 +13,7 @@ const routeTypes = [
 
 const AchievementDetails = () => {
   const { userId, wallName } = useParams();
+  const [userName, setUserName] = useState("");
   const [wall, setWall] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
@@ -37,6 +38,11 @@ const AchievementDetails = () => {
           {}
         );
         setAchievements(userAchievements);
+
+        const userNameResponse = await axios.get(
+          `https://node.me2vegan.com/api/users/${userId}`
+        );
+        setUserName(userNameResponse.data.name);
       } catch (error) {
         console.error("Error fetching wall or achievements data:", error);
       }
@@ -81,6 +87,9 @@ const AchievementDetails = () => {
             </div>
             <img src={wall.originalImage} alt={wallName} />
             <p>
+              <strong>{userName} </strong>的成就蒐集進度
+            </p>
+            <p>
               已完成數量: {completedCount}/{routes.length}
             </p>
           </div>
@@ -117,7 +126,7 @@ const AchievementDetails = () => {
                   >
                     <h4>{route.customName}</h4>
                     {achievements[route.customName] === "completed" && (
-                      <pre className="completed-text">  已完成！</pre>
+                      <pre className="completed-text"> 已完成！</pre>
                     )}
                   </div>
                 ))}

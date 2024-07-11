@@ -7,9 +7,10 @@ import { Layout } from "antd";
 
 const { Sider, Content } = Layout;
 
-const Footprint = () => {
+const Footprint = ({ showMessage }) => {
   const { id } = useParams();
   const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState("");
   const [footprints, setFootprints] = useState([]);
   const [climbRecords, setClimbRecords] = useState([]);
   const [currentGym, setCurrentGym] = useState(null);
@@ -34,6 +35,11 @@ const Footprint = () => {
         `https://node.me2vegan.com/api/footprints/${fetchId}`
       );
       setFootprints(response.data);
+
+      const userNameResponse = await axios.get(
+        `https://node.me2vegan.com/api/users/${fetchId}`
+      );
+      setUserName(userNameResponse.data.name);
     } catch (error) {
       console.error("Error fetching footprints:", error);
     }
@@ -324,86 +330,93 @@ const Footprint = () => {
     setCurrentGym(null);
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const shareLink = `https://rockreach.me2vegan.com/footprint/${userId}`;
-    prompt("Share this link:", shareLink);
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      showMessage("已複製網址到剪貼簿！", "success");
+    } catch (error) {
+      showMessage("複製網址失敗", "error");
+    }
   };
-
-  // const closeAllInfoWindows = () => {
-  //   infoWindows.forEach(infoWindow => infoWindow.close());
-  //   setInfoWindows([]);
-  // };
 
   return (
     <div className="footprints-container">
       {!id && !userId ? (
         <p>請先登入！</p>
       ) : (
-        <Layout className="map-details">
-          <Sider
-            style={{
-              display: showDetails ? "block" : "none",
-              background: "rgb(245, 245, 245)",
-              height: "80vh",
-            }}
-          >
-            <div>
-              <button className="close-btn" onClick={closeDetails}>
-                X
-              </button>
+        <div>
+          {id && (
+            <p>
+              <strong>{userName} </strong>的足跡地圖
+            </p>
+          )}
+          <Layout className="map-details">
+            <Sider
+              style={{
+                display: showDetails ? "block" : "none",
+                background: "rgb(245, 245, 245)",
+                height: "80vh",
+              }}
+            >
               <div>
-                <div className="map-detail">
-                  <h2>{footprintData.gymName}</h2>
-                </div>
-                <div className="map-detail">
-                  <h4>上次到訪日期:</h4>
-                  <input
-                    type="text"
-                    value={footprintData.visitDate || ""}
-                    readOnly
-                  />
-                </div>
-                <div className="map-detail">
-                  <h4>到訪次數:</h4>
-                  <input
-                    type="number"
-                    value={footprintData.visitTimes || 0}
-                    readOnly
-                  />
-                </div>
-                <div className="map-detail">
-                  <h4>會員到期日:</h4>
-                  <input
-                    type="date"
-                    value={footprintData.expiryDate || ""}
-                    onChange={(e) =>
-                      setFootprintData({
-                        ...footprintData,
-                        expiryDate: e.target.value,
-                      })
-                    }
-                  />
-                </div>
-                <button onClick={saveVisit} className="save-button">
-                  儲存
+                <button className="close-btn" onClick={closeDetails}>
+                  X
                 </button>
+                <div>
+                  <div className="map-detail">
+                    <h2>{footprintData.gymName}</h2>
+                  </div>
+                  <div className="map-detail">
+                    <h4>上次到訪日期:</h4>
+                    <input
+                      type="text"
+                      value={footprintData.visitDate || ""}
+                      readOnly
+                    />
+                  </div>
+                  <div className="map-detail">
+                    <h4>到訪次數:</h4>
+                    <input
+                      type="number"
+                      value={footprintData.visitTimes || 0}
+                      readOnly
+                    />
+                  </div>
+                  <div className="map-detail">
+                    <h4>會員到期日:</h4>
+                    <input
+                      type="date"
+                      value={footprintData.expiryDate || ""}
+                      onChange={(e) =>
+                        setFootprintData({
+                          ...footprintData,
+                          expiryDate: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <button onClick={saveVisit} className="save-button">
+                    儲存
+                  </button>
+                </div>
               </div>
-            </div>
-          </Sider>
-          <Content>
-            <div id="map" style={{ height: "80vh", width: "100%" }}></div>
-            <div className="map-share-area">
-              {!id && userId && (
-                <button
-                  onClick={() => handleShare()}
-                  className="map-share-button"
-                >
-                  分享
-                </button>
-              )}
-            </div>
-          </Content>
-        </Layout>
+            </Sider>
+            <Content>
+              <div id="map" style={{ height: "80vh", width: "100%" }}></div>
+            </Content>
+          </Layout>
+          <div className="map-share-area">
+            {!id && userId && (
+              <button
+                onClick={() => handleShare()}
+                className="map-share-button"
+              >
+                分享
+              </button>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
