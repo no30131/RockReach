@@ -3,7 +3,9 @@ import axios from "axios";
 import Explore from "./Explore";
 import ChatRoom from "./ChatRoom";
 import "./stylesheets/Friends.css";
-import { getUserFromToken } from "../utils/token";
+import { deleteToken, getUserFromToken } from "../utils/token";
+import Loading from "../components/Loading";
+import { useNavigate } from "react-router-dom";
 
 const Friends = ({ showMessage }) => {
   const [friends, setFriends] = useState([]);
@@ -12,6 +14,8 @@ const Friends = ({ showMessage }) => {
   const [selectedFriendId, setSelectedFriendId] = useState(null);
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [newFriendName, setNewFriendName] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const user = getUserFromToken();
@@ -23,6 +27,7 @@ const Friends = ({ showMessage }) => {
   }, []);
 
   useEffect(() => {
+    let loadingTimeout;
     if (userId) {
       const fetchFriends = async () => {
         try {
@@ -32,11 +37,19 @@ const Friends = ({ showMessage }) => {
           setFriends(response.data);
         } catch (error) {
           console.error("Error fetching friends: ", error);
+        } finally {
+          setIsLoading(false);
         }
       };
 
       fetchFriends();
+
+      loadingTimeout = setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
     }
+
+    return () => clearTimeout(loadingTimeout);
   }, [userId]);
 
   const addFriend = async () => {
@@ -47,7 +60,6 @@ const Friends = ({ showMessage }) => {
       );
 
       if (!userResponse.data) {
-        // console.error("User not found with name:", newFriendName);
         showMessage("查無此名稱的使用者！", "error");
         return;
       }
@@ -78,7 +90,7 @@ const Friends = ({ showMessage }) => {
         );
 
         setFriends(updatedFriends.data);
-        showMessage("成功添加好友！", "success");
+        showMessage("添加好友成功！", "success");
       } else {
         console.error("Error adding friend:", response.statusText);
         showMessage("添加好友失敗，請稍後再試！", "error");
@@ -94,6 +106,15 @@ const Friends = ({ showMessage }) => {
   };
 
   const handleToggleAddFriend = () => {
+    const token = getUserFromToken();
+    if (!token) {
+      deleteToken();
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+          navigate("/signin");
+      }, 1000);
+      return;
+    }
     setIsAddFriendVisible(!isAddFriendVisible);
   };
 
@@ -102,6 +123,16 @@ const Friends = ({ showMessage }) => {
   };
 
   const handleChat = (friendId) => {
+    const token = getUserFromToken();
+    if (!token) {
+      deleteToken();
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+          navigate("/signin");
+      }, 1000);
+      return;
+    }
+    
     setSelectedFriendId(friendId);
     setIsChatVisible(true);
   };
@@ -113,7 +144,7 @@ const Friends = ({ showMessage }) => {
   };
 
   if (selectedFriendId && isChatVisible) {
-    return <ChatRoom userId={userId} friendId={selectedFriendId} />;
+    return <ChatRoom userId={userId} friendId={selectedFriendId} showMessage={showMessage} />;
   }
 
   if (selectedFriendId) {
@@ -124,11 +155,13 @@ const Friends = ({ showMessage }) => {
     <div>
       {!userId ? (
         <p>請先登入！</p>
+      ) : isLoading ? (
+        <Loading />
       ) : (
         <div className="friend-list-container">
           <div>
             {friends.length === 0 ? (
-              <p>Loading ...</p>
+              <p>--- 尚無好友 ---</p>
             ) : (
               <div>
                 {friends.map((friend) => {

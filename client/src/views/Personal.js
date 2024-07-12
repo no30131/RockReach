@@ -3,7 +3,8 @@ import axios from "axios";
 import Plotly from "plotly.js-dist";
 import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Personal.css";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+import Loading from "../components/Loading";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -17,6 +18,7 @@ const Personal = () => {
   const [user, setUser] = useState(null);
   const [climbRecords, setClimbRecords] = useState([]);
   const [expandedRecords, setExpandedRecords] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const levelRef = useRef(null);
   const typesCountRef = useRef(null);
@@ -42,10 +44,18 @@ const Personal = () => {
         setClimbRecords(recordsResponse.data);
       } catch (error) {
         console.error("Error fetching data: ", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchUserData();
+
+    const loadingTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(loadingTimeout);
   }, []);
 
   const toggleRecordDetails = (recordId) => {
@@ -275,11 +285,13 @@ const Personal = () => {
   };
 
   return (
-    <div>
-      {!user ? (
+    <div className="personal-container">
+      {isLoading ? (
+        <Loading />
+      ) : !user ? (
         <p>請先登入！</p>
       ) : (
-        <div className="personal-container">
+        <>
           <div className="userData">
             <div className="userData-img">
               <img src={user.image} alt={user.name} />
@@ -294,22 +306,10 @@ const Personal = () => {
             <p>--- 尚無紀錄 ---</p>
           ) : (
             <div className="personal-charts">
-              <div
-                id="typesCount"
-                ref={typesCountRef}
-              ></div>
-              <div
-                id="typesTimes"
-                ref={typesTimesRef}
-              ></div>
-              <div
-                id="level"
-                ref={levelRef}
-              ></div>
-              <div
-                id="frequency"
-                ref={frequencyRef}
-              ></div>
+              <div id="typesCount" ref={typesCountRef}></div>
+              <div id="typesTimes" ref={typesTimesRef}></div>
+              <div id="level" ref={levelRef}></div>
+              <div id="frequency" ref={frequencyRef}></div>
             </div>
           )}
           <div className="personal-records-box-container">
@@ -366,17 +366,16 @@ const Personal = () => {
               ))}
             </div>
           </div>
-        </div>
+          {/* <div className="personal-add-record">
+            <Link to="/upload" className="btn-personal-add-record">
+              +
+            </Link>
+          </div> */}
+        </>
       )}
-      <div className="personal-add-record">
-        {user && (
-          <Link to="/upload" className="btn-personal-add-record">
-            +
-          </Link>
-        )}
-      </div>
     </div>
   );
-};
+  
+}  
 
 export default Personal;

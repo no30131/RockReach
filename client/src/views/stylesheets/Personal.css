@@ -50,6 +50,10 @@ h3 {
   align-items: center;
 }
 
+.userData-details {
+  margin-top: -5px;
+}
+
 .userData {
   display: flex;
   justify-content: center;

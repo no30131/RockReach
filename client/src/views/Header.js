@@ -1,9 +1,27 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./stylesheets/Header.css";
+import { getUserFromToken, deleteToken } from "../utils/token";
 
-const Header = () => {
+const Header = ({ showMessage }) => {
+  const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
   const location = useLocation();
+  
+  useEffect(() => {
+    const user = getUserFromToken();
+    if (user) {
+      setUserId(user.userId);
+    } else {
+      setUserId("");
+    }  
+  }, []);   
+
+  const handleLogout = () => {
+    deleteToken();
+    setUserId(null);
+    navigate("/signin");
+  };
 
   return (
     <header className="header">
@@ -21,7 +39,11 @@ const Header = () => {
             <Link to="/footprint" className={`button ${location.pathname === "/footprint" ? "active" : ""}`}>足跡地圖</Link>
         </div>
         <div className="menu-login">
-          <Link to="/signin" className="button login-button">登入</Link>
+          {!userId ? (
+            <Link to="/signin" className="button login-button">登入</Link>
+          ):(
+            <button onClick={handleLogout} className="button logout-button">登出</button>
+          )}
         </div>
       </nav>
     </header>

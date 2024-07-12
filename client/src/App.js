@@ -6,7 +6,7 @@ import Home from "./views/Home.js";
 import Signin from "./views/Signin.js";
 import Signup from "./views/Signup.js";
 import Upload from "./views/Upload.js";
-import Gyms from "./views/Gyms.js";
+// import Gyms from "./views/Gyms.js";
 import Custom from "./views/Custom.js";
 import Friends from "./views/Friends.js";
 import Footprint from "./views/Footprint.js";
@@ -42,7 +42,7 @@ function App() {
             <Route path="/" element={<Home showMessage={showMessage} />} />
             <Route path="/signup" element={<Signup showMessage={showMessage}/>} />
             <Route path="/signin" element={<Signin showMessage={showMessage} />} />
-            <Route path="/gyms" element={<Gyms showMessage={showMessage} />} />
+            {/* <Route path="/gyms" element={<Gyms showMessage={showMessage} />} /> */}
             <Route path="/upload" element={<Upload showMessage={showMessage} />} />
             <Route path="/custom" element={<Custom showMessage={showMessage} />} />
             <Route path="/custom/:id" element={<Custom showMessage={showMessage} />} />

@@ -3,6 +3,8 @@ footer {
     background-color: #f0f0f0;
     display: flex;
     justify-content: space-between;
+    font-size: 16px;
+    line-height: 1.6;
     /* margin-top: 50px; */
 }
 

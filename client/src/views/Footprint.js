@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { getUserFromToken } from "../utils/token";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./stylesheets/Footprint.css";
 import { Layout } from "antd";
+import { deleteToken } from "../utils/token";
 
 const { Sider, Content } = Layout;
 
@@ -14,11 +15,6 @@ const Footprint = ({ showMessage }) => {
   const [footprints, setFootprints] = useState([]);
   const [climbRecords, setClimbRecords] = useState([]);
   const [currentGym, setCurrentGym] = useState(null);
-  const [expiryDate, setExpiryDate] = useState(
-    new Date(new Date().setMonth(new Date().getMonth() + 1))
-      .toISOString()
-      .split("T")[0]
-  );
   const [showDetails, setShowDetails] = useState(false);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [markers, setMarkers] = useState([]);
@@ -28,6 +24,7 @@ const Footprint = ({ showMessage }) => {
     expiryDate: "",
     gymName: "",
   });
+  const navigate = useNavigate();
 
   const fetchUserFootprints = useCallback(async (fetchId) => {
     try {
@@ -117,7 +114,10 @@ const Footprint = ({ showMessage }) => {
           (footprint) => String(footprint.gymId._id) === String(gymId)
         );
         if (gymFootprint) {
-          setExpiryDate(gymFootprint.expiryDate);
+          setFootprintData((prevData) => ({
+            ...prevData,
+            expiryDate: gymFootprint.expiryDate,
+          }));
         }
       } catch (error) {
         console.error("Error fetching footprints:", error);
@@ -289,11 +289,21 @@ const Footprint = ({ showMessage }) => {
   }, [footprints, climbRecords, isMapLoaded, initMap]);
 
   const saveVisit = async () => {
+    const token = getUserFromToken();
+    if (!token) {
+        deleteToken();
+        showMessage("登入超時，請重新登入！", "error");
+        setTimeout(() => {
+            navigate("/signin");
+        }, 1000);
+        return;
+    }
+
     try {
       const updatedFootprint = {
         gymId: currentGym,
         userId: userId,
-        expiryDate: expiryDate,
+        expiryDate: footprintData.expiryDate,
       };
       const response = await axios.post(
         `https://node.me2vegan.com/api/footprints/create`,

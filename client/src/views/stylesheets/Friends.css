@@ -60,9 +60,9 @@ body {
   height: 50px;
   border-radius: 50%;
   cursor: pointer;
-  /* position: fixed;
+  position: fixed;
   bottom: 80px;
-  right: 30px; */
+  right: 30px;
 }
 
 .add-record-button {

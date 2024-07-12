@@ -3,6 +3,8 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Explore.css";
+import { useNavigate } from "react-router-dom";
+import Loading from "../components/Loading";
 
 const Explore = ({ userId, showMessage }) => {
   const { id } = useParams();
@@ -12,6 +14,8 @@ const Explore = ({ userId, showMessage }) => {
   const [showComments, setShowComments] = useState({});
   // const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,10 +49,18 @@ const Explore = ({ userId, showMessage }) => {
         setRecords(id ? [response.data] : response.data);
       } catch (error) {
         console.error("Error fetching records: ", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     // console.log("userId: ", userId);
     fetchRecords();
+    
+    const loadingTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+  
+    return () => clearTimeout(loadingTimeout);
   }, [id, userId]);
 
   const renderFile = (file) => {
@@ -144,7 +156,18 @@ const Explore = ({ userId, showMessage }) => {
 
   const handleAddComment = async (recordId, subRecordId) => {
     const comment = newComment[subRecordId];
-    if (!comment || !userName) return console.log("Please login!");
+    if (!userName) {
+      showMessage("請先登入才能留言！", "error");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000);
+      return;
+    }
+
+    if (!comment) {
+      showMessage("請輸入內容！", "error");
+      return;
+    }
 
     try {
       const fullComment = `${userName}: ${comment}`;
@@ -180,6 +203,7 @@ const Explore = ({ userId, showMessage }) => {
           return record;
         })
       );
+      showMessage("留言已送出！", "success");
       setNewComment((prev) => ({ ...prev, [subRecordId]: "" }));
       setShowComments((prev) => ({ ...prev, [subRecordId]: true }));
     } catch (error) {
@@ -207,8 +231,10 @@ const Explore = ({ userId, showMessage }) => {
 
   return (
     <div>
-      {records.length === 0 ? (
-        <p>Loading ...</p>
+      {isLoading ? (
+        <Loading />
+      ) : records.length === 0 ? (
+        <p>--- 尚無紀錄 ---</p>
       ) : (
         <div className="explore-container">
           {records.map((record) => {
@@ -323,6 +349,7 @@ const Explore = ({ userId, showMessage }) => {
                                 handleCommentChange(rec._id, e.target.value)
                               }
                               placeholder="write something..."
+                              required
                             />
                             <button
                               onClick={() =>

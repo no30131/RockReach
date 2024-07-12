@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-import { getUserFromToken } from "../utils/token";
+import { useParams, useNavigate } from "react-router-dom";
+import { deleteToken, getUserFromToken } from "../utils/token";
 import "./stylesheets/Custom.css";
+import Loading from "../components/Loading";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -33,6 +34,8 @@ const Custom = ({ showMessage }) => {
   const [scale, setScale] = useState(1);
   const [showOutput, setShowOutput] = useState(false);
   const [showSaveArea, setShowSaveArea] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const user = getUserFromToken();
@@ -116,6 +119,7 @@ const Custom = ({ showMessage }) => {
   const handleProcessClick = async () => {
     if (!selectedWall) return;
     setIsProcessing(true);
+    setIsLoading(true);
 
     try {
       const response = await axios.post(
@@ -129,13 +133,18 @@ const Custom = ({ showMessage }) => {
         }
       );
 
-      setOutputImage(`https://node.me2vegan.com/${response.data.processedImage}`);
+      setOutputImage(
+        `https://node.me2vegan.com/${response.data.processedImage}`
+      );
       setOutputDBImage(response.data.processedImage);
       setIsProcessing(false);
       setShowOutput(true);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error processing image:", error);
       setIsProcessing(false);
+      setIsLoading(false);
+      showMessage("處理影像時發生錯誤，請稍後再試", "error");
     }
   };
 
@@ -195,6 +204,16 @@ const Custom = ({ showMessage }) => {
   const handleConfirmClick = async (e) => {
     e.preventDefault();
 
+    const token = getUserFromToken();
+    if (!token) {
+      deleteToken();
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000);
+      return;
+    }
+
     if (!customName) {
       showMessage("請輸入路線名稱！", "error");
       return;
@@ -226,7 +245,7 @@ const Custom = ({ showMessage }) => {
           memo,
         })
         .then((response) => {
-          showMessage("新增路線成功！", "success")
+          showMessage("新增路線成功！", "success");
           setSelectedWall(null);
         })
         .catch((error) => {
@@ -258,6 +277,16 @@ const Custom = ({ showMessage }) => {
   };
 
   const handleAddRoute = () => {
+    const token = getUserFromToken();
+    if (!token) {
+      deleteToken();
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000);
+      return;
+    }
+
     setIsCanvasActive(true);
 
     if (selectedRoute) {
@@ -281,6 +310,11 @@ const Custom = ({ showMessage }) => {
 
   return (
     <div className="custom-page">
+      {isProcessing && isLoading && (
+        <div className="loading-overlay">
+          <Loading />
+        </div>
+      )}
       {!selectedWall ? (
         <div className="walls-list">
           {walls.map((wall, index) => (
@@ -314,11 +348,22 @@ const Custom = ({ showMessage }) => {
               style={{ display: "none" }}
               onLoad={handleImageLoad}
             />
-            {!id && <canvas ref={canvasRef} onClick={handleImageClick} />}
-            {outputImage && (
-              <div className="route-output">
-                <h3> </h3>
-                <img src={outputImage} alt="Output" />
+            <div className="images-container">
+              <canvas ref={canvasRef} onClick={handleImageClick} />
+              {outputImage && (
+                <div className="route-output">
+                  <img src={outputImage} alt="Output" />
+                </div>
+              )}
+            </div>
+            {showOutput && (
+              <div className="edit-or-save">
+                <button onClick={handleSave} className="process-save-button">
+                  保存
+                </button>
+                <button onClick={handleEdit} className="process-edit-button">
+                  修改
+                </button>
               </div>
             )}
             {!showOutput && isCanvasActive && !id && (
@@ -338,16 +383,6 @@ const Custom = ({ showMessage }) => {
                     {isEraserActive ? "使用標記" : "使用橡皮擦"}
                   </button>
                 </div>
-              </div>
-            )}
-            {showOutput && (
-              <div className="edit-or-save">
-                <button onClick={handleSave} className="process-save-button">
-                  保存
-                </button>
-                <button onClick={handleEdit} className="process-edit-button">
-                  修改
-                </button>
               </div>
             )}
             {outputImage && showSaveArea && !id && (
@@ -372,7 +407,6 @@ const Custom = ({ showMessage }) => {
                         onClick={() => toggleRouteType(type.name)}
                       >
                         <img src={type.icon} alt={type.name} />
-                        {/* <p>{type.name}</p> */}
                       </div>
                     ))}
                   </div>
@@ -383,13 +417,15 @@ const Custom = ({ showMessage }) => {
                     className="custom-textarea"
                     maxLength={100}
                   />
-                  <button
-                    type="submit"
-                    onClick={handleConfirmClick}
-                    className="confirm-button"
-                  >
-                    上傳
-                  </button>
+                  <div className="custom-submit-button-div">
+                    <button
+                      type="submit"
+                      onClick={handleConfirmClick}
+                      className="confirm-button"
+                    >
+                      上傳
+                    </button>
+                  </div>
                 </form>
               </div>
             )}

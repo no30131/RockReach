@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { getUserFromToken } from "../utils/token";
+import { deleteToken, getUserFromToken } from "../utils/token";
 import "./stylesheets/Achievements.css";
+import { useNavigate } from "react-router-dom";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -18,6 +19,7 @@ const Achievements = ({ showMessage }) => {
   const [selectedRoute, setSelectedRoute] = useState(null);
   const [userId, setUserId] = useState(null);
   const [achievements, setAchievements] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWalls = async () => {
@@ -71,6 +73,16 @@ const Achievements = ({ showMessage }) => {
   };
 
   const handleSaveAchievement = async () => {
+    const token = getUserFromToken();
+    if (!token) {
+        deleteToken();
+        showMessage("登入超時，請重新登入！", "error");
+        setTimeout(() => {
+            navigate("/signin");
+        }, 1000);
+        return;
+    }
+
     if (!userId || !selectedRoute) return;
     try {
       const response = await axios.post(

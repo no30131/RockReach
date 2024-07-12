@@ -27,3 +27,7 @@ export const getUserFromToken = () => {
   }
 };
 
+export const deleteToken = () => {
+  document.cookie = "token=; Max-Age=0; path=/";
+};
+

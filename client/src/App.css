@@ -13,17 +13,6 @@
   }
 }
 
-/* .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-} */
-
 .App-link {
   color: #61dafb;
 }
@@ -38,14 +27,14 @@
 }
 
 .container {
-  /* width: 100%; */
-  max-width: 80%;
-  /* min-height: 750px; */
+  max-width: 80vw;
   min-height: 100vh;
   margin: 80px auto 0 auto;
   padding: 20px;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -53,6 +42,8 @@
 
 .header {
   font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 .footer {
@@ -61,12 +52,10 @@
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Roboto', sans-serif;
-  font-weight: 700;
 }
 
 p, a, li, span, pre {
   font-family: 'Roboto', sans-serif;
-  font-weight: 400;
 }
 
 .box {
@@ -75,4 +64,12 @@ p, a, li, span, pre {
 
 .button:hover {
   color: #bb1c00;
+}
+
+button {
+  font-size: 16px;
+}
+
+input, textarea {
+  font-size: 16px;
 }

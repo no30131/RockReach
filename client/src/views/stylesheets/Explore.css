@@ -27,6 +27,7 @@
 
 .record-header-basic {
   display: flex;
+  align-items: center;
 }
 
 .user-image {
@@ -116,12 +117,13 @@
 
 .record-footer button {
   padding: 0 5px;
-  width: 60px;
+  width: 77px;
   background-color: rgb(255, 251, 248);
   border: 1px solid rgb(126, 126, 126);
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(203, 193, 185, 0.5);
   cursor: pointer;
+  height: 100%;
 }
 
 .record-footer1 {
@@ -166,6 +168,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   outline: none;
+  font-size: 16px;
 }
 
 .comment-input input:focus {

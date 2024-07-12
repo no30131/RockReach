@@ -11,8 +11,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 300px;
-  max-width: 500px;
+  min-width: 450px;
+  max-width: 600px;
 }
 
 .signin-form-area > input {
@@ -49,6 +49,7 @@ h1, p {
     background-color: rgb(255, 98, 0);
     color: white;
     font-size: 18px;
+    cursor: pointer;
 }
 
 .signin-submit:hover {

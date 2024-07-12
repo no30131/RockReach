@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { getUserFromToken } from "../utils/token"
+import { deleteToken, getUserFromToken } from "../utils/token"
 import "./stylesheets/Upload.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -61,7 +61,7 @@ const Upload = ({ showMessage }) => {
     if (user) {
       setUserId(user.userId);
     } else {
-      console.error("No user found");
+      console.error("請先登入！");
     }
   }, []);
 
@@ -99,6 +99,16 @@ const Upload = ({ showMessage }) => {
   };
 
   const addRecord = () => {
+    const token = getUserFromToken();
+    if (!token) {
+      deleteToken();
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+          navigate("/signin");
+      }, 1000);
+      return;
+    }
+    
     setShowForm(true);
     setShowSecondPart(true);
     setCurrentRecord({
@@ -112,6 +122,16 @@ const Upload = ({ showMessage }) => {
   };
 
   const handleSaveRecord = () => {
+    const token = getUserFromToken();
+    if (!token) {
+      deleteToken();
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+          navigate("/signin");
+      }, 1000);
+      return;
+    }
+    
     if (!currentRecord.level) {
       showMessage("請選擇難度等級", "error");
       return;
@@ -136,6 +156,16 @@ const Upload = ({ showMessage }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const token = getUserFromToken();
+    if (!token) {
+      deleteToken();
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+          navigate("/signin");
+      }, 1000);
+      return;
+    }
+    
     if (!selectedGym) {
       showMessage("請選擇岩館！", "error");
       return;

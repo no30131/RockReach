@@ -5,7 +5,7 @@
     background-color: #ffffff;
     color: #fff;
     text-align: center;
-    padding: 15px 0px 0 20px;
+    padding: 15px 0px 0 15px;
     z-index: 1000;
 }
 
@@ -51,10 +51,19 @@
     border-radius: 5px;
     background-color: rgb(255, 98, 0);
     color: white;
-    margin-right: 50px;
+    margin-right: 30px;
 }
 
 .login-button:hover {
     background-color: rgb(255, 115, 0);
     border: 1px solid rgb(255, 115, 0);
+}
+
+.logout-button {
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 5px 25px;
+    margin-right: 30px;
 }
