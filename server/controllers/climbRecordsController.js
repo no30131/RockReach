@@ -22,8 +22,8 @@ exports.createClimbRecords = async (req, res) => {
     }
 
     for (let record of parsedRecords) {
-      if (record.wall && record.wall.length > 5) {
-        return res.status(400).json({ message: "牆面編號不能超過5個字元！" });
+      if (record.wall && record.wall.length > 3) {
+        return res.status(400).json({ message: "牆面編號不能超過3個字元！" });
       }
       if (record.memo && record.memo.length > 100) {
         return res.status(400).json({ message: "備註不能超過100個字元！" });

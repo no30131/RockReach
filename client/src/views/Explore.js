@@ -55,11 +55,11 @@ const Explore = ({ userId, showMessage }) => {
     };
     // console.log("userId: ", userId);
     fetchRecords();
-    
+
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-  
+
     return () => clearTimeout(loadingTimeout);
   }, [id, userId]);
 
@@ -88,19 +88,19 @@ const Explore = ({ userId, showMessage }) => {
 
     // const fileStyle = {
     //   maxWidth: "320px",
-    //   maxHeight: "240px",
+    //   maxHeight: "240px",-explore
     //   objectFit: "contain",
     // };
 
     if (fileType && fileType.startsWith("video")) {
       return (
-        <div key={file} className="file-container">
+        <div key={file} className="file-container-explore">
           <video src={filePath} controls className="file-content" />
         </div>
       );
     } else if (fileType && fileType.startsWith("image")) {
       return (
-        <div key={file} className="file-container">
+        <div key={file} className="file-container-explore">
           <img src={filePath} alt="file" className="file-content" />
         </div>
       );
@@ -239,6 +239,9 @@ const Explore = ({ userId, showMessage }) => {
         <div className="explore-container">
           {records.map((record) => {
             const currentSlideIndex = currentSlides[record._id] || 0;
+            const shouldShowPagination = record.records.some(
+              (rec) => rec.files.length > 1
+            ); // 在這裡定義 shouldShowPagination
             return (
               <div className="record-card" key={record._id}>
                 <div className="record-header">
@@ -258,17 +261,20 @@ const Explore = ({ userId, showMessage }) => {
                     </div>
                     <div className="space"></div>
                   </div>
-                  {record.records.some((r) => r.wall) && (
-                    <div className="record-header-wall">
-                      <p>
-                        牆面:{" "}
-                        {record.records
-                          .filter((r) => r.wall)
-                          .map((r) => r.wall)
-                          .join(", ")}
-                      </p>
-                    </div>
-                  )}
+                  <div className="user-info-right">
+                    <p className="explore-date">{record.date}</p>
+                    {record.records.some((r) => r.wall) && (
+                      <div className="record-header-wall">
+                        <p>
+                          牆面:{" "}
+                          {record.records
+                            .filter((r) => r.wall)
+                            .map((r) => r.wall)
+                            .join(", ")}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="record-content">
                   <div className="image-slider">
@@ -284,21 +290,23 @@ const Explore = ({ userId, showMessage }) => {
                         </div>
                       ))
                     )}
-                    <div className="pagination">
-                      {record.records.map((rec, recIndex) =>
-                        rec.files.map((_, fileIndex) => (
-                          <span
-                            className={`dot ${
-                              currentSlideIndex === fileIndex ? "active" : ""
-                            }`}
-                            key={`${recIndex}-${fileIndex}`}
-                            onClick={() =>
-                              handleDotClick(record._id, fileIndex)
-                            }
-                          ></span>
-                        ))
-                      )}
-                    </div>
+                    {shouldShowPagination && (
+                      <div className="pagination">
+                        {record.records.map((rec, recIndex) =>
+                          rec.files.map((_, fileIndex) => (
+                            <span
+                              className={`dot ${
+                                currentSlideIndex === fileIndex ? "active" : ""
+                              }`}
+                              key={`${recIndex}-${fileIndex}`}
+                              onClick={() =>
+                                handleDotClick(record._id, fileIndex)
+                              }
+                            ></span>
+                          ))
+                        )}
+                      </div>
+                    )}
                   </div>
                   <p className="record-level">
                     {record.records.map((r) => r.level).join(", ")}

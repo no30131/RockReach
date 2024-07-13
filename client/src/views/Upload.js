@@ -138,7 +138,7 @@ const Upload = ({ showMessage }) => {
     }
 
     if (currentRecord.wall && currentRecord.wall.length > 6) {
-      showMessage("牆面編號不能超過5個字元！", "error");
+      showMessage("牆面編號不能超過3個字元！", "error");
       return;
     }
 
@@ -326,7 +326,7 @@ const Upload = ({ showMessage }) => {
                         placeholder="牆面編號 ( 非必填 )"
                         className="wall-input"
                         required
-                        maxLength={5}
+                        maxLength={3}
                       />
                     </div>
                   </div>
