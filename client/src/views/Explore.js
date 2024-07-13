@@ -12,9 +12,12 @@ const Explore = ({ userId, showMessage }) => {
   const [currentSlides, setCurrentSlides] = useState({});
   const [newComment, setNewComment] = useState({});
   const [showComments, setShowComments] = useState({});
-  // const [userId, setUserId] = useState(null);
   const [userName, setUserName] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [filterGym, setFilterGym] = useState("");
+  const [filterLevel, setFilterLevel] = useState("");
+  const [gymOptions, setGymOptions] = useState([]);
+  const [isRecommended, setIsRecommended] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,13 +31,38 @@ const Explore = ({ userId, showMessage }) => {
           `https://node.me2vegan.com/api/users/${userId}`
         );
         setUserName(userResponse.data.name);
-        // console.log("userName: ", userResponse.data.name);
+        // console.log("Fetched user data:", userResponse.data);
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        console.error("Error fetching user data:", error);
       }
     };
 
     fetchUserData();
+  }, []);
+
+  const fetchUserRecords = async (userId) => {
+    try {
+      const response = await axios.get(`https://node.me2vegan.com/api/climbRecords/${userId}`);
+      // console.log("Fetched user records:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user records:", error);
+      return [];
+    }
+  };
+
+  const fetchGymOptions = async () => {
+    try {
+      const response = await axios.get(`https://node.me2vegan.com/api/gyms/all`);
+      setGymOptions(response.data);
+      // console.log("Fetched gym options:", response.data);
+    } catch (error) {
+      console.error("Error fetching gym options:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchGymOptions();
   }, []);
 
   useEffect(() => {
@@ -43,17 +71,42 @@ const Explore = ({ userId, showMessage }) => {
         const endpoint = id
           ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
           : userId
-          ? `https://node.me2vegan.com/api/climbrecords/exploreWall/${userId}`
+          ? `https://node.me2vegan.com/api/climbrecords/exploreWall/`
           : `https://node.me2vegan.com/api/climbrecords/exploreWall/`;
         const response = await axios.get(endpoint);
-        setRecords(id ? [response.data] : response.data);
+        let records = response.data;
+        // console.log("Fetched records:", records);
+
+        const userNow = getUserFromToken();
+        const userIdNow = userNow?.userId;
+        if (isRecommended && userIdNow) {
+          const userRecords = await fetchUserRecords(userIdNow);
+          const userGyms = new Set(userRecords.map((record) => record.gymName));
+          const userLevels = userRecords
+            .flatMap((record) => record.records.map((r) => r.level))
+            .reduce((acc, level) => {
+              acc[level] = (acc[level] || 0) + 1;
+              return acc;
+            }, {});
+
+          const mostFrequentLevel = Object.keys(userLevels).reduce((a, b) =>
+            userLevels[a] > userLevels[b] ? a : b
+          );
+
+          records = sortRecordsByUserPreferences(records, userGyms, mostFrequentLevel);
+          // console.log("Recommended records:", records);
+        } else {
+          records.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        setRecords(records);
       } catch (error) {
-        console.error("Error fetching records: ", error);
+        console.error("Error fetching records:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    // console.log("userId: ", userId);
+
     fetchRecords();
 
     const loadingTimeout = setTimeout(() => {
@@ -61,7 +114,38 @@ const Explore = ({ userId, showMessage }) => {
     }, 3000);
 
     return () => clearTimeout(loadingTimeout);
-  }, [id, userId]);
+  }, [id, userId, isRecommended]);
+
+  const sortRecordsByUserPreferences = (records, userGyms, mostFrequentLevel) => {
+    const userGymRecords = [];
+    const otherRecords = [];
+
+    records.forEach((record) => {
+      if (userGyms.has(record.gymName)) {
+        userGymRecords.push(record);
+      } else {
+        otherRecords.push(record);
+      }
+    });
+
+    const levelOrder = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
+    const levelIndex = levelOrder.indexOf(mostFrequentLevel);
+    const orderedLevels = [
+      ...levelOrder.slice(levelIndex),
+      ...levelOrder.slice(0, levelIndex),
+    ];
+
+    const sortByLevel = (a, b) => {
+      const aLevel = a.records.find((rec) => orderedLevels.includes(rec.level));
+      const bLevel = b.records.find((rec) => orderedLevels.includes(rec.level));
+      return orderedLevels.indexOf(aLevel?.level) - orderedLevels.indexOf(bLevel?.level);
+    };
+
+    userGymRecords.sort(sortByLevel);
+    otherRecords.sort(sortByLevel);
+
+    return [...userGymRecords, ...otherRecords];
+  };
 
   const renderFile = (file) => {
     const fileTypeMap = {
@@ -85,12 +169,6 @@ const Explore = ({ userId, showMessage }) => {
     const fileExtension = file.split(".").pop().toLowerCase();
     const fileType = fileTypeMap[fileExtension];
     const filePath = file;
-
-    // const fileStyle = {
-    //   maxWidth: "320px",
-    //   maxHeight: "240px",-explore
-    //   objectFit: "contain",
-    // };
 
     if (fileType && fileType.startsWith("video")) {
       return (
@@ -116,23 +194,11 @@ const Explore = ({ userId, showMessage }) => {
     }));
   };
 
-  // const getEndpoint = () => {
-  //   return userId
-  //     ? `https://node.me2vegan.com/api/climbrecords/exploreWall/${userId}`
-  //     : `https://node.me2vegan.com/api/climbrecords/exploreWall`;
-  // };
-
   const handleAddLike = async (recordId, subRecordId) => {
     try {
       await axios.post(
         `https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`
       );
-      // const endpoint = id
-      //   ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
-      //   : // : getEndpoint();
-      //     `https://node.me2vegan.com/api/climbrecords/exploreWall/share`;
-      // const response = await axios.get(endpoint);
-      // setRecords(id ? [response.data] : response.data);
       setRecords((prevRecords) =>
         prevRecords.map((record) => {
           if (record._id === recordId) {
@@ -150,7 +216,7 @@ const Explore = ({ userId, showMessage }) => {
         })
       );
     } catch (error) {
-      console.error("Error adding like: ", error);
+      console.error("Error adding like:", error);
     }
   };
 
@@ -177,12 +243,6 @@ const Explore = ({ userId, showMessage }) => {
           comment: fullComment,
         }
       );
-      // const endpoint = id
-      //   ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
-      //   : // : getEndpoint();
-      //     `https://node.me2vegan.com/api/climbrecords/exploreWall/share`;
-      // const response = await axios.get(endpoint);
-      // setRecords(id ? [response.data] : response.data);
 
       setRecords((prevRecords) =>
         prevRecords.map((record) => {
@@ -207,7 +267,7 @@ const Explore = ({ userId, showMessage }) => {
       setNewComment((prev) => ({ ...prev, [subRecordId]: "" }));
       setShowComments((prev) => ({ ...prev, [subRecordId]: true }));
     } catch (error) {
-      console.error("Error adding comment: ", error);
+      console.error("Error adding comment:", error);
     }
   };
 
@@ -229,19 +289,70 @@ const Explore = ({ userId, showMessage }) => {
     }
   };
 
+  const handleFilterGymChange = (e) => {
+    setFilterGym(e.target.value);
+  };
+
+  const handleFilterLevelChange = (e) => {
+    setFilterLevel(e.target.value);
+  };
+
+  const resetFilters = () => {
+    setFilterGym("");
+    setFilterLevel("");
+  };
+
+  const filteredRecords = records.filter((record) => {
+    const gymMatch = filterGym ? record.gymName === filterGym : true;
+    const levelMatch = filterLevel ? record.records.some((rec) => rec.level === filterLevel) : true;
+    return gymMatch && levelMatch;
+  });
+
+  const levelOptions = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
+
   return (
     <div>
+      {!isLoading && (
+        <div className="filter-container-box">
+          <div className="filter-container">
+            <p>篩選動態</p>
+            <select value={filterGym} onChange={handleFilterGymChange}>
+              <option value="">指定岩館</option>
+              {gymOptions.map((gym) => (
+                <option key={gym._id} value={gym.name}>
+                  {gym.name}
+                </option>
+              ))}
+            </select>
+            <select value={filterLevel} onChange={handleFilterLevelChange}>
+              <option value="">指定等級</option>
+              {levelOptions.map((level) => (
+                <option key={level} value={level}>
+                  {level}
+                </option>
+              ))}
+            </select>
+            <button onClick={resetFilters}>重置篩選</button>
+            <div className="explore-space-div"></div>
+            {getUserFromToken() && (
+              <button onClick={() => setIsRecommended(true)}>關聯推薦</button>
+            )}
+            <button onClick={() => setIsRecommended(false)}>重置排序</button>
+          </div>
+        </div>
+      )}
+
       {isLoading ? (
         <Loading />
-      ) : records.length === 0 ? (
+      ) : filteredRecords.length === 0 ? (
         <p>--- 尚無紀錄 ---</p>
       ) : (
         <div className="explore-container">
-          {records.map((record) => {
+          {filteredRecords.map((record) => {
             const currentSlideIndex = currentSlides[record._id] || 0;
             const shouldShowPagination = record.records.some(
               (rec) => rec.files.length > 1
-            ); // 在這裡定義 shouldShowPagination
+            );
             return (
               <div className="record-card" key={record._id}>
                 <div className="record-header">
@@ -377,12 +488,6 @@ const Explore = ({ userId, showMessage }) => {
           })}
         </div>
       )}
-
-      {/* <div className="friend-add-friend">
-        <Link to="/upload" className="btn-explore-add-record">
-          +
-        </Link>
-      </div> */}
     </div>
   );
 };

@@ -24,8 +24,9 @@ router.post("/create", (req, res, next) => {
 
 
 router.get("/exploreWall", climbRecordsController.getExploresRecords);
-router.get("/exploreWall/:userId", climbRecordsController.getExploresRecordsByUser);
+router.get("/exploreWall/sorted/:userId", climbRecordsController.getSortedClimbRecords);
 router.get("/exploreWall/share/:id", climbRecordsController.getExploresRecordsById);
+router.get("/exploreWall/:userId", climbRecordsController.getExploresRecordsByUser);
 router.post("/addLike/:id", climbRecordsController.addExploresLike);
 router.post("/addComment/:id", climbRecordsController.addExploresComment);
 router.get("/:userId", climbRecordsController.getClimbRecordsByUserId);

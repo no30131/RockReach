@@ -12,7 +12,7 @@ const s3 = new AWS.S3({
 exports.createClimbRecords = async (req, res) => {
   try {
     const { userId, date, gymName, records } = req.body;
- 
+
     let parsedRecords;
     try {
       parsedRecords = typeof records === 'string' ? JSON.parse(records) : records;
@@ -29,7 +29,7 @@ exports.createClimbRecords = async (req, res) => {
         return res.status(400).json({ message: "備註不能超過100個字元！" });
       }
     }
-    
+
     const files = req.files || [];
 
     const uploadPromises = files.map(async (file) => {
@@ -58,7 +58,7 @@ exports.createClimbRecords = async (req, res) => {
       files: fileUrls.slice(index * 5, (index + 1) * 5),
     }));
 
-    // console.log("Updated records:", updatedRecords); 
+    // console.log("Updated records:", updatedRecords);
 
     const dateOnly = new Date(date).toISOString().split("T")[0];
 
@@ -68,7 +68,7 @@ exports.createClimbRecords = async (req, res) => {
       gymName,
       records: updatedRecords,
     });
- 
+
     await climbRecords.save();
     res.status(201).send(climbRecords);
   } catch (error) {
@@ -194,7 +194,7 @@ exports.getExploresRecordsByUser = async (req, res) => {
     })
       .populate("userId", "name image")
       .lean();
-      
+
     const formattedRecords = records.map((record) => ({
       ...record,
       user: record.userId,
@@ -243,3 +243,47 @@ exports.getExploresRecordsById = async (req, res) => {
     res.status(400).send({ error: error.message });
   }
 };
+
+exports.getSortedClimbRecords = async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const userRecords = await ClimbRecords.find({ userId: userId }).lean();
+    const userGyms = new Set(userRecords.map(record => record.gymName));
+
+    const allRecords = await ClimbRecords.find({
+      "records.files": { $exists: true, $ne: [] },
+    })
+      .populate("userId", "name image")
+      .lean();
+
+    const userGymRecords = [];
+    const otherRecords = [];
+
+    allRecords.forEach(record => {
+      if (userGyms.has(record.gymName)) {
+        userGymRecords.push(record);
+      } else {
+        otherRecords.push(record);
+      }
+    });
+
+    const sortedRecords = [...userGymRecords, ...otherRecords];
+
+    const formattedRecords = sortedRecords.map(record => ({
+      ...record,
+      user: record.userId,
+      records: record.records
+        .filter(rec => rec.files && rec.files.length > 0)
+        .map(rec => ({
+          ...rec,
+          likes: rec.likes || 0,
+          comments: rec.comments || [],
+        })),
+    }));
+
+    res.status(200).send(formattedRecords);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+};
+
