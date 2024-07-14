@@ -5,6 +5,7 @@ import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Explore.css";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
+import { FaFilter, FaThumbsUp, FaShare } from "react-icons/fa";
 
 const Explore = ({ userId, showMessage }) => {
   const { id } = useParams();
@@ -12,10 +13,12 @@ const Explore = ({ userId, showMessage }) => {
   const [currentSlides, setCurrentSlides] = useState({});
   const [newComment, setNewComment] = useState({});
   const [showComments, setShowComments] = useState({});
+  const [commentButtonDisabled, setCommentButtonDisabled] = useState({});
   const [userName, setUserName] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filterGym, setFilterGym] = useState("");
   const [filterLevel, setFilterLevel] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [gymOptions, setGymOptions] = useState([]);
   const [isRecommended, setIsRecommended] = useState(false);
   const navigate = useNavigate();
@@ -72,18 +75,22 @@ const Explore = ({ userId, showMessage }) => {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const endpoint = id
-          ? `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`
-          : userId
-          ? `https://node.me2vegan.com/api/climbrecords/exploreWall/`
-          : `https://node.me2vegan.com/api/climbrecords/exploreWall/`;
+        let endpoint;
+        if (id) {
+          endpoint = `https://node.me2vegan.com/api/climbrecords/exploreWall/share/${id}`;
+        } else if (userId) {
+          endpoint = `https://node.me2vegan.com/api/climbrecords/exploreWall/${userId}`;
+        } else {
+          endpoint = `https://node.me2vegan.com/api/climbrecords/exploreWall/`;
+        }
+
         const response = await axios.get(endpoint);
-        let records = response.data;
+        let records = id ? [response.data] : response.data;
         // console.log("Fetched records:", records);
 
         const userNow = getUserFromToken();
         const userIdNow = userNow?.userId;
-        if (isRecommended && userIdNow) {
+        if (isRecommended && userIdNow && !id && !userId) {
           const userRecords = await fetchUserRecords(userIdNow);
           const userGyms = new Set(userRecords.map((record) => record.gymName));
           const userLevels = userRecords
@@ -221,21 +228,63 @@ const Explore = ({ userId, showMessage }) => {
     }));
   };
 
-  const handleAddLike = async (recordId, subRecordId) => {
+  const handleToggleLike = async (recordId, subRecordId, isLiked) => {
+    if (!userName) {
+      showMessage("請先登入才能按讚！", "error");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000);
+      return;
+    }
+
+    // try {
+    //   await axios.post(
+    //     `https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`
+    //   );
+    //   setRecords((prevRecords) =>
+    //     prevRecords.map((record) => {
+    //       if (record._id === recordId) {
+    //         return {
+    //           ...record,
+    //           records: record.records.map((rec) => {
+    //             if (rec._id === subRecordId) {
+    //               return { ...rec, likes: rec.likes + 1 };
+    //             }
+    //             return rec;
+    //           }),
+    //         };
+    //       }
+    //       return record;
+    //     })
+    //   );
+    // } catch (error) {
+    //   console.error("Error adding like:", error);
+    // }
+
     try {
-      await axios.post(
-        `https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`
-      );
+      const url = isLiked
+        ? `https://node.me2vegan.com/api/climbrecords/removeLike/${subRecordId}`
+        : `https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`;
+      await axios.post(url, { userId: getUserFromToken().userId });
       setRecords((prevRecords) =>
         prevRecords.map((record) => {
           if (record._id === recordId) {
             return {
               ...record,
               records: record.records.map((rec) => {
-                if (rec._id === subRecordId) {
-                  return { ...rec, likes: rec.likes + 1 };
-                }
-                return rec;
+                const likedBy = rec.likedBy || [];
+                // if (rec._id === subRecordId) {
+                  return {
+                    ...rec,
+                    likes: isLiked ? rec.likes - 1 : rec.likes + 1,
+                    likedBy: isLiked
+                      ? likedBy.filter(
+                          (id) => id !== getUserFromToken().userId
+                        )
+                      : [...likedBy, getUserFromToken().userId],
+                  };
+                // }
+                // return rec;
               }),
             };
           }
@@ -243,8 +292,13 @@ const Explore = ({ userId, showMessage }) => {
         })
       );
     } catch (error) {
-      console.error("Error adding like:", error);
+      console.error("Error toggling like:", error);
     }
+  };
+
+  const isLikedByUser = (likedBy = []) => {
+    const userId = getUserFromToken()?.userId;
+    return likedBy.includes(userId);
   };
 
   const handleAddComment = async (recordId, subRecordId) => {
@@ -261,6 +315,12 @@ const Explore = ({ userId, showMessage }) => {
       showMessage("請輸入內容！", "error");
       return;
     }
+
+    if (commentButtonDisabled[subRecordId]) {
+      return;
+    }
+
+    setCommentButtonDisabled((prev) => ({ ...prev, [subRecordId]: true }));
 
     try {
       const fullComment = `${userName}: ${comment}`;
@@ -295,6 +355,10 @@ const Explore = ({ userId, showMessage }) => {
       setShowComments((prev) => ({ ...prev, [subRecordId]: true }));
     } catch (error) {
       console.error("Error adding comment:", error);
+    } finally {
+      setTimeout(() => {
+        setCommentButtonDisabled((prev) => ({ ...prev, [subRecordId]: false }));
+      }, 5000);
     }
   };
 
@@ -332,6 +396,30 @@ const Explore = ({ userId, showMessage }) => {
     window.scrollTo(0, 0);
   };
 
+  const toggleFilterContainer = () => {
+    if (isFilterOpen) {
+      document
+        .querySelector(".filter-container-box")
+        .classList.remove("expanded");
+      document
+        .querySelector(".filter-container-box")
+        .classList.add("collapsed");
+      setTimeout(() => {
+        setIsFilterOpen(false);
+      }, 500);
+    } else {
+      setIsFilterOpen(true);
+      setTimeout(() => {
+        document
+          .querySelector(".filter-container-box")
+          .classList.add("expanded");
+        document
+          .querySelector(".filter-container-box")
+          .classList.remove("collapsed");
+      }, 10);
+    }
+  };
+
   const filteredRecords = records.filter((record) => {
     const gymMatch = filterGym ? record.gymName === filterGym : true;
     const levelMatch = filterLevel
@@ -355,34 +443,45 @@ const Explore = ({ userId, showMessage }) => {
 
   return (
     <div>
-      {!isLoading && (
-        <div className="filter-container-box">
-          <div className="filter-container">
-            <p>篩選動態</p>
-            <select value={filterGym} onChange={handleFilterGymChange}>
-              <option value="">指定岩館</option>
-              {gymOptions.map((gym) => (
-                <option key={gym._id} value={gym.name}>
-                  {gym.name}
-                </option>
-              ))}
-            </select>
-            <select value={filterLevel} onChange={handleFilterLevelChange}>
-              <option value="">指定等級</option>
-              {levelOptions.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </select>
-            <button onClick={resetFilters}>重置篩選</button>
-            {getUserFromToken() && <div className="explore-space-div"></div>}
-            {getUserFromToken() && (
-              <button onClick={() => setIsRecommended(true)}>關聯推薦</button>
-            )}
-            {getUserFromToken() && (
-              <button onClick={() => setIsRecommended(false)}>重置排序</button>
-            )}
+      {!isLoading && !userId && !id && (
+        <div>
+          <button className="toggle-button" onClick={toggleFilterContainer}>
+            <FaFilter />
+          </button>
+          <div
+            className={`filter-container-box ${
+              isFilterOpen ? "expanded" : "collapsed"
+            }`}
+          >
+            <div className="filter-container">
+              <p>篩選動態</p>
+              <select value={filterGym} onChange={handleFilterGymChange}>
+                <option value="">指定岩館</option>
+                {gymOptions.map((gym) => (
+                  <option key={gym._id} value={gym.name}>
+                    {gym.name}
+                  </option>
+                ))}
+              </select>
+              <select value={filterLevel} onChange={handleFilterLevelChange}>
+                <option value="">指定等級</option>
+                {levelOptions.map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
+                ))}
+              </select>
+              <button onClick={resetFilters}>重置篩選</button>
+              {getUserFromToken() && <div className="explore-space-div"></div>}
+              {getUserFromToken() && (
+                <button onClick={() => setIsRecommended(true)}>關聯推薦</button>
+              )}
+              {getUserFromToken() && (
+                <button onClick={() => setIsRecommended(false)}>
+                  重置排序
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -478,22 +577,45 @@ const Explore = ({ userId, showMessage }) => {
                     <div className="record-footer1">
                       <div className="likes">
                         <button
-                          onClick={() => handleAddLike(record._id, rec._id)}
+                          onClick={() => handleToggleLike(record._id, rec._id, isLikedByUser(rec.likedBy))}
                         >
-                          👍 {rec.likes}
+                          {!isLikedByUser(rec.likedBy) ? "👍🏻" : "👍"} {rec.likes} 
                         </button>
+                        {/* <button
+                          onClick={() =>
+                            handleToggleLike(
+                              record._id,
+                              rec._id,
+                              isLikedByUser(rec.likedBy)
+                            )
+                          }
+                        >
+                          <FaThumbsUp
+                            style={{
+                              stroke: isLikedByUser(rec.likedBy)
+                                ? "black"
+                                : "none",
+                              strokeWidth: isLikedByUser(rec.likedBy)
+                                ? "1px"
+                                : "none",
+                              fill: isLikedByUser(rec.likedBy)
+                                ? "none"
+                                : "black",
+                            }}
+                          />
+                          <span>{rec.likes}</span>
+                        </button> */}
                       </div>
                       <div className="comments">
                         <button onClick={() => toggleComments(rec._id)}>
                           💬 {rec.comments.length}
+                          {/* <FaComment /> <span>{rec.comments.length}</span> */}
                         </button>
                       </div>
-                      <div>
-                        <button
-                          onClick={() => handleShare(record._id)}
-                          className="share-button"
-                        >
-                          ➤
+                      <div className="share">
+                        <button onClick={() => handleShare(record._id)}>
+                          {/* ➤ */}
+                          <FaShare />
                         </button>
                       </div>
                     </div>
@@ -519,6 +641,7 @@ const Explore = ({ userId, showMessage }) => {
                               onClick={() =>
                                 handleAddComment(record._id, rec._id)
                               }
+                              disabled={commentButtonDisabled[rec._id]}
                             >
                               送出
                             </button>

@@ -28,6 +28,7 @@ router.get("/exploreWall/sorted/:userId", climbRecordsController.getSortedClimbR
 router.get("/exploreWall/share/:id", climbRecordsController.getExploresRecordsById);
 router.get("/exploreWall/:userId", climbRecordsController.getExploresRecordsByUser);
 router.post("/addLike/:id", climbRecordsController.addExploresLike);
+router.post("/removeLike/:id", climbRecordsController.removeExploresLike);
 router.post("/addComment/:id", climbRecordsController.addExploresComment);
 router.get("/:userId", climbRecordsController.getClimbRecordsByUserId);
  

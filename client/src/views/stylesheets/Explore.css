@@ -138,11 +138,15 @@
   padding: 0 5px;
   width: 20vmin;
   background-color: rgb(255, 255, 255);
-  border: 1px solid rgb(126, 126, 126, 0.5);
+  border: 1px solid rgba(164, 164, 164, 0.5);
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(203, 193, 185, 0.5);
   cursor: pointer;
   height: 100%;
+}
+
+.record-footer button:hover {
+  margin: -1px 0;
 }
 
 .record-footer1 {
@@ -155,24 +159,27 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-left: 10px;
-  margin-bottom: 15px;
+  margin: 10px;
+  max-height: calc(3 * 1.7em);
+  overflow-y: scroll;
 }
 
-.comment-list p {
-  margin-bottom: -10px;
+.comment-list::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* .likes,
-.comments {
-  display: flex;
-  align-items: center;
-} */
+.comment-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
 
-/* .likes button,
-.comments button {
-  margin-right: 5px;
-} */
+.comment-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.comment-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 
 .comment-input {
   display: flex;
@@ -260,14 +267,25 @@
 
 .filter-container-box {
   display: flex;
-  position:fixed;
+  position: fixed;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  right: 0;
-  bottom: 0;
+  right: 105px;
+  bottom: 150px;
   z-index: 100;
-  margin: 0 115px 97px 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+}
+
+.filter-container-box.collapsed {
+  max-height: 0;
+  padding: 0;
+}
+
+.filter-container-box.expanded {
+  max-height: 500px;
+  /* padding: 5px; */
 }
 
 .filter-container {
@@ -287,7 +305,7 @@
   margin: 0 10px;
   padding: 5px;
   font-size: 16px;
-  border-radius: 7px;
+  border-radius: 5px;
 }
 
 .filter-container select:focus {
@@ -308,17 +326,61 @@
   background-color: rgb(40, 130, 255);
   color: white;
   border: none;
-  border-radius: 7px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
 .explore-space-div {
   margin: 0 10px;
   border-bottom: 1px solid rgba(20, 102, 216, 0.7);
-  /* max-width: 100%; */
-  /* color: rgba(20, 102, 216, 0.7); */
 }
 
 .filter-container button:hover {
   background-color: #0961c0;
+}
+
+.toggle-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 110;
+  border-radius: 5px;
+  margin-top: 10px;
+  position: fixed;
+  right: 150px;
+  bottom: 115px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-button:hover {
+  background-color: #0961c0;
+}
+
+.toggle-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.likes button, .comments button, .share button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 25px;
+  /* background-color: transparent; */
+  /* border: none;
+  cursor: pointer; */
+  font-size: 16px;
+}
+
+.likes button:hover, .comments button:hover, .share button:hover {
+  color: #007bff;
+}
+
+.likes button, .comments button, .share button {
+  color: #032a53;
 }

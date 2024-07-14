@@ -14,7 +14,8 @@ const climbRecordSchema = new Schema({
       memo: { type: String },
       files: { type: [String] },
       likes: { type: Number, default: 0 },
-      comments: { type: [String], default: [] } 
+      comments: { type: [String], default: [] },
+      likedBy: [{ type: Schema.Types.ObjectId, ref: "users", default: [] }]
     },
   ],
 });

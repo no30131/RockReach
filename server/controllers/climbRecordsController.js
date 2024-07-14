@@ -80,6 +80,19 @@ exports.createClimbRecords = async (req, res) => {
   }
 };
 
+// exports.getClimbRecordsByUserId = async (req, res) => {
+//   const userId = req.params.userId;
+//   try {
+//     const climbRecords = await ClimbRecords.find({ userId: userId }).lean();
+//     if (!climbRecords || climbRecords.length === 0) {
+//       return res.status(404).json({ error: "Climb records not found" });
+//     }
+//     res.status(200).send(climbRecords);
+//   } catch (error) {
+//     res.status(400).send({ error: error.message });
+//   }
+// };
+
 exports.getClimbRecordsByUserId = async (req, res) => {
   const userId = req.params.userId;
   try {
@@ -87,7 +100,16 @@ exports.getClimbRecordsByUserId = async (req, res) => {
     if (!climbRecords || climbRecords.length === 0) {
       return res.status(404).json({ error: "Climb records not found" });
     }
-    res.status(200).send(climbRecords);
+    const formattedRecords = climbRecords.map((record) => ({
+      ...record,
+      records: record.records.map((rec) => ({
+        ...rec,
+        likes: rec.likes || 0,
+        comments: rec.comments || [],
+        likedBy: rec.likedBy || [],
+      })),
+    }));
+    res.status(200).send(formattedRecords);
   } catch (error) {
     res.status(400).send({ error: error.message });
   }
@@ -109,6 +131,7 @@ exports.getExploresRecords = async (req, res) => {
           ...rec,
           likes: rec.likes || 0,
           comments: rec.comments || [],
+          likedBy: rec.likedBy || [],
         })),
     }));
 
@@ -118,36 +141,85 @@ exports.getExploresRecords = async (req, res) => {
   }
 };
 
+// exports.addExploresLike = async (req, res) => {
+//   const { userId } = req.body;
+//   const id = req.params.id;
+//   try {
+//     await ClimbRecords.findOneAndUpdate(
+//       { "records._id": id },
+//       { $inc: { "records.$.likes": 1 } },
+//       { new: true }
+//     );
+
+//     const records = await ClimbRecords.find({
+//       "records.files": { $exists: true, $ne: [] },
+//     })
+//       .populate("userId", "name image")
+//       .lean();
+
+//     const formattedRecords = records.map((record) => ({
+//       ...record,
+//       user: record.userId,
+//       records: record.records
+//         .filter((rec) => rec.files && rec.files.length > 0)
+//         .map((rec) => ({
+//           ...rec,
+//           likes: rec.likes || 0,
+//           comments: rec.comments || [],
+//         })),
+//     }));
+
+//     res.status(201).send(formattedRecords);
+//   } catch (error) {
+//     res.status(400).send({ error: error.message });
+//   }
+// };
+
 exports.addExploresLike = async (req, res) => {
-  const id = req.params.id;
+  const { userId } = req.body;
+  const subRecordId = req.params.id;
+
   try {
-    await ClimbRecords.findOneAndUpdate(
-      { "records._id": id },
-      { $inc: { "records.$.likes": 1 } },
+    const record = await ClimbRecords.findOneAndUpdate(
+      { "records._id": subRecordId, "records.likedBy": { $ne: userId } },
+      {
+        $inc: { "records.$.likes": 1 },
+        $push: { "records.$.likedBy": userId }
+      },
       { new: true }
     );
 
-    const records = await ClimbRecords.find({
-      "records.files": { $exists: true, $ne: [] },
-    })
-      .populate("userId", "name image")
-      .lean();
+    if (!record) {
+      return res.status(400).json({ error: "User has already liked this record" });
+    }
 
-    const formattedRecords = records.map((record) => ({
-      ...record,
-      user: record.userId,
-      records: record.records
-        .filter((rec) => rec.files && rec.files.length > 0)
-        .map((rec) => ({
-          ...rec,
-          likes: rec.likes || 0,
-          comments: rec.comments || [],
-        })),
-    }));
-
-    res.status(201).send(formattedRecords);
+    res.status(200).send(record);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    res.status(500).send({ error: error.message });
+  }
+};
+
+exports.removeExploresLike = async (req, res) => {
+  const { userId } = req.body;
+  const subRecordId = req.params.id;
+
+  try {
+    const record = await ClimbRecords.findOneAndUpdate(
+      { "records._id": subRecordId, "records.likedBy": userId },
+      {
+        $inc: { "records.$.likes": -1 },
+        $pull: { "records.$.likedBy": userId }
+      },
+      { new: true }
+    );
+
+    if (!record) {
+      return res.status(400).json({ error: "User has not liked this record" });
+    }
+
+    res.status(200).send(record);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
   }
 };
 
