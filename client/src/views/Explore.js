@@ -5,7 +5,7 @@ import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Explore.css";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
-import { FaFilter, FaThumbsUp, FaShare } from "react-icons/fa";
+import { FaFilter, FaShare } from "react-icons/fa";
 
 const Explore = ({ userId, showMessage }) => {
   const { id } = useParams();
