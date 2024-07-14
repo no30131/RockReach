@@ -3,7 +3,6 @@ import axios from "axios";
 import Plotly from "plotly.js-dist";
 import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Personal.css";
-// import { Link } from "react-router-dom";
 import Loading from "../components/Loading";
 
 const routeTypes = [
@@ -53,7 +52,7 @@ const Personal = () => {
 
     const loadingTimeout = setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(loadingTimeout);
   }, []);
@@ -286,10 +285,10 @@ const Personal = () => {
 
   return (
     <div className="personal-container">
-      {isLoading ? (
-        <Loading />
-      ) : !user ? (
+      {!user & !isLoading ? (
         <p>請先登入！</p>
+      ) : isLoading ? (
+        <Loading />
       ) : (
         <>
           <div className="userData">
@@ -366,11 +365,6 @@ const Personal = () => {
               ))}
             </div>
           </div>
-          {/* <div className="personal-add-record">
-            <Link to="/upload" className="btn-personal-add-record">
-              +
-            </Link>
-          </div> */}
         </>
       )}
     </div>

@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./stylesheets/Signin.css";
+import { useAuth } from "../utils/AuthContext";
 
 const Signin = ({ showMessage }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,8 +27,8 @@ const Signin = ({ showMessage }) => {
       );
 
       if (response.status === 200) {
-        // console.log("User logged in successfully:", response.data);
         showMessage("登入成功！", "success");
+        login(response.data);
         setTimeout(() => {
           navigate("/personal");
         }, 500);
@@ -35,7 +37,6 @@ const Signin = ({ showMessage }) => {
         showMessage("密碼不正確，請重新輸入！", "error");
       }
     } catch (error) {
-      // console.error("Error logging in:", error);
       if (error.response) {
         if (error.response.status === 401) {
           showMessage("密碼不正確，請重新輸入！", "error");

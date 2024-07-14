@@ -42,7 +42,9 @@ const Explore = ({ userId, showMessage }) => {
 
   const fetchUserRecords = async (userId) => {
     try {
-      const response = await axios.get(`https://node.me2vegan.com/api/climbRecords/${userId}`);
+      const response = await axios.get(
+        `https://node.me2vegan.com/api/climbRecords/${userId}`
+      );
       // console.log("Fetched user records:", response.data);
       return response.data;
     } catch (error) {
@@ -53,7 +55,9 @@ const Explore = ({ userId, showMessage }) => {
 
   const fetchGymOptions = async () => {
     try {
-      const response = await axios.get(`https://node.me2vegan.com/api/gyms/all`);
+      const response = await axios.get(
+        `https://node.me2vegan.com/api/gyms/all`
+      );
       setGymOptions(response.data);
       // console.log("Fetched gym options:", response.data);
     } catch (error) {
@@ -93,13 +97,18 @@ const Explore = ({ userId, showMessage }) => {
             userLevels[a] > userLevels[b] ? a : b
           );
 
-          records = sortRecordsByUserPreferences(records, userGyms, mostFrequentLevel);
+          records = sortRecordsByUserPreferences(
+            records,
+            userGyms,
+            mostFrequentLevel
+          );
           // console.log("Recommended records:", records);
         } else {
           records.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
 
         setRecords(records);
+        window.scrollTo(0, 0);
       } catch (error) {
         console.error("Error fetching records:", error);
       } finally {
@@ -116,7 +125,11 @@ const Explore = ({ userId, showMessage }) => {
     return () => clearTimeout(loadingTimeout);
   }, [id, userId, isRecommended]);
 
-  const sortRecordsByUserPreferences = (records, userGyms, mostFrequentLevel) => {
+  const sortRecordsByUserPreferences = (
+    records,
+    userGyms,
+    mostFrequentLevel
+  ) => {
     const userGymRecords = [];
     const otherRecords = [];
 
@@ -128,7 +141,18 @@ const Explore = ({ userId, showMessage }) => {
       }
     });
 
-    const levelOrder = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
+    const levelOrder = [
+      "V0",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "V5",
+      "V6",
+      "V7",
+      "V8",
+      "V9",
+    ];
     const levelIndex = levelOrder.indexOf(mostFrequentLevel);
     const orderedLevels = [
       ...levelOrder.slice(levelIndex),
@@ -138,7 +162,10 @@ const Explore = ({ userId, showMessage }) => {
     const sortByLevel = (a, b) => {
       const aLevel = a.records.find((rec) => orderedLevels.includes(rec.level));
       const bLevel = b.records.find((rec) => orderedLevels.includes(rec.level));
-      return orderedLevels.indexOf(aLevel?.level) - orderedLevels.indexOf(bLevel?.level);
+      return (
+        orderedLevels.indexOf(aLevel?.level) -
+        orderedLevels.indexOf(bLevel?.level)
+      );
     };
 
     userGymRecords.sort(sortByLevel);
@@ -291,24 +318,40 @@ const Explore = ({ userId, showMessage }) => {
 
   const handleFilterGymChange = (e) => {
     setFilterGym(e.target.value);
+    window.scrollTo(0, 0);
   };
 
   const handleFilterLevelChange = (e) => {
     setFilterLevel(e.target.value);
+    window.scrollTo(0, 0);
   };
 
   const resetFilters = () => {
     setFilterGym("");
     setFilterLevel("");
+    window.scrollTo(0, 0);
   };
 
   const filteredRecords = records.filter((record) => {
     const gymMatch = filterGym ? record.gymName === filterGym : true;
-    const levelMatch = filterLevel ? record.records.some((rec) => rec.level === filterLevel) : true;
+    const levelMatch = filterLevel
+      ? record.records.some((rec) => rec.level === filterLevel)
+      : true;
     return gymMatch && levelMatch;
   });
 
-  const levelOptions = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
+  const levelOptions = [
+    "V0",
+    "V1",
+    "V2",
+    "V3",
+    "V4",
+    "V5",
+    "V6",
+    "V7",
+    "V8",
+    "V9",
+  ];
 
   return (
     <div>
@@ -333,11 +376,13 @@ const Explore = ({ userId, showMessage }) => {
               ))}
             </select>
             <button onClick={resetFilters}>重置篩選</button>
-            <div className="explore-space-div"></div>
+            {getUserFromToken() && <div className="explore-space-div"></div>}
             {getUserFromToken() && (
               <button onClick={() => setIsRecommended(true)}>關聯推薦</button>
             )}
-            <button onClick={() => setIsRecommended(false)}>重置排序</button>
+            {getUserFromToken() && (
+              <button onClick={() => setIsRecommended(false)}>重置排序</button>
+            )}
           </div>
         </div>
       )}

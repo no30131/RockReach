@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./stylesheets/Signup.css";
+import { useAuth } from "../utils/AuthContext";
 
 const Signup = ({ showMessage }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const checkEmailExists = async (email) => {
     try {
@@ -21,7 +23,7 @@ const Signup = ({ showMessage }) => {
     }
   };
 
-  const checkNameExists = async (email) => {
+  const checkNameExists = async (name) => {
     try {
       const response = await axios.get(
         `https://node.me2vegan.com/api/users/check-name/${name}`
@@ -68,8 +70,8 @@ const Signup = ({ showMessage }) => {
       );
 
       if (response.status === 201) {
-        // console.log("User created successfully:", response.data);
         showMessage("註冊成功！", "success");
+        login(response.data);
         setTimeout(() => {
           navigate("/personal");
         }, 500);
