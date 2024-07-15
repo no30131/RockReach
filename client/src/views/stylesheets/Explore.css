@@ -122,10 +122,22 @@
   background-color: #436abf;
 } */
 
-/* .record-level,
-.record-memo {
-  margin: 10px 0;
-} */
+.record-level {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.record-level p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.record-times {
+  font-size: 15px;
+  color: rgb(55, 55, 55);
+}
 
 .record-footer {
   display: flex;

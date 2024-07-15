@@ -115,7 +115,7 @@ const Personal = ({ showMessage }) => {
       "V8",
       "V9",
     ];
-    const colors = ["#888888", "#e5b700", "#ffb6c1", "#ADD8E6", "#8d5524", "#FF0000", "#006400", "00008B", "#800080", "#000000"];
+    const colors = ["#BDBDBD", "#E6C6AE", "#ffb6c1", "#ADD8E6", "#E6DB81", "#E67D7D", "#BAE689", "#7CA0E6", "#B7ADE6", "#9DE6BA"];
 
     const data = allLevels.map((level, index) => ({
       x: [level],
@@ -262,12 +262,9 @@ const Personal = ({ showMessage }) => {
       return acc;
     }, {});
 
-    const dates = Object.keys(dateLevelCounts).sort();
-    // const levels = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
-    // const colors = ["#888888", "#e5b700", "#ffb6c1", "#ADD8E6", "#8d5524", "#FF0000", "#006400", "#00008B", "#800080", "#000000"];
-    const levels = ["V9", "V8", "V7", "V6", "V5", "V4", "V3", "V2", "V1", "V0",  ];
-    const colors = ["#000000", "#800080", "#00008B", "#006400", "#FF0000", "#8d5524", "#ADD8E6", "#ffb6c1", "#e5b700", "#888888"];
-    
+    const dates = Object.keys(dateLevelCounts).sort();const levels = ["V9", "V8", "V7", "V6", "V5", "V4", "V3", "V2", "V1", "V0",  ];
+    const colors = ["#9DE6BA", "#B7ADE6", "#7CA0E6", "#BAE689", "#E67D7D", "#E6DB81", "#ADD8E6", "#ffb6c1", "#E6C6AE", "#BDBDBD"];
+   
     const data = levels
     .map((level, index) => {
       const yValues = dates.map((date) => dateLevelCounts[date][level] || 0);

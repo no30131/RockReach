@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { deleteToken, getUserFromToken } from "../utils/token"
+import { deleteToken, getUserFromToken } from "../utils/token";
 import "./stylesheets/Upload.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -32,10 +32,14 @@ const Upload = ({ showMessage }) => {
   const [gyms, setGyms] = useState([]);
   const [selectedGym, setSelectedGym] = useState("");
   const [userId, setUserId] = useState(null);
-  const [records, setRecords] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const [currentRecord, setCurrentRecord] = useState({});
-  const [showSecondPart, setShowSecondPart] = useState(false);
+  const [currentRecord, setCurrentRecord] = useState({
+    wall: "",
+    level: "",
+    types: [],
+    times: 1,
+    memo: "",
+    files: [],
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -87,7 +91,7 @@ const Upload = ({ showMessage }) => {
   };
 
   const handleTimesChange = (delta) => {
-    const newTimes = Math.max(0, currentRecord.times + delta);
+    const newTimes = Math.max(1, currentRecord.times + delta);
     setCurrentRecord({ ...currentRecord, times: newTimes });
   };
 
@@ -98,46 +102,30 @@ const Upload = ({ showMessage }) => {
     setCurrentRecord({ ...currentRecord, types: newTypes });
   };
 
-  const addRecord = () => {
-    const token = getUserFromToken();
-    if (!token) {
-      deleteToken();
-      showMessage("登入超時，請重新登入！", "error");
-      setTimeout(() => {
-          navigate("/signin");
-      }, 1000);
-      return;
-    }
-    
-    setShowForm(true);
-    setShowSecondPart(true);
-    setCurrentRecord({
-      wall: "",
-      level: "",
-      types: [],
-      times: 1,
-      memo: "",
-      files: [],
-    });
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleSaveRecord = () => {
     const token = getUserFromToken();
     if (!token) {
       deleteToken();
       showMessage("登入超時，請重新登入！", "error");
       setTimeout(() => {
-          navigate("/signin");
+        navigate("/signin");
       }, 1000);
       return;
     }
-    
+
+    if (!selectedGym) {
+      showMessage("請選擇岩館！", "error");
+      return;
+    }
+
     if (!currentRecord.level) {
       showMessage("請選擇難度等級", "error");
       return;
     }
 
-    if (currentRecord.wall && currentRecord.wall.length > 6) {
+    if (currentRecord.wall && currentRecord.wall.length > 3) {
       showMessage("牆面編號不能超過3個字元！", "error");
       return;
     }
@@ -147,64 +135,18 @@ const Upload = ({ showMessage }) => {
       return;
     }
 
-    setRecords([...records, currentRecord]);
-    setShowForm(false);
-    setShowSecondPart(false);
-    setCurrentRecord({});
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const token = getUserFromToken();
-    if (!token) {
-      deleteToken();
-      showMessage("登入超時，請重新登入！", "error");
-      setTimeout(() => {
-          navigate("/signin");
-      }, 1000);
-      return;
-    }
-    
-    if (!selectedGym) {
-      showMessage("請選擇岩館！", "error");
-      return;
-    }
-
-    if (!records[0]) {
-      showMessage("請新增至少一個路線紀錄！", "error");
-      return;
-    }
-
-    for (let record of records) {
-      if (!record.level) {
-        showMessage("請選擇每個路線的難度等級！", "error");
-        return;
-      }
-    }
-
     const formData = new FormData();
     formData.append("userId", userId);
     formData.append("date", climbDate.toISOString());
     formData.append("gymName", selectedGym);
-    formData.append(
-      "records",
-      JSON.stringify(
-        records.map((record) => ({
-          wall: record.wall,
-          level: record.level,
-          types: record.types,
-          times: record.times,
-          memo: record.memo,
-        }))
-      )
-    );
 
-    records.forEach((record) => {
-      record.files.forEach((file) => {
-        formData.append("files", file);
-      });
+    const recordsArray = [currentRecord];
+    formData.append("records", JSON.stringify(recordsArray));
+
+    currentRecord.files.forEach((file) => {
+      formData.append("files", file);
     });
+
     try {
       const response = await axios.post(
         `https://node.me2vegan.com/api/climbRecords/create`,
@@ -235,7 +177,7 @@ const Upload = ({ showMessage }) => {
         <p>請先登入！</p>
       ) : (
         <form onSubmit={handleSubmit} className="upload-form">
-          <div className={`first-part ${showSecondPart ? "hidden" : ""}`}>
+          <div className="form-section">
             <div className="upload-form-hori">
               <div className="upload-form-hori-div">
                 <div className="upload-form-hori-div-hori">
@@ -272,196 +214,132 @@ const Upload = ({ showMessage }) => {
                 </div>
               </div>
             </div>
-            <div className="upload-form-routes">
-              <div className="upload-form-hori-div3">
+            <div className="upload-form-details">
+              <div className="upload-form-hori-div">
                 <div className="upload-form-hori-div-hori">
                   <p className="upload-steps">3</p>
-                  <p className="upload-steps-title">路線紀錄 ( 最多 10 個 )</p>
+                  <p className="upload-steps-title">難度等級</p>
+                  <p className="upload-steps-title-star">*</p>
                 </div>
-              </div>
-              {records.map((record, index) => (
-                <div key={index} className="upload-form-route-div-summary">
-                  <div className="upload-form-route-div-wall-summary">
-                    <span className="upload-form-route-div-level">
-                      {record.level}
-                    </span>
-                    {record.types.length > 0 && <span>類型：{record.types.join(", ")}</span>}
-                    <span>嘗試次數：{record.times}</span>
+                <div className="upload-form-hori-div-vert">
+                  <div className="difficulty-levels">
+                    {difficultyLevels.map((level) => (
+                      <button
+                        type="button"
+                        key={level}
+                        className={
+                          currentRecord.level === level ? "selected" : ""
+                        }
+                        onClick={() => handleLevelChange(level)}
+                      >
+                        {level}
+                      </button>
+                    ))}
                   </div>
                 </div>
-              ))}
-              {records.length < 10 && (
-                <div className="add-record-div">
-                  <button
-                    type="button"
-                    onClick={addRecord}
-                    className="add-record-button"
-                  >
-                    +
-                  </button>
+              </div>
+            </div>
+            <div className="upload-form-hori hori2">
+              <div className="upload-form-hori-div">
+                <div className="upload-form-hori-div-hori">
+                  <p className="upload-steps">4</p>
+                  <p className="upload-steps-title">牆面</p>
                 </div>
-              )}
+                <div className="upload-form-hori-div-vert">
+                  <input
+                    type="text"
+                    name="wall"
+                    value={currentRecord.wall}
+                    onChange={handleRecordChange}
+                    placeholder="牆面編號 ( 非必填 )"
+                    className="wall-input"
+                    maxLength={3}
+                  />
+                </div>
+              </div>
+              <div className="upload-form-hori-div">
+                <div className="upload-form-hori-div-hori">
+                  <p className="upload-steps">5</p>
+                  <p className="upload-steps-title">嘗試次數</p>
+                </div>
+                <div className="upload-form-hori-div-vert">
+                  <div className="attempts">
+                    <button type="button" onClick={() => handleTimesChange(-1)}>
+                      -
+                    </button>
+                    <p>{currentRecord.times}</p>
+                    <button type="button" onClick={() => handleTimesChange(1)}>
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="upload-form-details">
+              <div className="upload-form-hori-div">
+                <div className="upload-form-hori-div-hori">
+                  <p className="upload-steps">6</p>
+                  <p className="upload-steps-title">路線類型</p>
+                </div>
+                <div className="upload-steps-route-types">
+                  {routeTypes.map((type) => (
+                    <div
+                      key={type.name}
+                      className={`route-type ${
+                        currentRecord.types.includes(type.name)
+                          ? "selected"
+                          : ""
+                      }`}
+                      onClick={() => toggleRouteType(type.name)}
+                    >
+                      <img src={type.icon} alt={type.name} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="upload-form-details">
+              <div className="upload-form-hori-div">
+                <div className="upload-form-hori-div-hori">
+                  <p className="upload-steps">7</p>
+                  <p className="upload-steps-title">上傳圖片 / 影片</p>
+                </div>
+                <div className="upload-form-hori-div-vert">
+                  <div className="files-input">
+                    <input
+                      type="file"
+                      name="files"
+                      multiple
+                      onChange={handleFileChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="upload-form-details">
+              <div className="upload-form-hori-div">
+                <div className="upload-form-hori-div-hori">
+                  <p className="upload-steps">8</p>
+                  <p className="upload-steps-title">備註</p>
+                </div>
+                <div className="upload-form-hori-div-vert">
+                  <textarea
+                    className="upload-form-memo"
+                    name="memo"
+                    rows="3"
+                    value={currentRecord.memo}
+                    onChange={handleRecordChange}
+                    placeholder="例：心得 / 取名 / 困難點 / 跟誰一起 / 定線員 ... ( 非必填 )"
+                    maxLength={100}
+                  ></textarea>
+                </div>
+              </div>
             </div>
             <div className="upload-button-div">
               <button type="submit" className="upload-button">
                 上傳
               </button>
             </div>
-          </div>
-          <div className={`second-part ${showSecondPart ? "" : "hidden"}`}>
-            {showForm && (
-              <div className="upload-form-details-containers">
-                <div className="upload-form-hori">
-                  <div className="upload-form-hori-div">
-                    <div className="upload-form-hori-div-hori">
-                      <p className="upload-steps">1</p>
-                      <p className="upload-steps-title">牆面</p>
-                    </div>
-                    <div className="upload-form-hori-div-vert">
-                      <input
-                        type="text"
-                        name="wall"
-                        value={currentRecord.wall || ""}
-                        onChange={handleRecordChange}
-                        placeholder="牆面編號 ( 非必填 )"
-                        className="wall-input"
-                        required
-                        maxLength={3}
-                      />
-                    </div>
-                  </div>
-                  <div className="upload-form-hori-div">
-                    <div className="upload-form-hori-div-hori">
-                      <p className="upload-steps">2</p>
-                      <p className="upload-steps-title">嘗試次數</p>
-                    </div>
-                    <div className="upload-form-hori-div-vert">
-                      <div className="attempts">
-                        <button
-                          type="button"
-                          onClick={() => handleTimesChange(-1)}
-                        >
-                          -
-                        </button>
-                        <p>{currentRecord.times}</p>
-                        <button
-                          type="button"
-                          onClick={() => handleTimesChange(1)}
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="upload-form-details">
-                  <div className="upload-form-hori-div">
-                    <div className="upload-form-details-one">
-                      <p className="upload-steps">3</p>
-                      <p className="upload-steps-title">難度等級</p>
-                      <p className="upload-steps-title-star">*</p>
-                    </div>
-                    <div className="upload-form-hori-div-vert">
-                      <div className="difficulty-levels">
-                        {difficultyLevels.map((level) => (
-                          <button
-                            type="button"
-                            key={level}
-                            className={
-                              currentRecord.level === level ? "selected" : ""
-                            }
-                            onClick={() => handleLevelChange(level)}
-                          >
-                            {level}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="upload-form-details">
-                  <div className="upload-form-hori-div">
-                    <div className="upload-form-details-one">
-                      <p className="upload-steps">4</p>
-                      <p className="upload-steps-title">路線類型</p>
-                    </div>
-                    <div className="upload-steps-route-types">
-                      {routeTypes.map((type) => (
-                        <div
-                          key={type.name}
-                          className={`route-type ${
-                            currentRecord.types.includes(type.name)
-                              ? "selected"
-                              : ""
-                          }`}
-                          onClick={() => toggleRouteType(type.name)}
-                        >
-                          <img src={type.icon} alt={type.name} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="upload-form-details">
-                  <div className="upload-form-hori-div">
-                    <div className="upload-form-details-one">
-                      <p className="upload-steps">5</p>
-                      <p className="upload-steps-title">上傳圖片 / 影片</p>
-                    </div>
-                    <div className="upload-form-hori-div-vert">
-                      <div className="files-input">
-                        <input
-                          type="file"
-                          name="files"
-                          multiple
-                          onChange={handleFileChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="upload-form-details">
-                  <div className="upload-form-hori-div">
-                    <div className="upload-form-details-one">
-                      <p className="upload-steps">6</p>
-                      <p className="upload-steps-title">備註</p>
-                    </div>
-                    <div className="upload-form-hori-div-vert">
-                      <textarea
-                        className="upload-form-memo"
-                        name="memo"
-                        rows="3"
-                        value={currentRecord.memo || ""}
-                        onChange={handleRecordChange}
-                        placeholder="例：心得 / 取名 / 困難點 / 跟誰一起 / 定線員 ... ( 非必填 )"
-                        maxLength={100}
-                      ></textarea>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="second-part-buttons">
-                  <button
-                    type="button"
-                    onClick={handleSaveRecord}
-                    className="save-record-button"
-                  >
-                    儲存
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowSecondPart(false)}
-                    className="cancel-button"
-                  >
-                    取消
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </form>
       )}

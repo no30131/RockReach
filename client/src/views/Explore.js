@@ -529,9 +529,12 @@ const Explore = ({ userId, showMessage }) => {
                       </div>
                     )}
                   </div>
-                  <p className="record-level">
-                    {record.records.map((r) => r.level).join(", ")}
-                  </p>
+                  <div className="record-level">
+                    <p>等級： {record.records.map((r) => r.level).join(", ")}</p>
+                    <p className="record-times">
+                      嘗試次數： {record.records.map((r) => r.times).join(", ")}
+                    </p>
+                  </div>
                   {record.records.some((r) => r.memo) && (
                     <p className="record-memo">
                       {record.records.map((r) => r.memo).join(", ")}
