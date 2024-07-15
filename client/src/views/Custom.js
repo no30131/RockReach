@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { deleteToken, getUserFromToken } from "../utils/token";
 import "./stylesheets/Custom.css";
 import Loading from "../components/Loading";
+import { FaShare } from "react-icons/fa";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -176,7 +177,7 @@ const Custom = ({ showMessage }) => {
   const drawMarkers = useCallback(
     (ctx) => {
       markers.forEach((marker) => {
-        ctx.fillStyle = isEraserActive ? "blue" : "red";
+        ctx.fillStyle = isEraserActive ? "#FF2AF0" : "#FFF2F0";
         ctx.beginPath();
         ctx.arc(marker.x, marker.y, 5, 0, 2 * Math.PI);
         ctx.fill();
@@ -434,6 +435,13 @@ const Custom = ({ showMessage }) => {
           {selectedRoute && (
             <div className="route-details">
               <div className="route-details-data">
+                {!id && (
+                  <div className="custom-share-button">
+                    <button onClick={() => handleShare(selectedRoute._id)}>
+                      <FaShare />
+                    </button>
+                  </div>
+                )}
                 <p className="route-details-data-name">
                   {selectedRoute.customName}
                 </p>
@@ -448,14 +456,6 @@ const Custom = ({ showMessage }) => {
                 )}
               </div>
               <img src={selectedRoute.processedImage} alt="Processed" />
-              {!id && (
-                <button
-                  onClick={() => handleShare(selectedRoute._id)}
-                  className="share-custom-button"
-                >
-                  分享
-                </button>
-              )}
             </div>
           )}
           {routes.length > 0 && (

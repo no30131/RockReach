@@ -1,5 +1,5 @@
 .achievements-container {
-  /* margin-top: 30px; */
+  margin-top: 30px;
   min-height: 880px;
 }
 
@@ -36,4 +36,32 @@
 .completed-text {
   color: #bb1c00;
   font-size: 12px;
+}
+
+.Achievements-share-button {
+  /* margin: 0 0 -55px 0; */
+  /* padding-top: 0px; */
+  width: 320px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.Achievements-share-button > button {
+  cursor: pointer;
+  border: none;
+  width: 80px;
+  height: 40px;
+  background-color: transparent;
+  font-size: 20px;
+  margin-top: -45px;
+}
+
+.Achievements-share-button > button:hover {
+  color: #0961c0;
+  font-size: 21px;
+  padding-bottom: 2px;
+}
+
+.spaceA {
+  margin-bottom: 30px;
 }

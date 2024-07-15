@@ -97,20 +97,23 @@ const AchievementDetails = () => {
           {selectedRoute && (
             <div className="route-details">
               <div className="route-details-data">
-                <p>路線名稱: {selectedRoute.customName}</p>
+                <p className="route-details-data-name">
+                  {selectedRoute.customName}
+                </p>
                 <div className="route-types">
-                  路線類型:
                   {selectedRoute.customType.map((type, index) => (
                     <img key={index} src={getRouteTypeIcon(type)} alt={type} />
                   ))}
                 </div>
-                {selectedRoute.memo && <p>Memo: {selectedRoute.memo}</p>}
+                {selectedRoute.memo && (
+                  <p className="custom-memo">Memo: {selectedRoute.memo}</p>
+                )}
               </div>
               <img src={selectedRoute.processedImage} alt="Processed" />
             </div>
           )}
           {routes.length > 0 && (
-            <div className="route-list-box">
+            <div className="route-list-box spaceA">
               <div className="routes-list">
                 <h4>路線列表:</h4>
                 {routes.map((route, index) => (

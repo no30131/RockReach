@@ -138,6 +138,11 @@ const Friends = ({ showMessage }) => {
   };
 
   const handleConfirmAddFriend = () => {
+    if (newFriendName.length < 1) {
+      showMessage("好友名稱不能空白！", "error");
+      return;
+    }
+
     addFriend();
     handleToggleAddFriend();
     setNewFriendName("");
@@ -148,7 +153,7 @@ const Friends = ({ showMessage }) => {
   }
 
   if (selectedFriendId) {
-    return <Explore userId={selectedFriendId} />;
+    return <Explore userId={selectedFriendId} showMessage={showMessage} />;
   }
 
   return (

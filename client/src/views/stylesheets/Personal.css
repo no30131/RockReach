@@ -74,10 +74,15 @@ h3 {
 }
 
 .user-name {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   margin-top: 15px;
   margin-bottom: -15px;
+}
+
+.user-introduce {
+  font-style: italic;
+  color: rgb(80, 80, 80);
 }
 
 .personal-records-summary {
@@ -262,7 +267,7 @@ h3 {
   display: flex;
   justify-content: flex-end;
   width: 100%;
-  margin-top: -55px;
+  margin-top: -60px;
 }
 
 .delete-button-area2 {

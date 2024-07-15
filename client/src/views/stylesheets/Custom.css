@@ -1,13 +1,20 @@
 .custom-page {
   padding: 20px;
   text-align: center;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+  /* margin: 0 auto;   */
 }
 
 .walls-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  /* grid-template-columns: repeat(3, 1fr); */
+  /* max-width: calc(3 * 320); */
+  width: 100%;
   gap: 20px;
-  justify-items: center;
+  justify-content: center;
   align-items: center;
 }
 
@@ -53,10 +60,19 @@
   flex-direction: column;
   width: 100%;
   max-width: 750px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   align-items: center;
-  position: relative;
+  /* position: relative; */
+  margin: 20px auto;
+  background-color: #f9f9f9;
+  padding: 20px 20px 40px 20px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
 
 .custom-item-details > img,
 canvas {
@@ -90,7 +106,7 @@ canvas {
   justify-content: center;
   align-items: center;
   margin-top: 20px;
-  gap: 20px;
+  gap: 10px;
 }
 
 .route-output img,
@@ -108,8 +124,9 @@ canvas {
 .process-save-button,
 .process-edit-button,
 .eraser-button,
-.confirm-button,
-.share-custom-button {
+.confirm-button
+/* , .share-custom-button  */
+{
   display: block;
   width: 150px;
   padding: 10px;
@@ -137,9 +154,39 @@ canvas {
 .process-save-button:hover,
 .process-edit-button:hover,
 .eraser-button:hover,
-.confirm-button:hover,
-.share-custom-button:hover {
+.confirm-button:hover
+/* , .share-custom-button:hover  */
+{
   background-color: rgb(255, 142, 72);
+}
+
+.route-details-data {
+  /* margin-top: -10px; */
+  margin-bottom: 10px;
+}
+
+.custom-share-button {
+  margin: 0 0 -55px 0;
+  /* padding-top: 0px; */
+  width: 320px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.custom-share-button > button {
+  cursor: pointer;
+  border: none;
+  width: 80px;
+  height: 40px;
+  background-color: transparent;
+  font-size: 20px;
+  /* margin-top: 10px; */
+}
+
+.custom-share-button > button:hover {
+  color: #0961c0;
+  font-size: 21px;
+  padding-bottom: 2px;
 }
 
 .return-button {
@@ -264,12 +311,15 @@ canvas {
   max-width: 350px;
   margin: 20px auto;
   background-color: #f9f9f9;
-  padding: 20px;
+  /* padding: 20px; */
   border-radius: 10px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px 20px 40px 20px;
+  width: 100%;
+  max-width: 750px;
 }
 
 .hidden {
@@ -303,12 +353,8 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 30px;
   margin-top: 15px;
-}
-
-.route-details-data {
-  margin-bottom: 10px;
 }
 
 .complete-count-area {
@@ -336,7 +382,8 @@ canvas {
 }
 
 .route-details > button {
-  margin-top: 15px;
+  margin-top: 20px;
+  margin-bottom: -10px;
 }
 
 .custom-submit-button-div {

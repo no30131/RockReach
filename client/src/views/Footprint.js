@@ -413,7 +413,7 @@ const Footprint = ({ showMessage }) => {
               </div>
             </Sider>
             <Content>
-              <div id="map" style={{ height: "80vh", width: "100%" }}></div>
+              <div id="map" style={{ height: "77vh", width: "100%" }}></div>
             </Content>
           </Layout>
           <div className="map-share-area">

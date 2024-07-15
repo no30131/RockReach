@@ -1,7 +1,7 @@
 .chat-room {
   display: flex;
   flex-direction: column;
-  height: 90vh;
+  height: 80vh;
   /* background-color: #f9f9f9; */
   border: 1px solid rgb(255, 150, 112);
   border-radius: 7px;
@@ -15,7 +15,7 @@
   flex-direction: column;
 }
 
-.message { 
+.message {
   margin-bottom: 5px;
   display: flex;
   flex-direction: column;
@@ -27,7 +27,7 @@
   border-radius: 10px;
   background-color: rgb(210, 231, 255);
   max-width: 60%;
-  text-align: start; 
+  text-align: start;
   align-self: flex-start;
 }
 
@@ -108,7 +108,25 @@
 }
 
 .friend-details img {
-  width: 50px;
+  width: 60px;
   padding: 5px;
   object-fit: contain;
+}
+
+.friend-details-introduce {
+  font-size: 15px;
+  font-weight: 100;
+  font-style: italic;
+  color: rgb(80, 80, 80);
+}
+
+.friend-details-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.friend-details-area p {
+  margin: 0;
 }

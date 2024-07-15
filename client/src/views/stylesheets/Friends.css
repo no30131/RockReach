@@ -13,7 +13,7 @@ body {
 .friend-item {
   display: flex;
   align-items: center;
-  width: 600px;
+  width: 77vmin;
   background: #f9f9f9;
   padding: 10px;
   border-radius: 8px;

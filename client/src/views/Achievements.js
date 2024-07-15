@@ -3,6 +3,7 @@ import axios from "axios";
 import { deleteToken, getUserFromToken } from "../utils/token";
 import "./stylesheets/Achievements.css";
 import { useNavigate } from "react-router-dom";
+import { FaShare } from "react-icons/fa";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -75,12 +76,12 @@ const Achievements = ({ showMessage }) => {
   const handleSaveAchievement = async () => {
     const token = getUserFromToken();
     if (!token) {
-        deleteToken();
-        showMessage("登入超時，請重新登入！", "error");
-        setTimeout(() => {
-            navigate("/signin");
-        }, 1000);
-        return;
+      deleteToken();
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000);
+      return;
     }
 
     if (!userId || !selectedRoute) return;
@@ -99,7 +100,7 @@ const Achievements = ({ showMessage }) => {
           ...achievements,
           [selectedRoute.customName]: "completed",
         });
-        showMessage("完成狀態已更新", "success")
+        showMessage("完成狀態已更新", "success");
       } else {
         console.error("Error saving achievement: ", response.data);
         showMessage("完成狀態更新失敗，請稍後再試", "error");
@@ -169,14 +170,17 @@ const Achievements = ({ showMessage }) => {
           {selectedRoute && (
             <div className="route-details">
               <div className="route-details-data">
-                <p>路線名稱: {selectedRoute.customName}</p>
+                <p className="route-details-data-name">
+                  {selectedRoute.customName}
+                </p>
                 <div className="route-types">
-                  路線類型:
                   {selectedRoute.customType.map((type, index) => (
                     <img key={index} src={getRouteTypeIcon(type)} alt={type} />
                   ))}
                 </div>
-                {selectedRoute.memo && <p>Memo: {selectedRoute.memo}</p>}
+                {selectedRoute.memo && (
+                  <p className="custom-memo">Memo: {selectedRoute.memo}</p>
+                )}
               </div>
               <img src={selectedRoute.processedImage} alt="Processed" />
               {achievements[selectedRoute.customName] !== "completed" &&
@@ -219,9 +223,11 @@ const Achievements = ({ showMessage }) => {
               已完成數量: {completedCount}/{routes.length}
             </p>
             {userId && (
-              <button onClick={handleShare} className="share-custom-button">
-                分享
-              </button>
+              <div className="Achievements-share-button">
+                <button onClick={handleShare}>
+                  <FaShare />
+                </button>
+              </div>
             )}
           </div>
         </div>

@@ -115,17 +115,30 @@ const Personal = ({ showMessage }) => {
       "V8",
       "V9",
     ];
-    const colors = ["#BDBDBD", "#E6C6AE", "#ffb6c1", "#ADD8E6", "#E6DB81", "#E67D7D", "#BAE689", "#7CA0E6", "#B7ADE6", "#9DE6BA"];
-
-    const data = allLevels.map((level, index) => ({
-      x: [level],
-      y: [levelCounts[level] || 0],
-      type: "bar",
-      name: level,
-      marker: {
-        color: colors[index],
-      },
-    }));
+    const colors = [
+      "#BDBDBD",
+      "#E6C6AE",
+      "#ffb6c1",
+      "#ADD8E6",
+      "#E6DB81",
+      "#E67D7D",
+      "#BAE689",
+      "#7CA0E6",
+      "#B7ADE6",
+      "#9DE6BA",
+    ];
+  
+    const data = allLevels
+      .map((level, index) => ({
+        x: [level],
+        y: [levelCounts[level] || 0],
+        type: "bar",
+        name: level,
+        marker: {
+          color: colors[index],
+        },
+      }))
+      .filter((item) => item.y[0] > 0);
   
     const maxYValue = Math.max(...data.flatMap((d) => d.y));
   
@@ -159,8 +172,6 @@ const Personal = ({ showMessage }) => {
     Plotly.newPlot(levelRef.current, data, layout);
   }, [climbRecords]);
   
-  
-
   const generateTypesChart = useCallback(() => {
     if (!typesCountRef.current || !typesTimesRef.current) return;
 
@@ -196,7 +207,7 @@ const Personal = ({ showMessage }) => {
       typesTimesRef.current.style.display = "block";
     }
 
-    const colors = ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56", "#2ecc71"];
+    const colors = ["#B7ADE6", "#7CA0E6", "#BAE689", "#E67D7D", "#ffb6c1"];
 
     const dataCount = [
       {
@@ -208,6 +219,7 @@ const Personal = ({ showMessage }) => {
         marker: {
           colors: colors,
         },
+        sort: false,
       },
     ];
 
@@ -221,6 +233,7 @@ const Personal = ({ showMessage }) => {
         marker: {
           colors: colors,
         },
+        sort: false,
       },
     ];
 
@@ -228,12 +241,19 @@ const Personal = ({ showMessage }) => {
       title: "路線類型分析",
       height: 380,
       width: 450,
+      legend: {
+        traceorder: 'normal'
+      }
+      
     };
 
     const layoutTimes = {
       title: "平均挑戰次數",
       height: 380,
       width: 450,
+      legend: {
+        traceorder: 'normal'
+      }
     };
 
     Plotly.newPlot(typesCountRef.current, dataCount, layoutCount);
@@ -381,7 +401,7 @@ const Personal = ({ showMessage }) => {
             </div>
             <div className="userData-details">
               <p className="user-name">{user.name}</p>
-              <p>{user.introduce}</p>
+              <p className="user-introduce">{user.introduce}</p>
             </div>
           </div>
           <h3>個人化分析</h3>

@@ -190,6 +190,7 @@ const Upload = ({ showMessage }) => {
                     selected={climbDate}
                     onChange={(date) => setClimbDate(date)}
                     dateFormat="yyyy/MM/dd"
+                    maxDate={new Date()}
                   />
                 </div>
               </div>

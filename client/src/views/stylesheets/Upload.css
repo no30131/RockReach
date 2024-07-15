@@ -191,7 +191,7 @@ textarea {
 
 .difficulty-levels button,
 .submit-button {
-  background-color: rgb(255, 98, 0);
+  background-color: rgb(255, 98, 0, 0.88);
   color: white;
   border: none;
   border-radius: 5px;
@@ -201,7 +201,7 @@ textarea {
 }
 
 .attempts button {
-  background-color: rgb(255, 98, 0);
+  background-color: rgb(255, 98, 0, 0.88);
   color: white;
   border: none;
   border-radius: 5px;
@@ -237,7 +237,7 @@ textarea {
   align-items: center;
   justify-content: space-between;
   width: 100px;
-  margin: 0 auto;
+  margin: -8px auto 0 auto;
 }
 
 .difficulty-levels button.selected {

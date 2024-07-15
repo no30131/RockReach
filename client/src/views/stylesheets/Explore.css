@@ -176,9 +176,9 @@
   overflow-y: scroll;
 }
 
-/* .comment-list p {
+.comment-list p {
   margin: 0;
-} */
+}
 
 .comment-list::-webkit-scrollbar {
   width: 8px;
@@ -386,7 +386,7 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  height: 25px;
+  height: 30px;
   /* background-color: transparent; */
   /* border: none;
   cursor: pointer; */

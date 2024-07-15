@@ -69,12 +69,12 @@ const ChatRoom = ({ userId, friendId, showMessage }) => {
   const handleSendMessage = () => {
     const token = getUserFromToken();
     if (!token) {
-        deleteToken();
-        showMessage("登入超時，請重新登入！", "error");
-        setTimeout(() => {
-            navigate("/signin");
-        }, 1000);
-        return;
+      deleteToken();
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000);
+      return;
     }
 
     if (message.trim() !== "") {
@@ -92,7 +92,12 @@ const ChatRoom = ({ userId, friendId, showMessage }) => {
           {friend && (
             <div className="friend-details">
               <img src={friend.image} alt={friend.name} />
-              <p>{friend.name}</p>
+              <div className="friend-details-area">
+                <p>{friend.name}</p>
+                <p className="friend-details-introduce">
+                  {friend.introduce}
+                </p>
+              </div>
             </div>
           )}
           <div className="chat-messages">
