@@ -5,6 +5,7 @@ import { FaTrash } from "react-icons/fa";
 import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Personal.css";
 import Loading from "../components/Loading";
+import { useNavigate } from "react-router-dom";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -19,6 +20,7 @@ const Personal = ({ showMessage }) => {
   const [climbRecords, setClimbRecords] = useState([]);
   const [expandedRecords, setExpandedRecords] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const levelRef = useRef(null);
   const typesCountRef = useRef(null);
@@ -66,6 +68,15 @@ const Personal = ({ showMessage }) => {
   };
 
   const deleteRecord = async (recordId) => {
+    const token = getUserFromToken();
+    if (!token) {
+      showMessage("登入超時，請重新登入！", "error");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000);
+      return;
+    }
+
     try {
       await axios.post(
         `https://node.me2vegan.com/api/climbRecords/remove/${recordId}`
@@ -82,16 +93,16 @@ const Personal = ({ showMessage }) => {
 
   const generateLevelChart = useCallback(() => {
     if (!levelRef.current) return;
-
+  
     const levels = climbRecords.flatMap((record) =>
       record.records.map((r) => r.level)
     );
-
+  
     const levelCounts = levels.reduce((acc, level) => {
       acc[level] = (acc[level] || 0) + 1;
       return acc;
     }, {});
-
+  
     const allLevels = [
       "V0",
       "V1",
@@ -104,20 +115,20 @@ const Personal = ({ showMessage }) => {
       "V8",
       "V9",
     ];
-    const completeLevelCounts = allLevels.reduce((acc, level) => {
-      acc[level] = levelCounts[level] || 0;
-      return acc;
-    }, {});
+    const colors = ["#888888", "#e5b700", "#ffb6c1", "#ADD8E6", "#8d5524", "#FF0000", "#006400", "00008B", "#800080", "#000000"];
 
-    const data = [
-      {
-        x: Object.keys(completeLevelCounts),
-        y: Object.values(completeLevelCounts),
-        type: "bar",
-        orientation: "v",
+    const data = allLevels.map((level, index) => ({
+      x: [level],
+      y: [levelCounts[level] || 0],
+      type: "bar",
+      name: level,
+      marker: {
+        color: colors[index],
       },
-    ];
-
+    }));
+  
+    const maxYValue = Math.max(...data.flatMap((d) => d.y));
+  
     const layout = {
       title: "路線等級統計",
       xaxis: { title: "等級" },
@@ -126,14 +137,29 @@ const Personal = ({ showMessage }) => {
         categoryorder: "array",
         categoryarray: allLevels,
         dtick: 1,
-        range: [1, Math.max(...data.flatMap((d) => d.y))],
+        range: [0, Math.ceil(maxYValue)],
+        tickformat: "d",
       },
       height: 380,
       width: 450,
+      showlegend: true,
+      legend: {
+        orientation: "v",
+        x: 1,
+        y: 1,
+        traceorder: "normal",
+        font: {
+          family: "sans-serif",
+          size: 12,
+          color: "#000",
+        },
+      },
     };
-
+  
     Plotly.newPlot(levelRef.current, data, layout);
   }, [climbRecords]);
+  
+  
 
   const generateTypesChart = useCallback(() => {
     if (!typesCountRef.current || !typesTimesRef.current) return;
@@ -237,26 +263,33 @@ const Personal = ({ showMessage }) => {
     }, {});
 
     const dates = Object.keys(dateLevelCounts).sort();
-    const levels = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
-
-    // const colors = ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56", "#2ecc71"];
-
+    // const levels = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
+    // const colors = ["#888888", "#e5b700", "#ffb6c1", "#ADD8E6", "#8d5524", "#FF0000", "#006400", "#00008B", "#800080", "#000000"];
+    const levels = ["V9", "V8", "V7", "V6", "V5", "V4", "V3", "V2", "V1", "V0",  ];
+    const colors = ["#000000", "#800080", "#00008B", "#006400", "#FF0000", "#8d5524", "#ADD8E6", "#ffb6c1", "#e5b700", "#888888"];
+    
     const data = levels
-      .map((level) => {
-        const yValues = dates.map((date) => dateLevelCounts[date][level] || 0);
-        return {
-          x: dates,
-          y: yValues,
-          name: level,
-          type: "bar",
-          visible: yValues.some((value) => value > 0) ? true : "legendonly",
-        };
-      })
-      .filter(
-        (item) =>
-          item.visible !== "legendonly" || item.y.some((value) => value > 0)
-      );
-
+    .map((level, index) => {
+      const yValues = dates.map((date) => dateLevelCounts[date][level] || 0);
+      return {
+        x: dates,
+        y: yValues,
+        name: level,
+        type: "bar",
+        visible: yValues.some((value) => value > 0) ? true : "legendonly",
+        marker: { color: colors[index] },
+      };
+    })
+    .filter(
+      (item) =>
+        item.visible !== "legendonly" || item.y.some((value) => value > 0)
+    );
+    
+    const totalCounts = dates.map(date => 
+      levels.reduce((sum, level) => sum + (dateLevelCounts[date][level] || 0), 0)
+    );
+    const maxTotalCount = Math.max(...totalCounts);
+  
     const layout = {
       title: "攀爬頻率分析",
       xaxis: { title: "日期" },
@@ -267,7 +300,8 @@ const Personal = ({ showMessage }) => {
         },
         automargin: true,
         dtick: 1,
-        range: [1, Math.max(...data.flatMap((d) => d.y))],
+        range: [0, Math.ceil(maxTotalCount)],
+        tickformat: "d"
       },
       barmode: "stack",
       height: 380,
