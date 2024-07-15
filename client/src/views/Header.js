@@ -1,15 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './stylesheets/Header.css';
 import { useAuth } from '../utils/AuthContext';
+import { getUserFromToken } from "../utils/token";
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    try{
+      const userData = getUserFromToken();
+      setUserId(userData.userId);
+      console.log(userData.userId);
+    } catch (error) {
+      console.log(error);
+    };
+  }, []);
+
   const handleLogout = () => {
     logout();
+    setUserId(null);
     navigate("/signin");
   };
 
@@ -29,7 +42,7 @@ const Header = () => {
           <Link to="/footprint" className={`button ${location.pathname === "/footprint" ? "active" : ""}`}>足跡地圖</Link>
         </div>
         <div className="menu-login">
-          {!user ? (
+          {!user && !userId ? (
             <Link to="/signin" className="button login-button">登入</Link>
           ) : (
             <button onClick={handleLogout} className="button logout-button">登出</button>

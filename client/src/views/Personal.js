@@ -104,9 +104,13 @@ const Personal = () => {
 
     const layout = {
       title: "路線等級統計",
+      xaxis: { title: "等級" },
       yaxis: {
+        title: "次數",
         categoryorder: "array",
         categoryarray: allLevels,
+        dtick: 1,
+        range: [1, Math.max(...data.flatMap(d => d.y))],
       },
       height: 380,
       width: 450,
@@ -135,12 +139,18 @@ const Personal = () => {
       });
     });
 
+    const filteredTypes = types.filter((type) => typeCounts[type].count > 0);
+    const filteredCounts = filteredTypes.map((type) => typeCounts[type].count);
+    const filteredTimes = filteredTypes.map((type) =>
+      (typeCounts[type].times / typeCounts[type].count).toFixed(1)
+    );
+
     const colors = ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56", "#2ecc71"];
 
     const dataCount = [
       {
-        values: types.map((type) => typeCounts[type].count),
-        labels: types,
+        values: filteredCounts,
+        labels: filteredTypes,
         type: "pie",
         textinfo: "label+percent",
         hole: 0.4,
@@ -152,10 +162,8 @@ const Personal = () => {
 
     const dataTimes = [
       {
-        values: types.map((type) =>
-          (typeCounts[type].times / typeCounts[type].count).toFixed(1)
-        ),
-        labels: types,
+        values: filteredTimes,
+        labels: filteredTypes,
         type: "pie",
         textinfo: "label+value",
         hole: 0.4,
@@ -206,20 +214,40 @@ const Personal = () => {
     const dates = Object.keys(dateLevelCounts).sort();
     const levels = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
 
-    const data = levels.map((level) => ({
-      x: dates,
-      y: dates.map((date) => dateLevelCounts[date][level] || 0),
-      name: level,
-      type: "bar",
-    }));
+    // const colors = ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56", "#2ecc71"];
+    
+    const data = levels
+      .map((level) => {
+        const yValues = dates.map((date) => dateLevelCounts[date][level] || 0);
+        return {
+          x: dates,
+          y: yValues,
+          name: level,
+          type: "bar",
+          visible: yValues.some((value) => value > 0) ? true : "legendonly",
+        };
+      })
+      .filter(
+        (item) =>
+          item.visible !== "legendonly" || item.y.some((value) => value > 0)
+      );
 
     const layout = {
       title: "攀爬頻率分析",
       xaxis: { title: "日期" },
-      yaxis: { title: "路線" },
+      yaxis: {
+        title: {
+          text: "等級 & 次數",
+          standoff: 20,
+        },
+        automargin: true,
+        dtick: 1,
+        range: [1, Math.max(...data.flatMap(d => d.y))],
+      },
       barmode: "stack",
       height: 380,
       width: 450,
+      showlegend: true,
     };
 
     Plotly.newPlot(frequencyRef.current, data, layout);
@@ -369,7 +397,6 @@ const Personal = () => {
       )}
     </div>
   );
-  
-}  
+};
 
 export default Personal;

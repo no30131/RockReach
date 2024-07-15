@@ -80,19 +80,6 @@ exports.createClimbRecords = async (req, res) => {
   }
 };
 
-// exports.getClimbRecordsByUserId = async (req, res) => {
-//   const userId = req.params.userId;
-//   try {
-//     const climbRecords = await ClimbRecords.find({ userId: userId }).lean();
-//     if (!climbRecords || climbRecords.length === 0) {
-//       return res.status(404).json({ error: "Climb records not found" });
-//     }
-//     res.status(200).send(climbRecords);
-//   } catch (error) {
-//     res.status(400).send({ error: error.message });
-//   }
-// };
-
 exports.getClimbRecordsByUserId = async (req, res) => {
   const userId = req.params.userId;
   try {
@@ -141,39 +128,6 @@ exports.getExploresRecords = async (req, res) => {
   }
 };
 
-// exports.addExploresLike = async (req, res) => {
-//   const { userId } = req.body;
-//   const id = req.params.id;
-//   try {
-//     await ClimbRecords.findOneAndUpdate(
-//       { "records._id": id },
-//       { $inc: { "records.$.likes": 1 } },
-//       { new: true }
-//     );
-
-//     const records = await ClimbRecords.find({
-//       "records.files": { $exists: true, $ne: [] },
-//     })
-//       .populate("userId", "name image")
-//       .lean();
-
-//     const formattedRecords = records.map((record) => ({
-//       ...record,
-//       user: record.userId,
-//       records: record.records
-//         .filter((rec) => rec.files && rec.files.length > 0)
-//         .map((rec) => ({
-//           ...rec,
-//           likes: rec.likes || 0,
-//           comments: rec.comments || [],
-//         })),
-//     }));
-
-//     res.status(201).send(formattedRecords);
-//   } catch (error) {
-//     res.status(400).send({ error: error.message });
-//   }
-// };
 
 exports.addExploresLike = async (req, res) => {
   const { userId } = req.body;

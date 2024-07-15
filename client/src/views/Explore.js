@@ -34,7 +34,6 @@ const Explore = ({ userId, showMessage }) => {
           `https://node.me2vegan.com/api/users/${userId}`
         );
         setUserName(userResponse.data.name);
-        // console.log("Fetched user data:", userResponse.data);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -48,7 +47,6 @@ const Explore = ({ userId, showMessage }) => {
       const response = await axios.get(
         `https://node.me2vegan.com/api/climbRecords/${userId}`
       );
-      // console.log("Fetched user records:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching user records:", error);
@@ -62,7 +60,6 @@ const Explore = ({ userId, showMessage }) => {
         `https://node.me2vegan.com/api/gyms/all`
       );
       setGymOptions(response.data);
-      // console.log("Fetched gym options:", response.data);
     } catch (error) {
       console.error("Error fetching gym options:", error);
     }
@@ -86,7 +83,6 @@ const Explore = ({ userId, showMessage }) => {
 
         const response = await axios.get(endpoint);
         let records = id ? [response.data] : response.data;
-        // console.log("Fetched records:", records);
 
         const userNow = getUserFromToken();
         const userIdNow = userNow?.userId;
@@ -109,7 +105,6 @@ const Explore = ({ userId, showMessage }) => {
             userGyms,
             mostFrequentLevel
           );
-          // console.log("Recommended records:", records);
         } else {
           records.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
@@ -237,30 +232,6 @@ const Explore = ({ userId, showMessage }) => {
       return;
     }
 
-    // try {
-    //   await axios.post(
-    //     `https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`
-    //   );
-    //   setRecords((prevRecords) =>
-    //     prevRecords.map((record) => {
-    //       if (record._id === recordId) {
-    //         return {
-    //           ...record,
-    //           records: record.records.map((rec) => {
-    //             if (rec._id === subRecordId) {
-    //               return { ...rec, likes: rec.likes + 1 };
-    //             }
-    //             return rec;
-    //           }),
-    //         };
-    //       }
-    //       return record;
-    //     })
-    //   );
-    // } catch (error) {
-    //   console.error("Error adding like:", error);
-    // }
-
     try {
       const url = isLiked
         ? `https://node.me2vegan.com/api/climbrecords/removeLike/${subRecordId}`
@@ -273,18 +244,13 @@ const Explore = ({ userId, showMessage }) => {
               ...record,
               records: record.records.map((rec) => {
                 const likedBy = rec.likedBy || [];
-                // if (rec._id === subRecordId) {
-                  return {
-                    ...rec,
-                    likes: isLiked ? rec.likes - 1 : rec.likes + 1,
-                    likedBy: isLiked
-                      ? likedBy.filter(
-                          (id) => id !== getUserFromToken().userId
-                        )
-                      : [...likedBy, getUserFromToken().userId],
-                  };
-                // }
-                // return rec;
+                return {
+                  ...rec,
+                  likes: isLiked ? rec.likes - 1 : rec.likes + 1,
+                  likedBy: isLiked
+                    ? likedBy.filter((id) => id !== getUserFromToken().userId)
+                    : [...likedBy, getUserFromToken().userId],
+                };
               }),
             };
           }
@@ -577,11 +543,6 @@ const Explore = ({ userId, showMessage }) => {
                     <div className="record-footer1">
                       <div className="likes">
                         <button
-                          onClick={() => handleToggleLike(record._id, rec._id, isLikedByUser(rec.likedBy))}
-                        >
-                          {!isLikedByUser(rec.likedBy) ? "👍🏻" : "👍"} {rec.likes} 
-                        </button>
-                        {/* <button
                           onClick={() =>
                             handleToggleLike(
                               record._id,
@@ -590,31 +551,17 @@ const Explore = ({ userId, showMessage }) => {
                             )
                           }
                         >
-                          <FaThumbsUp
-                            style={{
-                              stroke: isLikedByUser(rec.likedBy)
-                                ? "black"
-                                : "none",
-                              strokeWidth: isLikedByUser(rec.likedBy)
-                                ? "1px"
-                                : "none",
-                              fill: isLikedByUser(rec.likedBy)
-                                ? "none"
-                                : "black",
-                            }}
-                          />
-                          <span>{rec.likes}</span>
-                        </button> */}
+                          {!isLikedByUser(rec.likedBy) ? "👍🏻" : "👍"}{" "}
+                          {rec.likes}
+                        </button>
                       </div>
                       <div className="comments">
                         <button onClick={() => toggleComments(rec._id)}>
                           💬 {rec.comments.length}
-                          {/* <FaComment /> <span>{rec.comments.length}</span> */}
                         </button>
                       </div>
                       <div className="share">
                         <button onClick={() => handleShare(record._id)}>
-                          {/* ➤ */}
                           <FaShare />
                         </button>
                       </div>
