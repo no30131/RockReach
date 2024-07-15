@@ -14,7 +14,6 @@ const Header = () => {
     try{
       const userData = getUserFromToken();
       setUserId(userData.userId);
-      console.log(userData.userId);
     } catch (error) {
       console.log(error);
     };

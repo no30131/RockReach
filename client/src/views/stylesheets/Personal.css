@@ -35,8 +35,7 @@ h3 {
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  margin-left: 10px;
-  margin-top: 5px;
+  margin: 5px 0 0 10px;
 }
 
 .personal-records > p {
@@ -129,7 +128,7 @@ h3 {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
 }
 
 .personal-records-details .personal-records > p {
@@ -257,4 +256,39 @@ h3 {
   /* margin-left: -15px; */
   padding-right: 15px;
   padding-left: -50px;
+}
+
+.delete-button-area {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: -55px;
+}
+
+.delete-button-area2 {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: -45px;
+}
+
+/* .delete-button {
+  cursor: pointer;
+
+} */
+
+.delete-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  color: rgb(66, 15, 15, 0.7);
+  border-radius: 5px;
+  border: 1px solid rgb(165, 165, 165, 0.8);
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  color: rgb(80, 31, 0);
 }

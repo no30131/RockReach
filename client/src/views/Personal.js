@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import Plotly from "plotly.js-dist";
+import { FaTrash } from "react-icons/fa";
 import { getUserFromToken } from "../utils/token";
 import "./stylesheets/Personal.css";
 import Loading from "../components/Loading";
@@ -13,7 +14,7 @@ const routeTypes = [
   { name: "Pump", icon: "/images/icon_pump.png" },
 ];
 
-const Personal = () => {
+const Personal = ({ showMessage }) => {
   const [user, setUser] = useState(null);
   const [climbRecords, setClimbRecords] = useState([]);
   const [expandedRecords, setExpandedRecords] = useState({});
@@ -64,6 +65,21 @@ const Personal = () => {
     }));
   };
 
+  const deleteRecord = async (recordId) => {
+    try {
+      await axios.post(
+        `https://node.me2vegan.com/api/climbRecords/remove/${recordId}`
+      );
+      setClimbRecords((prevRecords) =>
+        prevRecords.filter((record) => record._id !== recordId)
+      );
+      showMessage("已刪除紀錄", "success");
+    } catch (error) {
+      console.error("Error deleting record: ", error);
+      showMessage("刪除紀錄失敗，請稍後再試", "error");
+    }
+  };
+
   const generateLevelChart = useCallback(() => {
     if (!levelRef.current) return;
 
@@ -110,7 +126,7 @@ const Personal = () => {
         categoryorder: "array",
         categoryarray: allLevels,
         dtick: 1,
-        range: [1, Math.max(...data.flatMap(d => d.y))],
+        range: [1, Math.max(...data.flatMap((d) => d.y))],
       },
       height: 380,
       width: 450,
@@ -144,6 +160,15 @@ const Personal = () => {
     const filteredTimes = filteredTypes.map((type) =>
       (typeCounts[type].times / typeCounts[type].count).toFixed(1)
     );
+
+    if (filteredTypes.length === 0) {
+      typesCountRef.current.style.display = "none";
+      typesTimesRef.current.style.display = "none";
+      return;
+    } else {
+      typesCountRef.current.style.display = "block";
+      typesTimesRef.current.style.display = "block";
+    }
 
     const colors = ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56", "#2ecc71"];
 
@@ -215,7 +240,7 @@ const Personal = () => {
     const levels = ["V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9"];
 
     // const colors = ["#ff6384", "#36a2eb", "#cc65fe", "#ffce56", "#2ecc71"];
-    
+
     const data = levels
       .map((level) => {
         const yValues = dates.map((date) => dateLevelCounts[date][level] || 0);
@@ -242,7 +267,7 @@ const Personal = () => {
         },
         automargin: true,
         dtick: 1,
-        range: [1, Math.max(...data.flatMap(d => d.y))],
+        range: [1, Math.max(...data.flatMap((d) => d.y))],
       },
       barmode: "stack",
       height: 380,
@@ -374,6 +399,14 @@ const Personal = () => {
                                 ))}
                               </div>
                             )}
+                            <div className={rec.types.length > 0 ? "delete-button-area" : "delete-button-area2"}>
+                              <button
+                                onClick={() => deleteRecord(record._id)}
+                                className="delete-button"
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
                           </div>
                           {rec.memo && (
                             <div className="personal-records-memo">

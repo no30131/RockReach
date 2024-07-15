@@ -22,7 +22,7 @@ router.post("/create", (req, res, next) => {
     });
   }, climbRecordsController.createClimbRecords);
 
-
+router.post("/remove/:id", climbRecordsController.removeClimbRecord);
 router.get("/exploreWall", climbRecordsController.getExploresRecords);
 router.get("/exploreWall/sorted/:userId", climbRecordsController.getSortedClimbRecords);
 router.get("/exploreWall/share/:id", climbRecordsController.getExploresRecordsById);

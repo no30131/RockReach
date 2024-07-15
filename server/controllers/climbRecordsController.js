@@ -80,6 +80,41 @@ exports.createClimbRecords = async (req, res) => {
   }
 };
 
+exports.removeClimbRecord = async (req, res) => {
+  const recordId = req.params.id;
+
+  try {
+    const record = await ClimbRecords.findById(recordId);
+
+    if (!record) {
+      return res.status(404).json({ error: "Climb record not found" });
+    }
+
+    const deletePromises = record.records.flatMap(subRecord => {
+      if (subRecord.files && subRecord.files.length > 0) {
+        return subRecord.files.map(async (fileUrl) => {
+          const fileName = fileUrl.split('/').pop();
+          const params = {
+            Bucket: process.env.AWS_S3_BUCKET,
+            Key: `climb_records/${fileName}`,
+          };
+          await s3.deleteObject(params).promise();
+        });
+      }
+      return [];
+    });
+
+    await Promise.all(deletePromises);
+
+    await ClimbRecords.findByIdAndDelete(recordId);
+
+    res.status(200).json({ message: "Climb record removed successfully" });
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+};
+
+
 exports.getClimbRecordsByUserId = async (req, res) => {
   const userId = req.params.userId;
   try {
