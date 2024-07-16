@@ -282,6 +282,11 @@ const Explore = ({ userId, showMessage }) => {
       return;
     }
 
+    if (comment.length > 100) {
+      showMessage("留言不能超過100個字元！", "error");
+      return;
+    }
+  
     if (commentButtonDisabled[subRecordId]) {
       return;
     }

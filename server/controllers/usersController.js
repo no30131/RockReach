@@ -90,11 +90,17 @@ exports.getUserByName = async (req, res) => {
 exports.checkEmail = async (req, res) => {
     const { email } = req.params;
     const user = await User.findOne({ email });
-    res.status(400).json({ exists: !!user });
+    if (user) {
+        return res.status(409).json({ exists: true, message: "此信箱已註冊，請前往登入！" });
+    }
+    res.status(200).json({ exists: false });
 };
 
 exports.checkName = async (req, res) => {
     const { name } = req.params;
     const user = await User.findOne({ name });
-    res.status(400).json({ exists: !!user });
+    if (user) {
+        return res.status(409).json({ exists: true, message: "此名字已被使用，請使用其他名字！" });
+    }
+    res.status(200).json({ exists: false });
 };

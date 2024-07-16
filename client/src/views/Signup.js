@@ -16,48 +16,49 @@ const Signup = ({ showMessage }) => {
       const response = await axios.get(
         `https://node.me2vegan.com/api/users/check-email/${email}`
       );
-      return response.data.exists;
+      if (response.data.exists) {
+        throw new Error(response.data.message);
+      }
     } catch (error) {
+      if (error.response && error.response.status === 409) {
+        throw new Error(error.response.data.message);
+      }
       console.error("Error checking email:", error);
-      return false;
+      throw error;
     }
   };
-
+  
   const checkNameExists = async (name) => {
     try {
       const response = await axios.get(
         `https://node.me2vegan.com/api/users/check-name/${name}`
       );
-      return response.data.exists;
+      if (response.data.exists) {
+        throw new Error(response.data.message);
+      }
     } catch (error) {
+      if (error.response && error.response.status === 409) {
+        throw new Error(error.response.data.message);
+      }
       console.error("Error checking name:", error);
-      return false;
+      throw error;
     }
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (name.length > 15) {
       showMessage("名字不能超過15個字元！", "error");
       return;
     }
-
+  
     const userData = { name, email, password };
-
+  
     try {
-      const emailExists = await checkEmailExists(email);
-      if (emailExists) {
-        showMessage("此信箱已註冊，請前往登入！", "error");
-        return;
-      }
-
-      const nameExists = await checkNameExists(name);
-      if (nameExists) {
-        showMessage("此名字已被使用，請使用其他名字！", "error");
-        return;
-      }
-
+      await checkEmailExists(email);
+      await checkNameExists(name);
+  
       const response = await axios.post(
         `https://node.me2vegan.com/api/users/create`,
         userData,
@@ -68,7 +69,7 @@ const Signup = ({ showMessage }) => {
           },
         }
       );
-
+  
       if (response.status === 201) {
         showMessage("註冊成功！", "success");
         login(response.data);
@@ -77,14 +78,17 @@ const Signup = ({ showMessage }) => {
         }, 500);
       } else {
         console.error("Error creating user:", response.data);
-        showMessage("信箱已註冊，請前往登入！", "error");
+        showMessage("伺服器異常，請稍後再試！", "error");
       }
     } catch (error) {
-      console.error("Error creating user:", error);
-      showMessage("伺服器異常，請稍後再試！", "error");
+      if (error.message) {
+        showMessage(error.message, "error");
+      } else {
+        showMessage("伺服器異常，請稍後再試！", "error");
+      }
     }
   };
-
+  
   return (
     <div className="box">
       <h1>會員註冊</h1>

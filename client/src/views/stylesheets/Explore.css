@@ -178,6 +178,7 @@
 
 .comment-list p {
   margin: 0;
+  text-align: left;
 }
 
 .comment-list::-webkit-scrollbar {

@@ -282,7 +282,10 @@ const Personal = ({ showMessage }) => {
       return acc;
     }, {});
 
-    const dates = Object.keys(dateLevelCounts).sort();const levels = ["V9", "V8", "V7", "V6", "V5", "V4", "V3", "V2", "V1", "V0",  ];
+    const allDates = Object.keys(dateLevelCounts).sort();
+    const dates = allDates.slice(-10);
+
+    const levels = ["V9", "V8", "V7", "V6", "V5", "V4", "V3", "V2", "V1", "V0",  ];
     const colors = ["#9DE6BA", "#B7ADE6", "#7CA0E6", "#BAE689", "#E67D7D", "#E6DB81", "#ADD8E6", "#ffb6c1", "#E6C6AE", "#BDBDBD"];
    
     const data = levels

@@ -8,7 +8,7 @@
 .home-title {
     /* display: flex; */
     /* flex-direction: column; */
-    margin-top: 30px;
+    margin-top: 40px;
     margin-right: 50px;
 }
 
@@ -19,7 +19,7 @@
 }
 
 .home-title > p {
-    margin-top: 30px;
+    margin-top: 60px;
     text-align: left;
     font-size: 17px;
     max-width: 470px;
@@ -49,9 +49,38 @@
     border: 1px solid rgb(255, 115, 0);
 }
 
-.home-signup-link {
-    display: flex;
+.home-signup-button {
+    /* display: flex;
     justify-content: center;
     text-decoration: none;
-    margin: -88px 0 20px 0;
+    margin: -88px 0 20px 0; */
+    /* display: flex;
+    position: absolute;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    right: 105px;
+    bottom: 150px;
+    z-index: 200;
+    overflow: hidden; */
+    /* max-width: 20vmin; */
+}
+
+.home1-signup-area {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+.landing-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.landing-page img {
+    width: 80vw;
 }

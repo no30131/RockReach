@@ -59,12 +59,23 @@ function App() {
               <Route path="/achievement/:userId/:wallName" element={<AchievementDetails showMessage={showMessage} />} />
               <Route path="/service" element={<Service showMessage={showMessage} />} />
               <Route path="/policy" element={<Policy showMessage={showMessage} />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />
         </div>
       </Router>
     </AuthProvider>
+  );
+};
+
+const NotFound = () => {
+  return (
+    <div className="notfound">
+      <h1>404 - 找不到頁面</h1>
+      <p>您輸入的網址不存在！</p>
+      <img src="/images/gpt.jpg" alt="wall" />
+    </div>
   );
 };
 

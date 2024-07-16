@@ -222,6 +222,10 @@ exports.addExploresComment = async (req, res) => {
       { new: true }
     );
 
+    if (comment && comment.length > 100) {
+      return res.status(400).json({ message: "留言不能超過100個字元！" });
+    }
+
     const records = await ClimbRecords.find({
       "records.files": { $exists: true, $ne: [] },
     })

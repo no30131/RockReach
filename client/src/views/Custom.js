@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { deleteToken, getUserFromToken } from "../utils/token";
 import "./stylesheets/Custom.css";
 import Loading from "../components/Loading";
-import { FaShare } from "react-icons/fa";
+import { FaShare, FaPen, FaEraser } from "react-icons/fa";
 
 const routeTypes = [
   { name: "Crimpy", icon: "/images/icon_crimpy.png" },
@@ -369,7 +369,7 @@ const Custom = ({ showMessage }) => {
             )}
             {!showOutput && isCanvasActive && !id && (
               <div className="adding-custom-area">
-                <p>點擊標記路線中的所有岩點，再點執行查看結果</p>
+                <p>在圖上點選標記路線中的所有岩點，再點執行查看結果</p>
                 <div className="adding-custom-buttons">
                   <button
                     onClick={handleProcessClick}
@@ -381,7 +381,17 @@ const Custom = ({ showMessage }) => {
                     onClick={() => setIsEraserActive(!isEraserActive)}
                     className="eraser-button"
                   >
-                    {isEraserActive ? "使用標記" : "使用橡皮擦"}
+                    {isEraserActive ? (
+                      <div className="custom-markers">
+                        <FaPen />
+                        <span>&nbsp;&nbsp;使用標記</span>
+                      </div>
+                    ) : (
+                      <div className="custom-markers">
+                        <FaEraser />
+                        <span>&nbsp;&nbsp;使用橡皮擦</span>
+                      </div>
+                    )}
                   </button>
                 </div>
               </div>
