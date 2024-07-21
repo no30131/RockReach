@@ -13,7 +13,7 @@ exports.createOrUpdateFootprint = async (req, res) => {
 
       res.status(200).json(footprint);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
 };
 
@@ -23,7 +23,7 @@ exports.getFootprintByUserId = async (req, res) => {
       const footprints = await Footprints.find({ userId }).populate("gymId");
       res.status(200).send(footprints);
     } catch (error) {
-      res.status(400).send({ error: error.message });
+      next(error);
     }
 };
 
@@ -45,8 +45,7 @@ exports.getGeocode = async (req, res) => {
     });
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching geocode:', error.message);
-    res.status(500).json({ error: 'Error fetching geocode' });
+    next(error);
   }
 };
 
@@ -64,7 +63,6 @@ exports.getPlaces = async (req, res) => {
     });
     res.json(response.data);
   } catch (error) {
-    console.error('Error fetching places:', error.message);
-    res.status(500).json({ error: 'Error fetching places' });
+    next(error);
   }
 };

@@ -22,7 +22,7 @@ exports.createAchievement = async (req, res) => {
       res.status(201).json(newAchievement);
     }
   } catch (error) {
-    res.status(500).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -35,6 +35,6 @@ exports.getAchievementsByUser = async (req, res) => {
     }
     res.status(200).json(achievements);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };

@@ -19,10 +19,7 @@ exports.getCustomsWalls = async (req, res) => {
     );
     res.status(200).json(walls);
   } catch (error) {
-    res.status(500).json({
-      message: "牆面資料同步失敗",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -37,10 +34,7 @@ exports.getCustomsWallRoutes = async (req, res) => {
       res.status(404).json({ message: "查無此牆面" });
     }
   } catch (error) {
-    res.status(500).json({
-      message: "路線資料同步失敗",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -59,10 +53,7 @@ exports.getCustomsWallRouteById = async (req, res) => {
       res.status(404).json({ message: "查無此路線" });
     }
   } catch (error) {
-    res.status(500).json({
-      message: "Error fetching route data",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -131,12 +122,10 @@ exports.processImage = async (req, res) => {
     });
 
     writer.on("error", (err) => {
-      console.error("Error writing image to local file:", err);
-      res.status(500).send("Error writing image to local file");
+      next(new Error("Error writing image to local file"));
     });
   } catch (error) {
-    console.error("Error fetching image from S3:", error);
-    res.status(500).send("Error fetching image from S3");
+    next(new Error("Error fetching image from S3"));
   }
 };
 
@@ -191,11 +180,7 @@ exports.createCustoms = async (req, res) => {
       res.status(404).json({ message: "查無此牆面" });
     }
   } catch (error) {
-    console.error("Error uploading to S3 or saving to DB:", error);
-    res.status(500).json({
-      message: "新增路線時出現錯誤",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -207,10 +192,7 @@ exports.getAchievementWalls = async (req, res) => {
     );
     res.status(200).json(walls);
   } catch (error) {
-    res.status(500).json({
-      message: "牆面資料同步失敗",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -225,9 +207,6 @@ exports.getAchievementRoutes = async (req, res) => {
       res.status(404).json({ message: "查無此牆面" });
     }
   } catch (error) {
-    res.status(500).json({
-      message: "路線資料同步失敗",
-      error: error.message,
-    });
+    next(error);
   }
 };

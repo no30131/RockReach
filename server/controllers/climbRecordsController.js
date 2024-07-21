@@ -1,7 +1,5 @@
 const ClimbRecords = require("../models/climbRecords");
 const AWS = require("aws-sdk");
-// const path = require("path");
-// const fs = require("fs");
 
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -16,7 +14,6 @@ exports.createClimbRecords = async (req, res) => {
     let parsedRecords;
     try {
       parsedRecords = typeof records === 'string' ? JSON.parse(records) : records;
-      // console.log("parsedRecords: ", parsedRecords);
     } catch (parseError) {
       return res.status(400).json({ message: "Invalid records JSON", error: parseError.message });
     }
@@ -33,21 +30,16 @@ exports.createClimbRecords = async (req, res) => {
     const files = req.files || [];
 
     const uploadPromises = files.map(async (file) => {
-      // const fileContent = fs.readFileSync(file.path);
-      // const fileName = `climb_records/${path.basename(file.path)}`;
-
       const fileName = `climb_records/${file.originalname}`;
 
       const params = {
         Bucket: process.env.AWS_S3_BUCKET,
         Key: fileName,
-        // Body: fileContent,
         Body: file.buffer,
         ContentType: file.mimetype,
       };
 
       const data = await s3.upload(params).promise();
-      // fs.unlinkSync(file.path);
       return data.Location;
     });
 
@@ -57,8 +49,6 @@ exports.createClimbRecords = async (req, res) => {
       ...record,
       files: fileUrls.slice(index * 5, (index + 1) * 5),
     }));
-
-    // console.log("Updated records:", updatedRecords);
 
     const dateOnly = new Date(date).toISOString().split("T")[0];
 
@@ -72,11 +62,7 @@ exports.createClimbRecords = async (req, res) => {
     await climbRecords.save();
     res.status(201).send(climbRecords);
   } catch (error) {
-    console.error("Error uploading to S3 or saving to DB:", error);
-    res.status(500).json({
-      message: "Error creating climb records",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
@@ -110,7 +96,7 @@ exports.removeClimbRecord = async (req, res) => {
 
     res.status(200).json({ message: "Climb record removed successfully" });
   } catch (error) {
-    res.status(500).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -133,7 +119,7 @@ exports.getClimbRecordsByUserId = async (req, res) => {
     }));
     res.status(200).send(formattedRecords);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -159,7 +145,7 @@ exports.getExploresRecords = async (req, res) => {
 
     res.status(200).send(formattedRecords);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -184,7 +170,7 @@ exports.addExploresLike = async (req, res) => {
 
     res.status(200).send(record);
   } catch (error) {
-    res.status(500).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -208,7 +194,7 @@ exports.removeExploresLike = async (req, res) => {
 
     res.status(200).send(record);
   } catch (error) {
-    res.status(500).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -246,7 +232,7 @@ exports.addExploresComment = async (req, res) => {
 
     res.status(201).send(formattedRecords);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -274,18 +260,16 @@ exports.getExploresRecordsByUser = async (req, res) => {
 
     res.status(200).send(formattedRecords);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 
 exports.getExploresRecordsById = async (req, res) => {
   const id = req.params.id;
-  // console.log(id);
   try {
     const records = await ClimbRecords.findById(id)
       .populate("userId", "name image")
       .lean();
-    // console.log(records);
 
     if (!records) {
       return res.status(404).send({ error: "Records not found" });
@@ -305,7 +289,7 @@ exports.getExploresRecordsById = async (req, res) => {
 
     res.status(200).send(formattedRecords);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -348,7 +332,7 @@ exports.getSortedClimbRecords = async (req, res) => {
 
     res.status(200).send(formattedRecords);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 

@@ -31,7 +31,7 @@ exports.createFriends = async (req, res) => {
     await friends.save();
     res.status(201).send(friends);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -49,7 +49,7 @@ exports.getFriendsByUserId = async (req, res) => {
     }
     res.status(200).send(friends);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -86,7 +86,7 @@ exports.addChatMessage = async (req, res) => {
     const newChat = await saveChatMessage(userId, friendId, message);
     res.status(201).send(newChat);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 
@@ -105,6 +105,7 @@ exports.getChatByFriendId = async (req, res) => {
     res.status(200).send(friend.chat);
   } catch (error) {
     res.status(400).send({ error: error.message });
+    next(error);
   }
 };
 

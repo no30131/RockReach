@@ -236,23 +236,21 @@ const Custom = ({ showMessage }) => {
       );
       const userName = userResponse.data.name;
 
-      axios
-        .post(`https://node.me2vegan.com/api/customs/create`, {
+      try {
+        await axios.post(`https://node.me2vegan.com/api/customs/create`, {
           wallName: selectedWall.wallName,
           processedImage: outputDBImage,
           userId: userName,
           customName,
           customType,
           memo,
-        })
-        .then((response) => {
-          showMessage("新增路線成功！", "success");
-          setSelectedWall(null);
-        })
-        .catch((error) => {
-          console.error("Error saving custom route:", error);
-          showMessage("新增路線失敗，請稍後再試", "error");
         });
+        showMessage("新增路線成功！", "success");
+        setSelectedWall(null);
+      } catch (error) {
+        console.error("Error saving custom route:", error);
+        showMessage("新增路線失敗，請稍後再試", "error");
+      }
     } catch (error) {
       console.error("Error fetching data: ", error);
       showMessage("伺服器異常，請稍後再試", "error");

@@ -10,7 +10,7 @@ exports.createGyms = async (req, res) => {
         await gyms.save();
         res.status(201).send(gyms);
     } catch (error) {
-        res.status(400).send({ error: error.message });
+        next(error);
     }
 };
 
@@ -19,7 +19,7 @@ exports.getAllGyms = async (req, res) => {
         const gyms = await Gyms.find();
         res.status(200).send(gyms);
     } catch (error) {
-        res.status(400).send({ error: error.message });
+        next(error);
     }
 };
 
@@ -32,6 +32,6 @@ exports.getGymsById = async (req, res) => {
         }
         res.status(200).send(gyms);
     } catch (error) {
-        res.status(400).send({ error: error.message });
+        next(error);
     }
 };
