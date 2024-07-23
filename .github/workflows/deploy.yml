@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - sprint5
+      - main
  
 jobs:
   build:
@@ -33,6 +33,11 @@ jobs:
           cd client
           npm install
 
+      - name: Run server tests
+        run: |
+          cd server
+          npm run test
+  
       - name: Build client
         run: |
           cd client
