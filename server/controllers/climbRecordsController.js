@@ -7,7 +7,7 @@ const s3 = new AWS.S3({
   region: process.env.AWS_REGION,
 });
 
-exports.createClimbRecords = async (req, res) => {
+exports.createClimbRecords = async (req, res, next) => {
   try {
     const { userId, date, gymName, records } = req.body;
 
@@ -66,7 +66,7 @@ exports.createClimbRecords = async (req, res) => {
   }
 };
 
-exports.removeClimbRecord = async (req, res) => {
+exports.removeClimbRecord = async (req, res, next) => {
   const recordId = req.params.id;
 
   try {
@@ -100,8 +100,7 @@ exports.removeClimbRecord = async (req, res) => {
   }
 };
 
-
-exports.getClimbRecordsByUserId = async (req, res) => {
+exports.getClimbRecordsByUserId = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const climbRecords = await ClimbRecords.find({ userId: userId }).lean();
@@ -123,7 +122,7 @@ exports.getClimbRecordsByUserId = async (req, res) => {
   }
 };
 
-exports.getExploresRecords = async (req, res) => {
+exports.getExploresRecords = async (req, res, next) => {
   try {
     const records = await ClimbRecords.find({
       "records.files": { $exists: true, $ne: [] },
@@ -150,7 +149,7 @@ exports.getExploresRecords = async (req, res) => {
 };
 
 
-exports.addExploresLike = async (req, res) => {
+exports.addExploresLike = async (req, res, next) => {
   const { userId } = req.body;
   const subRecordId = req.params.id;
 
@@ -174,7 +173,7 @@ exports.addExploresLike = async (req, res) => {
   }
 };
 
-exports.removeExploresLike = async (req, res) => {
+exports.removeExploresLike = async (req, res, next) => {
   const { userId } = req.body;
   const subRecordId = req.params.id;
 
@@ -198,7 +197,7 @@ exports.removeExploresLike = async (req, res) => {
   }
 };
 
-exports.addExploresComment = async (req, res) => {
+exports.addExploresComment = async (req, res, next) => {
   const id = req.params.id;
   const { comment } = req.body;
   try {
@@ -236,7 +235,7 @@ exports.addExploresComment = async (req, res) => {
   }
 };
 
-exports.getExploresRecordsByUser = async (req, res) => {
+exports.getExploresRecordsByUser = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const records = await ClimbRecords.find({
@@ -264,7 +263,7 @@ exports.getExploresRecordsByUser = async (req, res) => {
   }
 };
 
-exports.getExploresRecordsById = async (req, res) => {
+exports.getExploresRecordsById = async (req, res, next) => {
   const id = req.params.id;
   try {
     const records = await ClimbRecords.findById(id)
@@ -293,7 +292,7 @@ exports.getExploresRecordsById = async (req, res) => {
   }
 };
 
-exports.getSortedClimbRecords = async (req, res) => {
+exports.getSortedClimbRecords = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const userRecords = await ClimbRecords.find({ userId: userId }).lean();

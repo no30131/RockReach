@@ -11,7 +11,7 @@ const s3 = new AWS.S3({
   region: process.env.AWS_REGION,
 });
 
-exports.getCustomsWalls = async (req, res) => {
+exports.getCustomsWalls = async (req, res, next) => {
   try {
     const walls = await Customs.find(
       { type: "custom" },
@@ -23,7 +23,7 @@ exports.getCustomsWalls = async (req, res) => {
   }
 };
 
-exports.getCustomsWallRoutes = async (req, res) => {
+exports.getCustomsWallRoutes = async (req, res, next) => {
   const { wallName } = req.params;
 
   try {
@@ -38,7 +38,7 @@ exports.getCustomsWallRoutes = async (req, res) => {
   }
 };
 
-exports.getCustomsWallRouteById = async (req, res) => {
+exports.getCustomsWallRouteById = async (req, res, next) => {
   const id = req.params.id;
 
   try {
@@ -57,7 +57,7 @@ exports.getCustomsWallRouteById = async (req, res) => {
   }
 };
 
-exports.processImage = async (req, res) => {
+exports.processImage = async (req, res, next) => {
   const { image, markers } = req.body;
 
   if (!image || typeof image !== "string") {
@@ -129,7 +129,7 @@ exports.processImage = async (req, res) => {
   }
 };
 
-exports.createCustoms = async (req, res) => {
+exports.createCustoms = async (req, res, next) => {
   const { wallName, processedImage, userId, customName, customType, memo } =
     req.body;
 
@@ -184,7 +184,7 @@ exports.createCustoms = async (req, res) => {
   }
 };
 
-exports.getAchievementWalls = async (req, res) => {
+exports.getAchievementWalls = async (req, res, next) => {
   try {
     const walls = await Customs.find(
       { type: "achievement" },
@@ -196,7 +196,7 @@ exports.getAchievementWalls = async (req, res) => {
   }
 };
 
-exports.getAchievementRoutes = async (req, res) => {
+exports.getAchievementRoutes = async (req, res, next) => {
   const { wallName } = req.params;
 
   try {

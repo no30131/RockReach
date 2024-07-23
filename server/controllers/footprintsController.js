@@ -1,7 +1,7 @@
 const Footprints = require("../models/footprints");
 const axios = require("axios");
 
-exports.createOrUpdateFootprint = async (req, res) => {
+exports.createOrUpdateFootprint = async (req, res, next) => {
     const { gymId, userId, expiryDate } = req.body;
     
     try {
@@ -17,7 +17,7 @@ exports.createOrUpdateFootprint = async (req, res) => {
     }
 };
 
-exports.getFootprintByUserId = async (req, res) => {
+exports.getFootprintByUserId = async (req, res, next) => {
     const userId = req.params.userId;
     try {
       const footprints = await Footprints.find({ userId }).populate("gymId");
@@ -33,7 +33,7 @@ exports.getMapsApiUrl = async (req, res) => {
   res.json({ url });
 };
 
-exports.getGeocode = async (req, res) => {
+exports.getGeocode = async (req, res, next) => {
   try {
     const address = req.query.address;
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
@@ -49,7 +49,7 @@ exports.getGeocode = async (req, res) => {
   }
 };
 
-exports.getPlaces = async (req, res) => {
+exports.getPlaces = async (req, res, next) => {
   try {
     const { lat, lng, query } = req.query;
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;

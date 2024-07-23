@@ -1,9 +1,9 @@
 const Gyms = require("../models/gyms");
-const axios = require("axios");
+// const axios = require("axios");
 
-const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
+// const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
 
-exports.createGyms = async (req, res) => {
+exports.createGyms = async (req, res, next) => {
     const { name, phone, address } = req.body;
     try {
         const gyms = new Gyms({ name, phone, address });
@@ -14,7 +14,7 @@ exports.createGyms = async (req, res) => {
     }
 };
 
-exports.getAllGyms = async (req, res) => {
+exports.getAllGyms = async (req, res, next) => {
     try {
         const gyms = await Gyms.find();
         res.status(200).send(gyms);
@@ -23,7 +23,7 @@ exports.getAllGyms = async (req, res) => {
     }
 };
 
-exports.getGymsById = async (req, res) => {
+exports.getGymsById = async (req, res, next) => {
     const gymsId = req.params.id;
     try {
         const gyms = await Gyms.findById(gymsId);

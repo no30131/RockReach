@@ -7,5 +7,6 @@ const gymSchema = new Schema({
     address: String,
   });
 
-const Gym = mongoose.model("gyms", gymSchema);
+const Gym = mongoose.models.gyms || mongoose.model("gyms", gymSchema);
+
 module.exports = Gym;

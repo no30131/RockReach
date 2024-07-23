@@ -1,7 +1,7 @@
 const Friends = require("../models/friends");
 const moment = require("moment-timezone");
 
-exports.createFriends = async (req, res) => {
+exports.createFriends = async (req, res, next) => {
   const { inviterId, receiverId, friendDate } = req.body;
 
   if (inviterId === receiverId) {
@@ -35,7 +35,7 @@ exports.createFriends = async (req, res) => {
   }
 };
 
-exports.getFriendsByUserId = async (req, res) => {
+exports.getFriendsByUserId = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const friends = await Friends.find({
@@ -44,11 +44,12 @@ exports.getFriendsByUserId = async (req, res) => {
       .populate("inviterId", "name image")
       .populate("receiverId", "name image");
 
-    if (!friends) {
+    if (!friends || friends.length === 0) {
       return res.status(404).json({ error: "好友關係不存在！" });
     }
     res.status(200).send(friends);
   } catch (error) {
+    res.status(500).send({ error: error.message });
     next(error);
   }
 };
@@ -80,17 +81,18 @@ const saveChatMessage = async (userId, friendId, message) => {
   }
 };
 
-exports.addChatMessage = async (req, res) => {
+exports.addChatMessage = async (req, res, next) => {
   const { userId, friendId, message } = req.body;
   try {
     const newChat = await saveChatMessage(userId, friendId, message);
     res.status(201).send(newChat);
   } catch (error) {
+    res.status(500).send({ error: error.message });
     next(error);
   }
 };
 
-exports.getChatByFriendId = async (req, res) => {
+exports.getChatByFriendId = async (req, res, next) => {
   const { userId, friendId } = req.params;
   try {
     const friend = await Friends.findOne({
@@ -104,7 +106,7 @@ exports.getChatByFriendId = async (req, res) => {
     }
     res.status(200).send(friend.chat);
   } catch (error) {
-    res.status(400).send({ error: error.message });
+    res.status(500).send({ error: error.message });
     next(error);
   }
 };

@@ -1,6 +1,6 @@
 const Achievements = require("../models/achievements");
 
-exports.createAchievement = async (req, res) => {
+exports.createAchievement = async (req, res, next) => {
   try {
     const { userId, customName, status } = req.body;
 
@@ -26,7 +26,7 @@ exports.createAchievement = async (req, res) => {
   }
 };
 
-exports.getAchievementsByUser = async (req, res) => {
+exports.getAchievementsByUser = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const achievements = await Achievements.find({ userId }).lean();
