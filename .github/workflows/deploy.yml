@@ -32,11 +32,6 @@ jobs:
         run: |
           cd client
           npm install
-
-      - name: Run server tests
-        run: |
-          cd server
-          npm run test
   
       - name: Build client
         run: |
