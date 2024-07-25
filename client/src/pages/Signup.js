@@ -27,7 +27,7 @@ const Signup = ({ showMessage }) => {
       throw error;
     }
   };
-  
+
   const checkNameExists = async (name) => {
     try {
       const response = await axios.get(
@@ -44,21 +44,21 @@ const Signup = ({ showMessage }) => {
       throw error;
     }
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (name.length > 15) {
       showMessage("名字不能超過15個字元！", "error");
       return;
     }
-  
+
     const userData = { name, email, password };
-  
+
     try {
       await checkEmailExists(email);
       await checkNameExists(name);
-  
+
       const response = await axios.post(
         `https://node.me2vegan.com/api/users/create`,
         userData,
@@ -69,7 +69,7 @@ const Signup = ({ showMessage }) => {
           },
         }
       );
-  
+
       if (response.status === 201) {
         showMessage("註冊成功！", "success");
         login(response.data);
@@ -88,7 +88,11 @@ const Signup = ({ showMessage }) => {
       }
     }
   };
-  
+
+  const handleDemoLogin = () => {
+    navigate("/signin?demo=true");
+  };
+
   return (
     <div className="box">
       <h1>會員註冊</h1>
@@ -141,6 +145,24 @@ const Signup = ({ showMessage }) => {
             }}
           >
             登入
+          </button>
+        </p>
+        <p className="demo-button">
+          或點此{" "}
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            style={{
+              cursor: "pointer",
+              color: "blue",
+              textDecoration: "underline",
+              background: "none",
+              border: "none",
+              padding: 0,
+              font: "inherit",
+            }}
+          >
+            登入示範帳號
           </button>
         </p>
         <div className="signup-link">
