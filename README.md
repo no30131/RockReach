@@ -12,7 +12,7 @@ progress, custom route design, and a community platform for sharing experiences.
 - 📁 Upload Records: Keep detailed records of each climbing route and upload photos and videos.
 - 📊 Personal Space: View personalized data analysis, track your progress, and see all your climbing records.
 - 🌐 Explore Wall: See all player posts, interact with likes, comments, and shares. Use our intelligent recommendation system to sort posts.
-- 🤝 Friends: Check out your friends' personal walls and chat with them using the online chat room.
+- 🤝 Friends: Check out your friends personal walls and chat with them using the online chat room.
 - ✏️ Custom Routes: Create custom routes on your own. Simply click on desired rock to auto-draw edges. Upload and share your designed routes.
 - 🌟 Achievement: Collect routes of specific colors on designated walls.
 - 🗺️ Footprint Map: Display your visits to different climbing gyms and keep track of your membership expiration dates.
