@@ -233,10 +233,9 @@ const Explore = ({ userId, showMessage }) => {
     }
 
     try {
-      const url = isLiked
-        ? `https://node.me2vegan.com/api/climbrecords/removeLike/${subRecordId}`
-        : `https://node.me2vegan.com/api/climbrecords/addLike/${subRecordId}`;
-      await axios.post(url, { userId: getUserFromToken().userId });
+      const url = `https://node.me2vegan.com/api/climbrecords/exploreWall/${subRecordId}/like`;
+      const method = isLiked ? 'delete' : 'put';
+      await axios({ method, url, data: { userId: getUserFromToken().userId } });
       setRecords((prevRecords) =>
         prevRecords.map((record) => {
           if (record._id === recordId) {
@@ -295,8 +294,8 @@ const Explore = ({ userId, showMessage }) => {
 
     try {
       const fullComment = `${userName}: ${comment}`;
-      await axios.post(
-        `https://node.me2vegan.com/api/climbrecords/addComment/${subRecordId}`,
+      await axios.put(
+        `https://node.me2vegan.com/api/climbrecords/exploreWall/${subRecordId}/comment`,
         {
           comment: fullComment,
         }
@@ -341,7 +340,7 @@ const Explore = ({ userId, showMessage }) => {
     setShowComments((prev) => ({ ...prev, [subRecordId]: !prev[subRecordId] }));
   };
 
-  const handleShare = async (recordId) => {
+  const handleShare = async (recordId) => { 
     const shareLink = `https://rockreach.me2vegan.com/explore/${recordId}`;
     try {
       await navigator.clipboard.writeText(shareLink);

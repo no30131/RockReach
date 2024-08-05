@@ -78,8 +78,8 @@ const Personal = ({ showMessage }) => {
     }
 
     try {
-      await axios.post(
-        `https://node.me2vegan.com/api/climbRecords/remove/${recordId}`
+      await axios.delete(
+        `https://node.me2vegan.com/api/climbRecords/${recordId}`
       );
       setClimbRecords((prevRecords) =>
         prevRecords.filter((record) => record._id !== recordId)

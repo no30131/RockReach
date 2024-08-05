@@ -111,7 +111,7 @@ exports.processImage = async (req, res, next) => {
 
       pythonProcess.on("close", (code) => {
         if (code !== 0) {
-          res.status(500).send("Error processing image");
+          res.status(500).json({ message: "Error processing image" });
           return;
         }
         const outputPath = outputData.trim();
@@ -141,7 +141,7 @@ exports.createCustoms = async (req, res, next) => {
     return res.status(400).json({ message: "路線名稱不能超過20個字元！" });
   }
 
-  if (memo.length > 100) {
+  if (memo && memo.length > 100) {
     return res.status(400).json({ message: "說明或備註不能超過100個字元！" });
   }
 

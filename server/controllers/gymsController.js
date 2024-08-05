@@ -8,7 +8,7 @@ exports.createGyms = async (req, res, next) => {
     try {
         const gyms = new Gyms({ name, phone, address });
         await gyms.save();
-        res.status(201).send(gyms);
+        res.status(201).json(gyms);
     } catch (error) {
         next(error);
     }
@@ -17,7 +17,7 @@ exports.createGyms = async (req, res, next) => {
 exports.getAllGyms = async (req, res, next) => {
     try {
         const gyms = await Gyms.find();
-        res.status(200).send(gyms);
+        res.status(200).json(gyms);
     } catch (error) {
         next(error);
     }
@@ -30,7 +30,7 @@ exports.getGymsById = async (req, res, next) => {
         if (!gyms) {
             return res.status(404).json({ error: "Gym not found" });
         }
-        res.status(200).send(gyms);
+        res.status(200).json(gyms);
     } catch (error) {
         next(error);
     }

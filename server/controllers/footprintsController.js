@@ -21,7 +21,7 @@ exports.getFootprintByUserId = async (req, res, next) => {
     const userId = req.params.userId;
     try {
       const footprints = await Footprints.find({ userId }).populate("gymId");
-      res.status(200).send(footprints);
+      res.status(200).json(footprints);
     } catch (error) {
       next(error);
     }

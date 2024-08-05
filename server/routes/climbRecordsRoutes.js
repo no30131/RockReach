@@ -22,14 +22,15 @@ router.post("/create", (req, res, next) => {
     });
   }, climbRecordsController.createClimbRecords);
 
-router.post("/remove/:id", climbRecordsController.removeClimbRecord);
 router.get("/exploreWall", climbRecordsController.getExploresRecords);
 router.get("/exploreWall/sorted/:userId", climbRecordsController.getSortedClimbRecords);
 router.get("/exploreWall/share/:id", climbRecordsController.getExploresRecordsById);
 router.get("/exploreWall/:userId", climbRecordsController.getExploresRecordsByUser);
-router.post("/addLike/:id", climbRecordsController.addExploresLike);
-router.post("/removeLike/:id", climbRecordsController.removeExploresLike);
-router.post("/addComment/:id", climbRecordsController.addExploresComment);
+router.put("/exploreWall/:id/comment", climbRecordsController.addExploresComment);
+router.put("/exploreWall/:id/like", climbRecordsController.addExploresLike);
+router.delete("/exploreWall/:id/like", climbRecordsController.removeExploresLike);
+
 router.get("/:userId", climbRecordsController.getClimbRecordsByUserId);
+router.delete("/:id", climbRecordsController.removeClimbRecord);
  
 module.exports = router;

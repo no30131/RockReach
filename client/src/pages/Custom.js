@@ -123,7 +123,7 @@ const Custom = ({ showMessage }) => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
+      const response = await axios.put(
         "https://node.me2vegan.com/api/customs/process",
         {
           image: selectedWall.originalImage,

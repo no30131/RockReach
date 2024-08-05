@@ -11,7 +11,7 @@ exports.createUser = async (req, res, next) => {
     "https://rockreach-0618.s3.ap-southeast-2.amazonaws.com/account2.png";
 
   if (name.length > 15) {
-    return res.status(400).send({ error: "名字不能超過15個字元！" });
+    return res.status(400).json({ error: "名字不能超過15個字元！" });
   }
 
   try {
@@ -40,7 +40,7 @@ exports.createUser = async (req, res, next) => {
       maxAge: 3600000,
     });
 
-    res.status(201).send({ user, token });
+    res.status(201).json({ user, token });
   } catch (error) {
     next(error);
   }
@@ -51,12 +51,12 @@ exports.loginUser = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).send({ message: "此信箱未註冊" });
+      return res.status(404).json({ message: "此信箱未註冊" });
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(401).send({ message: "密碼不正確" });
+      return res.status(401).json({ message: "密碼不正確" });
     }
 
     const token = jwt.sign(
@@ -72,7 +72,7 @@ exports.loginUser = async (req, res, next) => {
       maxAge: 3600000,
     });
 
-    res.status(200).send({ message: "登入成功", user, token });
+    res.status(200).json({ message: "登入成功", user, token });
   } catch (error) {
     next(error);
   }
@@ -83,9 +83,9 @@ exports.getUserById = async (req, res, next) => {
     const userId = req.params.userId;
     const user = await User.findById(userId).select("name introduce image");
     if (!user) {
-      return res.status(404).send({ error: "查無此使用者！" });
+      return res.status(404).json({ error: "查無此使用者！" });
     }
-    res.status(200).send(user);
+    res.status(200).json(user);
   } catch (error) {
     next(error);
   }
@@ -96,9 +96,9 @@ exports.getUserByName = async (req, res, next) => {
     const name = req.params.name;
     const user = await User.findOne({ name });
     if (!user) {
-      return res.status(404).send({ error: "查無此使用者！" });
+      return res.status(404).json({ error: "查無此使用者！" });
     }
-    res.status(200).send(user);
+    res.status(200).json(user);
   } catch (error) {
     next(error);
   }

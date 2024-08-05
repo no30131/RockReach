@@ -5,7 +5,7 @@ exports.createAchievement = async (req, res, next) => {
     const { userId, customName, status } = req.body;
 
     if (status !== "completed") {
-      return res.status(400).send({ error: "Status can only be 'completed'" });
+      return res.status(400).json({ error: "Status can only be 'completed'" });
     }
 
     const existingAchievement = await Achievements.findOne({ userId, customName });

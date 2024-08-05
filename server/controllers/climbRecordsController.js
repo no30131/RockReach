@@ -60,7 +60,7 @@ exports.createClimbRecords = async (req, res, next) => {
     });
 
     await climbRecords.save();
-    res.status(201).send(climbRecords);
+    res.status(201).json(climbRecords);
   } catch (error) {
     next(error);
   }
@@ -116,7 +116,7 @@ exports.getClimbRecordsByUserId = async (req, res, next) => {
         likedBy: rec.likedBy || [],
       })),
     }));
-    res.status(200).send(formattedRecords);
+    res.status(200).json(formattedRecords);
   } catch (error) {
     next(error);
   }
@@ -142,7 +142,7 @@ exports.getExploresRecords = async (req, res, next) => {
         })),
     }));
 
-    res.status(200).send(formattedRecords);
+    res.status(200).json(formattedRecords);
   } catch (error) {
     next(error);
   }
@@ -167,7 +167,7 @@ exports.addExploresLike = async (req, res, next) => {
       return res.status(400).json({ error: "User has already liked this record" });
     }
 
-    res.status(200).send(record);
+    res.status(200).json(record);
   } catch (error) {
     next(error);
   }
@@ -191,7 +191,7 @@ exports.removeExploresLike = async (req, res, next) => {
       return res.status(400).json({ error: "User has not liked this record" });
     }
 
-    res.status(200).send(record);
+    res.status(200).json(record);
   } catch (error) {
     next(error);
   }
@@ -211,25 +211,25 @@ exports.addExploresComment = async (req, res, next) => {
       return res.status(400).json({ message: "留言不能超過100個字元！" });
     }
 
-    const records = await ClimbRecords.find({
-      "records.files": { $exists: true, $ne: [] },
-    })
-      .populate("userId", "name image")
-      .lean();
+    // const records = await ClimbRecords.find({
+    //   "records.files": { $exists: true, $ne: [] },
+    // })
+    //   .populate("userId", "name image")
+    //   .lean();
 
-    const formattedRecords = records.map((record) => ({
-      ...record,
-      user: record.userId,
-      records: record.records
-        .filter((rec) => rec.files && rec.files.length > 0)
-        .map((rec) => ({
-          ...rec,
-          likes: rec.likes || 0,
-          comments: rec.comments || [],
-        })),
-    }));
+    // const formattedRecords = records.map((record) => ({
+    //   ...record,
+    //   user: record.userId,
+    //   records: record.records
+    //     .filter((rec) => rec.files && rec.files.length > 0)
+    //     .map((rec) => ({
+    //       ...rec,
+    //       likes: rec.likes || 0,
+    //       comments: rec.comments || [],
+    //     })),
+    // }));
 
-    res.status(201).send(formattedRecords);
+    res.status(201).json(record);
   } catch (error) {
     next(error);
   }
@@ -257,7 +257,7 @@ exports.getExploresRecordsByUser = async (req, res, next) => {
         })),
     }));
 
-    res.status(200).send(formattedRecords);
+    res.status(200).json(formattedRecords);
   } catch (error) {
     next(error);
   }
@@ -271,7 +271,7 @@ exports.getExploresRecordsById = async (req, res, next) => {
       .lean();
 
     if (!records) {
-      return res.status(404).send({ error: "Records not found" });
+      return res.status(404).json({ error: "Records not found" });
     }
 
     const formattedRecords = {
@@ -286,7 +286,7 @@ exports.getExploresRecordsById = async (req, res, next) => {
         })),
     };
 
-    res.status(200).send(formattedRecords);
+    res.status(200).json(formattedRecords);
   } catch (error) {
     next(error);
   }
@@ -329,7 +329,7 @@ exports.getSortedClimbRecords = async (req, res, next) => {
         })),
     }));
 
-    res.status(200).send(formattedRecords);
+    res.status(200).json(formattedRecords);
   } catch (error) {
     next(error);
   }
