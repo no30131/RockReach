@@ -58,9 +58,9 @@ exports.getCustomsWallRouteById = async (req, res, next) => {
 };
 
 exports.processImage = async (req, res, next) => {
-  const { imageKey, markers } = req.body;
+  const { image, markers } = req.body;
 
-  if (!imageKey || typeof imageKey !== "string") {
+  if (!image || typeof image !== "string") {
     return res
       .status(400)
       .json({ message: "圖片路徑不可缺少，而且必須是字串格式" });
@@ -73,49 +73,56 @@ exports.processImage = async (req, res, next) => {
     __dirname,
     "..",
     "uploads",
-    path.basename(imageKey)
+    path.basename(image)
   );
 
-  const params = {
-    Bucket: process.env.AWS_S3_BUCKET,
-    Key: imageKey,
-  };
-
   try {
-    const data = await s3.getObject(params).promise();
-    await fs.promises.writeFile(localImagePath, data.Body);
-
-    const pythonScriptPath = path.join(
-      __dirname,
-      "..",
-      "scripts",
-      "image_processing.py"
-    );
-    const pythonProcess = spawn("python", [
-      pythonScriptPath,
-      localImagePath,
-      JSON.stringify(markers),
-    ]);
-
-    let outputData = "";
-
-    pythonProcess.stdout.on("data", (data) => {
-      outputData += data.toString();
+    const response = await axios({
+      url: image,
+      method: "GET",
+      responseType: "stream",
     });
 
-    pythonProcess.stderr.on("data", (data) => {
-      console.error(`stderr: ${data}`);
+    const writer = fs.createWriteStream(localImagePath);
+    response.data.pipe(writer);
+
+    writer.on("finish", () => {
+      const pythonScriptPath = path.join(
+        __dirname,
+        "..",
+        "scripts",
+        "image_processing.py"
+      );
+      const pythonProcess = spawn("python", [
+        pythonScriptPath,
+        localImagePath,
+        JSON.stringify(markers),
+      ]);
+
+      let outputData = "";
+
+      pythonProcess.stdout.on("data", (data) => {
+        outputData += data.toString();
+      });
+
+      pythonProcess.stderr.on("data", (data) => {
+        console.error(`stderr: ${data}`);
+      });
+
+      pythonProcess.on("close", (code) => {
+        if (code !== 0) {
+          res.status(500).json({ message: "Error processing image" });
+          return;
+        }
+        const outputPath = outputData.trim();
+        const relativePath = path.join("uploads", path.basename(outputPath));
+
+        res.status(200).json({ processedImage: relativePath });
+      });
     });
 
-    pythonProcess.on("close", (code) => {
-      if (code !== 0) {
-        res.status(500).json({ message: "Error processing image" });
-        return;
-      }
-      const outputPath = outputData.trim();
-      const relativePath = path.join("uploads", path.basename(outputPath));
-
-      res.status(200).json({ processedImage: relativePath });
+    writer.on("error", (err) => {
+      next(new Error("Error writing image to local file"));
     });
   } catch (error) {
     next(new Error("Error fetching image from S3"));
