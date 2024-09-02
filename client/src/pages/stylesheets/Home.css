@@ -1,86 +1,54 @@
-.home-main {
-    padding: 0 35px;
-    display: flex;
-    justify-content: space-around;
-    min-height: 500px;
-}
-
-.home-title {
-    /* display: flex; */
-    /* flex-direction: column; */
-    margin-top: 40px;
-    margin-right: 50px;
-}
-
-.home-title > h1 {
-    text-align: left;
-    margin-bottom: -10px;
-    color: darkred;
-}
-
-.home-title > p {
-    margin-top: 60px;
-    text-align: left;
-    font-size: 17px;
-    max-width: 470px;
-}
-
-.home-main-image {
-    max-height: 300px;
-    margin: 30px 10px 10px 0px;
-}
-
 .home-signup-button {
-    width: 250px;
-    height: 55px;
-    padding: 10px 20px;
-    border: 1px solid rgb(255, 98, 0);
-    border-radius: 5px;
-    background-color: rgb(255, 98, 0);
-    color: white;
-    font-size: 18px;
-    margin-top: 30px;
-    cursor: pointer;
-    /* margin-bottom: 200px; */
+  width: 250px;
+  height: 55px;
+  padding: 10px 20px;
+  border: 1px solid rgb(255, 98, 0);
+  border-radius: 5px;
+  background-color: rgb(255, 98, 0);
+  color: white;
+  font-size: 18px;
+  margin-top: 20px;
+  cursor: pointer;
 }
 
 .home-signup-button:hover {
-    background-color: rgb(255, 115, 0);
-    border: 1px solid rgb(255, 115, 0);
-}
-
-.home-signup-button {
-    /* display: flex;
-    justify-content: center;
-    text-decoration: none;
-    margin: -88px 0 20px 0; */
-    /* display: flex;
-    position: absolute;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    right: 105px;
-    bottom: 150px;
-    z-index: 200;
-    overflow: hidden; */
-    /* max-width: 20vmin; */
+  background-color: rgb(255, 115, 0);
+  border: 1px solid rgb(255, 115, 0);
+  font-size: 0.9rem;
 }
 
 .home1-signup-area {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 50px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
 }
 
 .landing-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .landing-page img {
-    width: 80vw;
+  width: 110%;
+}
+
+@media screen and (max-width: 599px) {
+  .home1-signup-area {
+    margin-top: -5px;
+    margin-bottom: 20px;
+  }
+  
+  .home-signup-button {
+    width: 200px;
+    height: 45px;
+    font-size: 0.7rem;
+  }
+
+  .home-signup-button:hover {
+    font-size: 0.75rem;
+  }
 }

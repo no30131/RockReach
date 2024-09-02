@@ -302,7 +302,6 @@
 
 .filter-container-box.expanded {
   max-height: 500px;
-  /* padding: 5px; */
 }
 
 .filter-container {
@@ -311,7 +310,7 @@
   justify-content: center;
   gap: 20px;
   margin-bottom: 20px;
-  width: 25vmin;
+  width: 30vmin;
   background-color: rgb(255, 255, 255);
   border: 1px solid rgb(40, 130, 255, 0.8);
   border-radius: 3px;
@@ -388,9 +387,6 @@
   justify-content: center;
   gap: 5px;
   height: 30px;
-  /* background-color: transparent; */
-  /* border: none;
-  cursor: pointer; */
   font-size: 16px;
 }
 
@@ -401,3 +397,41 @@
 .likes button, .comments button, .share button {
   color: #032a53;
 }
+
+@media screen and (max-width: 599px) {
+  .toggle-button {
+    position: fixed;
+    right: 55px;
+    bottom: 70px;
+  }
+  
+  .filter-container-box {
+    right: 55px;
+    bottom: 100px;
+  }
+
+  .filter-container {
+    width: 40vmin;
+  }
+}
+
+@media screen and (min-width: 600px) and (max-width: 1023px) {
+  .toggle-button {
+    position: fixed;
+    right: 55px;
+    bottom: 70px;
+  }
+  
+  .filter-container-box {
+    right: 55px;
+    bottom: 100px;
+  }
+
+  .filter-container {
+    width: 35vmin;
+  }
+}
+
+/* @media screen and (min-width: 1024px) {
+ 
+} */
