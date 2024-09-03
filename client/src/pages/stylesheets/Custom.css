@@ -1,21 +1,16 @@
 .custom-page {
-  padding: 20px;
+  padding: 20px 0;
   text-align: center;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
-  /* margin: 0 auto;   */
 }
 
 .walls-list {
   display: flex;
   flex-wrap: wrap;
-  /* grid-template-columns: repeat(3, 1fr); */
-  /* max-width: calc(3 * 320); */
   width: 100%;
   gap: 20px;
   justify-content: center;
   align-items: center;
+  margin-top: 15px;
 }
 
 .wall-item {
@@ -48,24 +43,18 @@
   object-fit: cover;
   object-position: center;
 }
-/* 
-.custom-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-} */
 
 .custom-item-details {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 95%;
   max-width: 750px;
   /* margin: 0 auto; */
   align-items: center;
   /* position: relative; */
   margin: 20px auto;
   background-color: #f9f9f9;
-  padding: 20px 20px 40px 20px;
+  padding: 20px 15px 40px 15px;
   border-radius: 10px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -73,10 +62,10 @@
   align-items: center;
 }
 
-
 .custom-item-details > img,
 canvas {
-  width: 350px;
+  max-width: 315px;
+  height: auto;
 }
 
 .custom-item-details-h3-div {
@@ -85,7 +74,8 @@ canvas {
   padding: 0 15px;
   border: 2px solid rgb(138, 156, 255, 0.7);
   border-radius: 7px;
-  width: 316px;
+  width: 90%;
+  max-width: 285px;
   margin-top: 30px;
   display: flex;
   justify-content: center;
@@ -111,7 +101,7 @@ canvas {
 
 .route-output img,
 .route-details img {
-  width: 350px;
+  max-width: 315px;
   transition: transform 0.3s ease;
 }
 
@@ -168,7 +158,7 @@ canvas {
 .custom-share-button {
   margin: 0 0 -55px 0;
   /* padding-top: 0px; */
-  width: 320px;
+  width: 315px;
   display: flex;
   justify-content: flex-end;
 }
@@ -199,7 +189,7 @@ canvas {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-left: 20px;
+  /* margin-left: 20px; */
 }
 
 .return-button:hover {
@@ -281,8 +271,13 @@ canvas {
   align-items: center;
 }
 
+.routes-list > h4 {
+  margin-left: 10px;
+}
+
 .routes-list {
-  width: 350px;
+  width: 90%;
+  max-width: 800px;
   text-align: left;
   margin-top: 10px;
 }
@@ -308,7 +303,6 @@ canvas {
 
 .route-details {
   text-align: left;
-  max-width: 350px;
   margin: 20px auto;
   background-color: #f9f9f9;
   /* padding: 20px; */
@@ -317,8 +311,8 @@ canvas {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 20px 40px 20px;
-  width: 100%;
+  padding: 20px 15px 40px 15px;
+  width: 95%;
   max-width: 750px;
 }
 
@@ -404,3 +398,25 @@ canvas {
   align-items: center;
   z-index: 1000;
 }
+
+@media screen and (max-width: 599px) {
+  .adding-custom-area > p {
+    margin: 0 20px;
+  }
+
+  .adding-custom-buttons > button {
+    width: 135px;
+  }
+
+  .edit-or-save > button {
+    width: 135px;
+  }
+}
+
+/* @media screen and (min-width: 600px) and (max-width: 1023px) {
+
+} */
+
+/* @media screen and (min-width: 1024px) {
+ 
+} */

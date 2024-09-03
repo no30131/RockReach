@@ -7,13 +7,13 @@ body {
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
-  min-height: 700px;
+  min-height: 300px;
 }
 
 .friend-item {
   display: flex;
   align-items: center;
-  width: 77vmin;
+  width: 85vmin;
   background: #f9f9f9;
   padding: 10px;
   border-radius: 8px;
@@ -37,7 +37,7 @@ body {
 .btn-chat {
   background-color: rgb(40, 130, 255);
   display: block;
-  width: 100px;
+  width: 90px;
   padding: 5px;
   margin-left: 10px;
   color: white;

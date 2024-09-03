@@ -16,15 +16,8 @@
 }
 
 .signin-form-area > input {
-  width: 100%;
+  width: 90%;
 }
-
-
-/* .signin-form {
-  display: flex;
-  flex-direction: column;
-  margin: 10px 50px;
-} */
 
 .input-email,
 .input-password {

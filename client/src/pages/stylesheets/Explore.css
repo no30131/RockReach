@@ -6,7 +6,7 @@
 }
 
 .record-card {
-  width: 80vmin;
+  width: 90vmin;
   margin: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -401,17 +401,17 @@
 @media screen and (max-width: 599px) {
   .toggle-button {
     position: fixed;
-    right: 55px;
+    right: 30px;
     bottom: 70px;
   }
   
   .filter-container-box {
-    right: 55px;
+    right: 30px;
     bottom: 100px;
   }
 
   .filter-container {
-    width: 40vmin;
+    width: 50vmin;
   }
 }
 

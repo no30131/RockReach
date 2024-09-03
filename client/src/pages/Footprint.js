@@ -373,7 +373,7 @@ const Footprint = ({ showMessage }) => {
                 <button className="close-btn" onClick={closeDetails}>
                   X
                 </button>
-                <div>
+                <div className="map-detail-box">
                   <div className="map-detail">
                     <h2>{footprintData.gymName}</h2>
                   </div>

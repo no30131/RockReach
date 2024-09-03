@@ -37,12 +37,24 @@ const Custom = ({ showMessage }) => {
   const [showSaveArea, setShowSaveArea] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 599);
+  const [isCanvasVisible, setIsCanvasVisible] = useState(true);
 
   useEffect(() => {
     const user = getUserFromToken();
     if (user) {
       setUserId(user.userId);
     }
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 599);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -81,6 +93,7 @@ const Custom = ({ showMessage }) => {
     setScale(1);
     setShowSaveArea(false);
     setShowOutput(false);
+    setIsCanvasVisible(true);
 
     axios
       .get(`https://node.me2vegan.com/api/customs/walls/${wall.wallName}`)
@@ -100,6 +113,7 @@ const Custom = ({ showMessage }) => {
     if (!isCanvasActive) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
+    setIsCanvasVisible(true);
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
@@ -141,6 +155,9 @@ const Custom = ({ showMessage }) => {
       setIsProcessing(false);
       setShowOutput(true);
       setIsLoading(false);
+      if (isMobile) {
+        setIsCanvasVisible(false);
+      }
     } catch (error) {
       console.error("Error processing image:", error);
       setIsProcessing(false);
@@ -300,6 +317,9 @@ const Custom = ({ showMessage }) => {
   const handleEdit = () => {
     setShowSaveArea(false);
     setShowOutput(false);
+    setOutputImage(null);
+    setIsCanvasVisible(true);
+    setIsCanvasActive(true);
   };
 
   const getRouteTypeIcon = (typeName) => {
@@ -340,15 +360,20 @@ const Custom = ({ showMessage }) => {
             <div className="custom-item-details-h3-div">
               <h3>{selectedWall.wallName}</h3>
             </div>
-            <img
-              ref={imgRef}
-              src={selectedWall.originalImage}
-              alt={selectedWall.wallName}
-              style={{ display: "none" }}
-              onLoad={handleImageLoad}
-            />
+            
+            {isCanvasVisible && (
+              <img
+                ref={imgRef}
+                src={selectedWall.originalImage}
+                alt={selectedWall.wallName}
+                style={{ display: "none" }}
+                onLoad={handleImageLoad}
+              />
+            )}
             <div className="images-container">
-              <canvas ref={canvasRef} onClick={handleImageClick} />
+              {isCanvasVisible && (
+                <canvas ref={canvasRef} onClick={handleImageClick} />
+              )}
               {outputImage && (
                 <div className="route-output">
                   <img src={outputImage} alt="Output" />

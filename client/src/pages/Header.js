@@ -117,7 +117,7 @@ const Header = () => {
                     {!user && !userId ? (
                       <Link to="/signin" className="m-login-button" onClick={toggleMenuContainer}>登入</Link>
                     ) : (
-                      <button onClick={handleLogout} className="button logout-button">登出</button>
+                      <button onClick={handleLogout} className="button m-logout-button">登出</button>
                     )}
                   </div>
                 </nav>

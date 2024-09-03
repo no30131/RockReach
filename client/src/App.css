@@ -53,8 +53,7 @@ input, textarea {
 
 @media screen and (max-width: 599px) {
   .container {
-    width: 100%;
-    min-height: 80vh;
+    width: 95%;
     margin: 60px auto 0 auto;
   }
 }

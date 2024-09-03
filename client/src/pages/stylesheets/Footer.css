@@ -3,11 +3,20 @@ footer {
     background-color: #f0f0f0;
     display: flex;
     justify-content: space-between;
-    font-size: 15px;
+    min-width: 200px;
+    width: 100%;
 }
 
 .footer-links {
     display: flex;
     align-items: center;
     margin-right: 20px;
+}
+
+.footer-rights > p {
+    font-size: 11px;
+}
+
+.footer-links > a {
+    font-size: 13px;
 }

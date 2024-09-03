@@ -17,11 +17,11 @@
 }
 
 .ant-layout-sider {
-  padding: 20px;
+  padding: 10px 10px;
 }
 
 .map-detail {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .map-detail h4 {
@@ -114,7 +114,15 @@
 
 .map-detail > h2 {
   text-align: center;
-  padding: 0 0 25px 0;
+  margin-top: -5px;
+  margin-bottom: 25px;
   color: rgb(40, 130, 255);
   font-size: 18px;
+}
+
+.ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 95vh;
 }
