@@ -65,3 +65,8 @@
 .spaceA {
   margin-bottom: 30px;
 }
+
+.achievements-container > .wall-data > .custom-item-details > .custom-item-details-h3-div {
+  margin-top: 20px;
+  margin-bottom: 5px;
+}

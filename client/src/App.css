@@ -2,7 +2,7 @@
   /* max-width: 80vw; */
   min-height: 100vh;
   margin: 80px auto 0 auto;
-  padding: 20px;
+  /* padding: 20px; */
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
   font-size: 16px;
@@ -53,8 +53,8 @@ input, textarea {
 
 @media screen and (max-width: 599px) {
   .container {
-    width: 95%;
-    margin: 60px auto 0 auto;
+    width: 99%;
+    margin: 65px auto 0 auto;
   }
 }
 

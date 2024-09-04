@@ -397,6 +397,7 @@ const Footprint = ({ showMessage }) => {
                     <h4>會員到期日:</h4>
                     <input
                       type="date"
+                      placeholder="請選擇到期日"
                       value={footprintData.expiryDate || ""}
                       onChange={(e) =>
                         setFootprintData({
